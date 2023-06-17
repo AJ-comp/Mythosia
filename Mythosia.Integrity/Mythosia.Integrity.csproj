@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>CheckSum.CRC</PackageId>
+    <Authors>JJW</Authors>
+    <Company>Swinnus</Company>
+    <Product>CRC</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>support checksum8: 
+1. xor (using in NMEA format)
+2. modulo-256
+3. 2's complement
+
+support CRC8:
+1. CRC8
+2. CRC8 Maxim
+
+support CRC16:
+1. CRC16
+2. CRC16 CCITT (xModem)
+3. CRC16 DNP
+
+support CRC32
+1. CRC32</Description>
+    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement</PackageTags>
+    <PackageProjectUrl>https://github.com/AJ-comp/Algorithm</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AJ-comp/Algorithm</RepositoryUrl>
+    <Version>2.0.1</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>2.0.0.1</AssemblyVersion>
+    <FileVersion>2.0.0.1</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mythosia\Mythosia.csproj" />
+  </ItemGroup>
+
+</Project>
