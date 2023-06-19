@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -245,5 +246,17 @@ namespace Mythosia
             }
             return true;
         }
+
+
+        public static string ToEncodedString(this IEnumerable<byte> data, Encoding encoding)
+        {
+            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.ToArray(), 0, data.Count());
+        }
+
+        public static string ToASCIIString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.ASCII);
+        public static string ToUTF7String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF7);
+        public static string ToUTF8String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF8);
+        public static string ToUnicodeString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.Unicode);
+        public static string ToUTF32String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF32);
     }
 }
