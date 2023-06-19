@@ -15,7 +15,7 @@ namespace Mythosia
         /// <param name="maxValue">The maximum value of the range.</param>
         /// <returns><c>true</c> if the value is within the range; otherwise, <c>false</c>.</returns>
         /*******************************************************************************/
-        public static bool IsRange(this DateTime value, DateTime minValue, DateTime maxValue)
+        public static bool IsInRange(this DateTime value, DateTime minValue, DateTime maxValue)
         {
             return (minValue <= value && value <= maxValue);
         }

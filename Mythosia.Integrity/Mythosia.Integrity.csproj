@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageId>CheckSum.CRC</PackageId>
+    <PackageId></PackageId>
     <Authors>JJW</Authors>
-    <Company>Swinnus</Company>
+    <Company>JJW</Company>
     <Product>CRC</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>support checksum8: 
@@ -18,15 +18,16 @@ support CRC8:
 
 support CRC16:
 1. CRC16
-2. CRC16 CCITT (xModem)
-3. CRC16 DNP
+2. CRC16 (modbus)
+3. CRC16 CCITT (xModem)
+4. CRC16 DNP
 
 support CRC32
 1. CRC32</Description>
-    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement</PackageTags>
-    <PackageProjectUrl>https://github.com/AJ-comp/Algorithm</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AJ-comp/Algorithm</RepositoryUrl>
-    <Version>2.0.1</Version>
+    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16(modbus) CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement</PackageTags>
+    <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</RepositoryUrl>
+    <Version>1.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>2.0.0.1</AssemblyVersion>
     <FileVersion>2.0.0.1</FileVersion>

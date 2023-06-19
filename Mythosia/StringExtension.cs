@@ -75,42 +75,23 @@ namespace Mythosia
 
 
 
-        public static IEnumerable<byte> ToEncodingArray(this string value, Encoding encoding)
+        public static byte[] ToEncodingArray(this string value, Encoding encoding)
         {
-            if (value == null) return new List<byte>();
+            if (value == null)
+            {
+                List<byte> result = new List<byte>();
+                return result.ToArray();
+            }
 
             return encoding.GetBytes(value);
         }
 
-        public static IEnumerable<byte> ToDefaultArray(this string value)
-        {
-            return value.ToEncodingArray(Encoding.Default);
-        }
-
-        public static IEnumerable<byte> ToASCIIArray(this string value)
-        {
-            return value.ToEncodingArray(Encoding.ASCII);
-        }
-
-        public static IEnumerable<byte> ToUTF7Array(this string value)
-        {
-            return value.ToEncodingArray(Encoding.UTF7);
-        }
-
-        public static IEnumerable<byte> ToUTF8Array(this string value)
-        {
-            return value.ToEncodingArray(Encoding.UTF8);
-        }
-
-        public static IEnumerable<byte> ToUTF16Array(this string value)
-        {
-            return value.ToEncodingArray(Encoding.Unicode);
-        }
-
-        public static IEnumerable<byte> ToUTF32Array(this string value)
-        {
-            return value.ToEncodingArray(Encoding.UTF32);
-        }
+        public static byte[] ToDefaultArray(this string value) => value.ToEncodingArray(Encoding.Default);
+        public static byte[] ToASCIIArray(this string value) => value.ToEncodingArray(Encoding.ASCII);
+        public static byte[] ToUTF7Array(this string value) => value.ToEncodingArray(Encoding.UTF7);
+        public static byte[] ToUTF8Array(this string value) => value.ToEncodingArray(Encoding.UTF8);
+        public static byte[] ToUTF16Array(this string value) => value.ToEncodingArray(Encoding.Unicode);
+        public static byte[] ToUTF32Array(this string value) => value.ToEncodingArray(Encoding.UTF32);
 
     }
 }
