@@ -15,3 +15,10 @@ var result = 56.IsInRange(0, 100);  // result is true
 var result = 56.IsInRange(0, 30);   // result is false
 var data = 56000000.ToSIPrefix();   // data is "56 M"
 var data = ((double)423.42031).ConvertEndian();	// change endian
+
+// Example for Enumerable extension
+new List<byte> test = new List<byte>(){0xff, 0xab, 0x01, 0x00, 0xee};
+var result = test.ToUnPrefixedHexString();	// result is "ff ab 01 00 ee"
+var result = test.ToPrefixedHexString();		// result is "0xffab0100ee"
+var result = test.ToEncodedString(Encoding.GetEncoding("ISO-8859-1"));		// convert string as "ISO-8859-1" format
+var result = test.ToASCIIString()	// equal with Encoding.ASCII.GetString(test.ToArray(), 0, test.Count());

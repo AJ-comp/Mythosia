@@ -8,7 +8,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>string, numeric, enumerable extension</PackageTags>
     <Authors>JJW</Authors>
-    <PackageProjectUrl>https://github.com/AJ-comp/Algorithm</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description># Mythosia
 This project supports custom functions that are not directly provided by .NET as extension methods so that they can be conveniently used within the project.
