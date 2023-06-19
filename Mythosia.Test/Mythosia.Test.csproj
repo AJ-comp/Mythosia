@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mythosia.Integrity\Mythosia.Integrity.csproj" />
-    <ProjectReference Include="..\Mythosia.security.crypto\Mythosia.Security.Cryptography.csproj" />
+    <ProjectReference Include="..\Mythosia.Security.Cryptography\Mythosia.Security.Cryptography.csproj" />
     <ProjectReference Include="..\Mythosia\Mythosia.csproj" />
   </ItemGroup>
 
