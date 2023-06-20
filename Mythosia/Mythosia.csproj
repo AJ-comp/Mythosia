@@ -29,6 +29,7 @@ var result = 56.IsInRange(0, 100);  // result is true
 var result = 56.IsInRange(0, 30);   // result is false
 var data = 56000000.ToSIPrefix();   // data is "56 M"
 var data = ((double)423.42031).ConvertEndian(); // change endian</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>
