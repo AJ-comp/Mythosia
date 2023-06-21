@@ -3,6 +3,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <Description>The goal of this project is to support convenience through an extension function when using an encryption class (example: AES, DES)
+
+You can use encryption function from just byte array or string if you use a this library.
+
+for example:
+var dataEncrypted = "test123456".ToUTF8Array().EncryptAES(key, iv);
+var dataDecrypted = dataEncrypted.DecryptAES128(key, iv);
+
+// if you want to convert to string, here the stringDecrypted will be "test123456"
+var stringDecrypted = dataDecrypted.ToUTF8String();
+
+
+
+refer to https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography for detail.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

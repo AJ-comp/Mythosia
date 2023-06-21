@@ -28,7 +28,7 @@ var key = KeyGenerator.GenerateAES128Key();
 var iv = KeyGenerator.GenerateAES128IV();
 
 var dataEncrypted = "test123456".ToUTF8Array().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" string  (if you pass AES256 key then run as AES256)
-var dataDecrypted = dataEncrypted.DecryptAES128(key, iv);		// decrypt with AES128
+var dataDecrypted = dataEncrypted.DecryptAES(key, iv);		// decrypt with AES128
 
 var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert to string, here the stringDecrypted will be "test123456"
 ```

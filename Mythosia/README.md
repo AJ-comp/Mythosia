@@ -21,4 +21,6 @@ new List<byte> test = new List<byte>(){0xff, 0xab, 0x01, 0x00, 0xee};
 var result = test.ToUnPrefixedHexString();			// result is "ff ab 01 00 ee"
 var result = test.ToPrefixedHexString();			// result is "0xffab0100ee"
 var result = test.ToEncodedString(Encoding.GetEncoding("ISO-8859-1"));		// convert string as "ISO-8859-1" format
-var result = test.ToASCIIString()	// equal with Encoding.ASCII.GetString(test.ToArray(), 0, test.Count());
+var result = test.ToASCIIString();	// equal with Encoding.ASCII.GetString(test.ToArray(), 0, test.Count());
+var result = test.IndexOf(new List(){ 0xab, 0x01 });	// return the index that subsequence is finded.
+test.AddExceptNull(item);		// add item if item is not null
