@@ -6,14 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-
-List<byte> test = new List<byte>() { 10, 16, 15, 30, 45, 65 };
-Console.WriteLine(test.ToUnPrefixedHexString());
-
-
 IntegrityTest integrityTest = new IntegrityTest();
 integrityTest.StartTest();
 
+EnumerableTest enumTest = new EnumerableTest();
+enumTest.StartTest(new List<byte>() { 10, 16, 15, 30, 45, 65 });
 
 var key = KeyGenerator.GenerateAES128Key();
 var iv = KeyGenerator.GenerateAES128IV();

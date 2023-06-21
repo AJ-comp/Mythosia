@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Mythosia
@@ -11,7 +12,7 @@ namespace Mythosia
     {
         public static IEnumerable<byte> Append(this IEnumerable<byte> data, byte toAddData)
         {
-            List<byte> result = new List<byte>(data);
+            var result = data.ToList();
             if (data.Count() <= 0) return result;
 
             result.Add(toAddData);
@@ -22,12 +23,111 @@ namespace Mythosia
 
         public static IEnumerable<byte> AppendRange(this IEnumerable<byte> data, IEnumerable<byte> toAddData)
         {
-            List<byte> result = new List<byte>(data);
+            var result = data.ToList();
             if (data.Count() <= 0) return result;
 
             result.AddRange(toAddData);
 
             return result;
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Joins the elements of an enumerable collection into a single string using the specified connector.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <param name="obj">The enumerable collection to join.</param>
+        /// <param name="connector">The string used to connect the elements in the resulting string. Default value is a comma (,).</param>
+        /// <returns>A string that contains the joined elements of the collection.</returns>
+        /*******************************************************************************/
+        public static string JoinItems<T>(this IEnumerable<T> obj, string connector = ",") => string.Join(connector, obj);
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Returns the index of the first occurrence of a specified subsequence within the source sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the sequences.</typeparam>
+        /// <param name="obj">The source sequence to search within.</param>
+        /// <param name="param">The subsequence to locate within the source sequence.</param>
+        /// <returns>
+        /// The zero-based index of the first occurrence of the specified subsequence within the source sequence,
+        /// if found; otherwise, -1.
+        /// </returns>
+        /*******************************************************************************/
+        public static int IndexOf<T>(this IEnumerable<T> obj, IEnumerable<T> param)
+        {
+            if (param.Count() == 0) return -1;
+
+            int result = -1;
+            var matchedCandidate = new List<int>();
+            for (int i = 0; i < obj.Count(); i++)
+            {
+                // The time complexity of ElementAt(i) is O(1) because try to access after to convert to IList<T> internally except HashSet.
+                if (obj.ElementAt(i).Equals(param.ElementAt(0))) matchedCandidate.Add(i);
+            }
+
+            foreach (var item in matchedCandidate)
+            {
+                var candidate = obj.Skip(item).Take(param.Count());
+                if (candidate.SequenceEqual(param))
+                {
+                    result = item;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Adds a specified element to the collection, excluding null values.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collection.</typeparam>
+        /// <param name="obj">The collection to which the element should be added.</param>
+        /// <param name="data">The element to add to the collection.</param>
+        /// <remarks>
+        /// This extension method checks if the provided element is null. If the element is not null,
+        /// it is added to the collection using the <see cref="ICollection{T}.Add"/> method.
+        /// If the element is null, no action is taken, and the method returns without modifying the collection.
+        /// </remarks>
+        /*******************************************************************************/
+        public static void AddExceptNull<T>(this ICollection<T> obj, T data)
+        {
+            if (data == null) return;
+
+            obj.Add(data);
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Converts the elements of an enumerable collection to their decimal string representations, separated by a delimiter.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <param name="list">The enumerable collection to convert.</param>
+        /// <param name="delimiter">The delimiter string used to separate the decimal string representations. Default value is a single space.</param>
+        /// <returns>A string containing the decimal string representations of the elements in the collection, separated by the specified delimiter.</returns>
+        /// <exception cref="ArgumentException">Thrown when an element of the collection cannot be converted to decimal.</exception>
+        /*******************************************************************************/
+        public static string ToDecimalString<T>(this IEnumerable<T> list, string delimiter = " ")
+        {
+            StringBuilder decimalString = new StringBuilder();
+
+            foreach (var value in list)
+            {
+                // if the type is not converted to decimal then occurs exception.
+                decimalString.Append(Convert.ToDecimal(value).ToString());
+                decimalString.Append(delimiter);
+            }
+
+            if (decimalString.Length > 0)
+                decimalString.Length -= delimiter.Length; // Remove the last delimiter
+
+            return decimalString.ToString();
         }
 
 
