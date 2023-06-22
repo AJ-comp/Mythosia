@@ -22,6 +22,7 @@ var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert t
 
 1. Example
 ```c#
+using Mythosia;
 using Mythosia.Security.Cryptography;
 
 var key = KeyGenerator.GenerateAES128Key();
@@ -38,6 +39,7 @@ var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert t
 
 1. Example
 ```c#
+using Mythosia;
 using Mythosia.Security.Cryptography;
 
 var key = KeyGenerator.Generate3DESKey();
@@ -52,18 +54,40 @@ var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert t
 
 # Application
 
-Application example
+1. Using with polymorphism
+```c#
+// if you want to use polymorphism, you can do as below.
+
+using Mythosia;
+using Mythosia.Security.Cryptography;
+
+string contentToEncrypt = "test123456";
+
+// select the one from below
+// SEED algorithm is not supported yet but will be supported soon
+SymmetricAlgorithm symmetricAlgorithm = Aes.Create();
+SymmetricAlgorithm symmetricAlgorithm = 3DES.Create();
+SymmetricAlgorithm symmetricAlgorithm = DES.Create();
+
+// en-decryption with selected algorithm
+var encrypted = symmetricAlgorithm.Encrypt(contentToEncrypt.ToUTF8Array(), key, iv);
+var decrypted = symmetricAlgorithm.Decrypt(encrypted, key, iv).ToUTF8String();
+```
+
+2. Using with CRC
 ```c#
 // if you have a Mythosia.Integrity library, you can do as below.
 
+using Mythosia;
 using Mythosia.Integrity;
 using Mythosia.Security.Cryptography;
 
+var contentToEncrypt = "test123456".ToUTF8Array();
 var key = KeyGenerator.GenerateAES128Key();
 var iv = KeyGenerator.GenerateAES128IV();
 
-var dataEncrypted = "test123456".ToUTF8Array().WithCheckSum8().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + checksum8
-var dataEncrypted = "test123456".ToUTF8Array().WithCRC8().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc8
-var dataEncrypted = "test123456".ToUTF8Array().WithCRC16().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc16
-var dataEncrypted = "test123456".ToUTF8Array().WithCRC32().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc32
+var dataEncrypted = contentToEncrypt.WithCheckSum8().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + checksum8
+var dataEncrypted = contentToEncrypt.WithCRC8().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc8
+var dataEncrypted = contentToEncrypt.WithCRC16().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc16
+var dataEncrypted = contentToEncrypt.WithCRC32().EncryptAES(key, iv);		// encrypt with AES128 the "test123456" + crc32
 ```

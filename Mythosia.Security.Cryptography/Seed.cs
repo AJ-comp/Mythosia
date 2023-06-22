@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Mythosia.Security.Cryptography
 {
-    public class SEED
+    public class SEED : SymmetricAlgorithm
     {
         #region SSN
 
@@ -388,13 +389,13 @@ namespace Mythosia.Security.Cryptography
             return Encoding.UTF8.GetString(SEED.Decrypt(sData, seedKey));
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .EncryptWithSeed instead.")]
+        [Obsolete("This method is deprecated, please use the extension method .EncryptSeed instead.")]
         internal static byte[] Encrypt(byte[] Data, byte[] seedKey)
         {
             return SEED.Encrypt(Data, seedKey, true);
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .EncryptWithSeed instead.")]
+        [Obsolete("This method is deprecated, please use the extension method .EncryptSeed instead.")]
         internal static byte[] Encrypt(byte[] Data, byte[] seedKey, bool cbcPad)
         {
             int nOutSize = (int)((Data.Length) / 16) * 16;
@@ -450,13 +451,13 @@ namespace Mythosia.Security.Cryptography
             return OutData;
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .DecryptWithSeed instead.")]
+        [Obsolete("This method is deprecated, please use the extension method .DecryptSeed instead.")]
         internal static byte[] Decrypt(byte[] Data, byte[] seedKey)
         {
             return SEED.Decrypt(Data, seedKey, true);
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .DecryptWithSeed instead.")]
+        [Obsolete("This method is deprecated, please use the extension method .DecryptSeed instead.")]
         internal static byte[] Decrypt(byte[] Data, byte[] seedKey, bool cbcPad)
         {
             int nOutSize = Data.Length;
@@ -511,5 +512,18 @@ namespace Mythosia.Security.Cryptography
             }
             return OutData;
         }
+
+        public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[] rgbIV)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void GenerateIV() => KeyGenerator.GenerateSEEDKey();
+        public override void GenerateKey() => KeyGenerator.GenerateSEEDIV();
     }
 }

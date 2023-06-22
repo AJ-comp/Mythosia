@@ -4,9 +4,10 @@ Please see https://crccalc.com/
 
 
 ```c#
+using Mythosia;
 using Mythosia.Integrity;
 
-var data = Encoding.ASCII.GetBytes("123456789");
+var data = "123456789".ToASCIIArray();
 
 // Example for CRC 8
 var crc = data.CRC8();
@@ -36,7 +37,16 @@ var dataWithCRC = data.WithCRC16(CRC16Type.DNP);
 // Example for CRC 32
 var crc = data.CRC32();
 var dataWithCRC = data.WithCRC32();
+```
 
+
+# Checksum
+
+```c#
+using Mythosia;
+using Mythosia.Integrity;
+
+var data = "123456789".ToASCIIArray();
 
 // Example for Checksum8
 var checksum = data.CheckSum8(CheckSum8Type.Xor);
@@ -50,5 +60,4 @@ var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.TwosComplement);
 
 var checksum = data.CheckSum8(CheckSum8Type.NMEA);
 var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.NMEA);
-
 ```

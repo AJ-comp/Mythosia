@@ -20,26 +20,7 @@ namespace Mythosia.Security.Cryptography
         /// <returns>The encrypted data.</returns>
         /***************************************************************************/
         public static IEnumerable<byte> EncryptAES(this IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv, Aes aes)
-        {
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-            var inputBytes = toEncryptData.ToArray();
-            return encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
-
-            /*
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-            using (var ms = new MemoryStream())
-            using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-            {
-                cs.Write(toEncryptData.ToArray(), 0, toEncryptData.Count());
-                cs.FlushFinalBlock();
-                encrypted.AddRange(ms.ToArray());
-            }
-
-            return encrypted;
-             */
-        }
+            => toEncryptData.EncryptSymmetric(key, iv, aes);
 
 
         /***************************************************************************/
@@ -95,27 +76,7 @@ namespace Mythosia.Security.Cryptography
         /// <returns>The decrypted data.</returns>
         /***************************************************************************/
         public static IEnumerable<byte> DecryptAES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv, Aes aes)
-        {
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-            var cipherText = encryptedData.ToArray();
-            var decryptedBytes = decryptor.TransformFinalBlock(cipherText, 0, cipherText.Length);
-            return decryptedBytes;
-
-            /*
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-            using (var ms = new MemoryStream(encryptedData.ToArray()))
-            using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-            {
-                byte[] decryptedBytes = new byte[encryptedData.Count()];
-                int decryptedByteCount = cs.Read(decryptedBytes, 0, decryptedBytes.Length);
-                decrypted.AddRange(decryptedBytes.Take(decryptedByteCount));
-            }
-
-            return decrypted;
-            */
-        }
+            => encryptedData.DecryptSymmetric(key, iv, aes);
 
 
         /***************************************************************************/

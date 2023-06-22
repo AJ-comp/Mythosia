@@ -19,6 +19,7 @@ var stringDecrypted = dataDecrypted.ToUTF8String();
 refer to https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography for detail.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,12 +20,7 @@ namespace Mythosia.Security.Cryptography
         /// <returns>The encrypted data.</returns>
         /***************************************************************************/
         public static IEnumerable<byte> Encrypt3DES(this IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv, TripleDES tripleDES)
-        {
-            ICryptoTransform encryptor = tripleDES.CreateEncryptor(tripleDES.Key, tripleDES.IV);
-
-            var inputBytes = toEncryptData.ToArray();
-            return encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
-        }
+            => toEncryptData.EncryptSymmetric(key, iv, tripleDES);
 
 
         /***************************************************************************/
@@ -80,13 +76,7 @@ namespace Mythosia.Security.Cryptography
         /// <returns>The decrypted data.</returns>
         /***************************************************************************/
         public static IEnumerable<byte> Decrypt3DES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv, TripleDES tripleDES)
-        {
-            ICryptoTransform decryptor = tripleDES.CreateDecryptor(tripleDES.Key, tripleDES.IV);
-
-            var cipherText = encryptedData.ToArray();
-            var decryptedBytes = decryptor.TransformFinalBlock(cipherText, 0, cipherText.Length);
-            return decryptedBytes;
-        }
+            => encryptedData.DecryptSymmetric(key, iv, tripleDES);
 
 
         /***************************************************************************/
@@ -129,5 +119,118 @@ namespace Mythosia.Security.Cryptography
         public static IEnumerable<byte> Decrypt3DES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv,
                                                                             PaddingMode paddingMode)
             => Decrypt3DES(encryptedData, key, iv, CipherMode.CBC, paddingMode);
+
+
+
+
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Encrypts the specified data using the Data Encryption Standard (DES) algorithm with the provided DES instance.
+        /// </summary>
+        /// <param name="toEncryptData">The data to be encrypted.</param>
+        /// <param name="key">The encryption key used for DES encryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES encryption.</param>
+        /// <param name="des">The DES instance used for encryption.</param>
+        /// <returns>The encrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> EncryptDES(this IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv, DES des)
+            => toEncryptData.EncryptSymmetric(key, iv, des);
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Encrypts the specified data using the Data Encryption Standard (DES) algorithm.
+        /// </summary>
+        /// <param name="toEncryptData">The data to be encrypted.</param>
+        /// <param name="key">The encryption key used for DES encryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES encryption.</param>
+        /// <param name="cipherMode">The cipher mode used for DES encryption (default: CipherMode.CBC).</param>
+        /// <param name="paddingMode">The padding mode used for DES encryption (default: PaddingMode.PKCS7).</param>
+        /// <returns>The encrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> EncryptDES(this IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv,
+                                                                        CipherMode cipherMode = CipherMode.CBC, PaddingMode paddingMode = PaddingMode.PKCS7)
+        {
+            using var des = DES.Create();
+
+            des.Key = key.ToArray();
+            des.IV = iv.ToArray();
+            des.Mode = cipherMode;
+            des.Padding = paddingMode;
+
+            return EncryptDES(toEncryptData, key, iv, des);
+        }
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Encrypts the specified data using the Data Encryption Standard (DES) algorithm with the specified padding mode.
+        /// </summary>
+        /// <param name="toEncryptData">The data to be encrypted.</param>
+        /// <param name="key">The encryption key used for DES encryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES encryption.</param>
+        /// <param name="paddingMode">The padding mode used for DES encryption.</param>
+        /// <returns>The encrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> EncryptDES(this IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv,
+                                                                            PaddingMode paddingMode)
+            => EncryptDES(toEncryptData, key, iv, CipherMode.CBC, paddingMode);
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Decrypts the specified encrypted data using the Data Encryption Standard (DES) algorithm with the provided DES instance.
+        /// </summary>
+        /// <param name="encryptedData">The data to be decrypted.</param>
+        /// <param name="key">The encryption key used for DES decryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES decryption.</param>
+        /// <param name="des">The DES instance used for decryption.</param>
+        /// <returns>The decrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> DecryptDES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv, DES des)
+            => encryptedData.DecryptSymmetric(key, iv, des);
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Decrypts the specified encrypted data using the Data Encryption Standard (DES) algorithm with the provided key, IV, cipher mode, and padding mode.
+        /// </summary>
+        /// <param name="encryptedData">The data to be decrypted.</param>
+        /// <param name="key">The encryption key used for DES decryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES decryption.</param>
+        /// <param name="cipherMode">The cipher mode used for DES decryption (default: CipherMode.CBC).</param>
+        /// <param name="paddingMode">The padding mode used for DES decryption (default: PaddingMode.PKCS7).</param>
+        /// <returns>The decrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> DecryptDES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv,
+                                                                        CipherMode cipherMode = CipherMode.CBC, PaddingMode paddingMode = PaddingMode.PKCS7)
+        {
+            using var des = DES.Create();
+
+            des.Key = key.ToArray();
+            des.IV = iv.ToArray();
+            des.Mode = cipherMode;
+            des.Padding = paddingMode;
+
+            return DecryptDES(encryptedData, key, iv, des);
+        }
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Decrypts the specified encrypted data using the Data Encryption Standard (DES) algorithm with the provided key, IV, 
+        /// and padding mode, assuming the default cipher mode of CBC.
+        /// </summary>
+        /// <param name="encryptedData">The data to be decrypted.</param>
+        /// <param name="key">The encryption key used for DES decryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for DES decryption.</param>
+        /// <param name="paddingMode">The padding mode used for DES decryption.</param>
+        /// <returns>The decrypted data as a sequence of bytes.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> DecryptDES(this IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv,
+                                                                        PaddingMode paddingMode)
+            => DecryptDES(encryptedData, key, iv, CipherMode.CBC, paddingMode);
     }
 }

@@ -87,5 +87,27 @@ namespace Mythosia.Security.Cryptography
         /// <returns>The generated 3DES IV.</returns>
         /******************************************************/
         public static IEnumerable<byte> Generate3DESIV() => GenerateKey(64);
+
+
+        /******************************************************/
+        /// <summary>
+        /// Generates a random DES key.
+        /// </summary>
+        /// <returns>The generated DES key as a sequence of bytes.</returns>
+        /******************************************************/
+        public static IEnumerable<byte> GenerateDESKey() => GenerateKey(64);
+
+
+        /******************************************************/
+        /// <summary>
+        /// Generates a random DES initialization vector (IV).
+        /// </summary>
+        /// <returns>The generated DES IV as a sequence of bytes.</returns>
+        /******************************************************/
+        public static IEnumerable<byte> GenerateDESIV() => GenerateKey(64);
+
+
+        public static IEnumerable<byte> GenerateSEEDKey() => GenerateKey(128);
+        public static IEnumerable<byte> GenerateSEEDIV() => GenerateKey(128);
     }
 }

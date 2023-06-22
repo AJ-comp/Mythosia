@@ -12,14 +12,12 @@ integrityTest.StartTest();
 EnumerableTest enumTest = new EnumerableTest();
 enumTest.StartTest(new List<byte>() { 10, 16, 15, 30, 45, 65 });
 
+CryptographyTest cryptographyTest = new CryptographyTest();
+cryptographyTest.StartTest("test12345");
+
+SymmetricAlgorithm symmetricAlgorithm = Aes.Create();
 var key = KeyGenerator.GenerateAES128Key();
 var iv = KeyGenerator.GenerateAES128IV();
 
-var result = "test123456".ToUTF8Array().EncryptAES(key, iv);
-Console.WriteLine(result.DecryptAES(key, iv).ToUTF8String());
-
-key = KeyGenerator.Generate3DESKey();
-iv = KeyGenerator.Generate3DESIV();
-
-var desResult = "test1234".ToUTF8Array().Encrypt3DES(key, iv, CipherMode.ECB, PaddingMode.Zeros);
-Console.WriteLine(desResult.Decrypt3DES(key, iv, CipherMode.ECB, PaddingMode.Zeros).ToUTF8String());
+var encrypted = symmetricAlgorithm.Encrypt("test123456".ToUTF8Array(), key, iv);
+Console.WriteLine(symmetricAlgorithm.Decrypt(encrypted, key, iv).ToUTF8String());
