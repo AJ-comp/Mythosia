@@ -17,26 +17,42 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between each retry in milliseconds (optional, defaults to 0)</param>
         /// <returns>True if the function returns true within the timeout, false otherwise</returns>
         /*******************************************************************************/
-        public static bool RetryUntilTimeout(this Func<bool> action, uint timeout_ms, int retryInterval_ms = 0)
+        public static bool Retry(this Func<bool> action, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
 
-            bool result = false;
+            bool result;
             while (true)
             {
-                try
-                {
-                    result = action.Invoke();
-                    if (result) break;
-                }
-                catch
-                {
-                    elapsedTime = DateTime.Now - startTime;
-                    if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+                result = action.Invoke();
+                if (result) break;
 
-                    if (retryInterval_ms > 0) Thread.Sleep(retryInterval_ms);
-                }
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) Thread.Sleep(retryInterval_ms);
+            }
+
+            return result;
+        }
+
+
+        public static bool Retry<T>(this Func<T, bool> action, T arg, uint timeout_ms, int retryInterval_ms = 0)
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime;
+
+            bool result;
+            while (true)
+            {
+                result = action.Invoke(arg);
+                if (result) break;
+
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) Thread.Sleep(retryInterval_ms);
             }
 
             return result;
@@ -52,26 +68,21 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between each retry in milliseconds (optional, defaults to 0)</param>
         /// <returns>True if the function returns true within the timeout, false otherwise</returns>
         /*******************************************************************************/
-        public static async Task<bool> RetryUntilTimeoutAsync(this Func<Task<bool>> action, uint timeout_ms, int retryInterval_ms = 0)
+        public static async Task<bool> RetryAsync(this Func<Task<bool>> action, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
 
-            bool result = false;
+            bool result;
             while (true)
             {
-                try
-                {
-                    result = await action.Invoke();
-                    if (result) break;
-                }
-                catch
-                {
-                    elapsedTime = DateTime.Now - startTime;
-                    if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+                result = await action.Invoke();
+                if (result) break;
 
-                    if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
-                }
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
             }
 
             return result;

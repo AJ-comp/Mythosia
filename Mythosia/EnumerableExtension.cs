@@ -1,28 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mythosia
 {
     public static class EnumerableExtension
     {
-        /*******************************************************************************/
-        /// <summary>
-        /// An extension method that appends the elements from the specified collection to the existing data collection.
-        /// </summary>
-        /// <param name="data">The existing data collection</param>
-        /// <param name="toAddData">The collection containing elements to be appended</param>
-        /*******************************************************************************/
-        public static void AppendRange(this IEnumerable<byte> data, IEnumerable<byte> toAddData)
-        {
-            foreach (var item in toAddData) data.Append(item);
-        }
-
-
         /*******************************************************************************/
         /// <summary>
         /// Joins the elements of an enumerable collection into a single string using the specified connector.
@@ -77,22 +67,81 @@ namespace Mythosia
 
         /*******************************************************************************/
         /// <summary>
+        /// Adds the elements from the specified collection to the target collection in parallel, with the provided parallel options.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collections.</typeparam>
+        /// <param name="collection">The target collection.</param>
+        /// <param name="toAddList">The collection from which to add the elements.</param>
+        /// <param name="options">The parallel options to control the degree of parallelism and other settings.</param>
+        /// <remarks>
+        /// This method performs parallel addition of elements from the <paramref name="toAddList"/> collection to the target <paramref name="collection"/>.
+        /// The parallel execution is controlled by the specified <paramref name="options"/>. <br/>
+        /// The parallel options provide control over the degree of parallelism and other settings such as cancellation and exception handling. <br/>
+        /// <b><i>Note: The order of element addition is not guaranteed due to parallel execution.</i></b>
+        /// </remarks>
+        /*******************************************************************************/
+        public static void AddRangeParallel<T>(this ICollection<T> collection, IEnumerable<T> toAddList, ParallelOptions options)
+        {
+            Parallel.ForEach(toAddList, options, item =>
+            {
+                collection.Add(item);
+            });
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Adds the elements from the specified collection to the target collection in parallel, with the option to control the degree of parallelism.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collections.</typeparam>
+        /// <param name="collection">The target collection.</param>
+        /// <param name="toAddList">The collection from which to add the elements.</param>
+        /// <param name="taskCount">
+        /// The number of tasks to be used for parallel execution. Use 0 to let the system determine the degree of parallelism.
+        /// </param>
+        /// <remarks>
+        /// <b><i>Note: The order of element addition is not guaranteed due to parallel execution.</i></b>
+        /// </remarks>
+        /*******************************************************************************/
+        public static void AddRangeParallel<T>(this ICollection<T> collection, IEnumerable<T> toAddList, int taskCount = 0)
+        {
+            if (taskCount > 0)
+            {
+                ParallelOptions options = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = taskCount
+                };
+
+                collection.AddRangeParallel(toAddList, options);
+            }
+            else
+            {
+                Parallel.ForEach(toAddList, item =>
+                {
+                    collection.Add(item);
+                });
+            }
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
         /// Adds a specified element to the collection, excluding null values.
         /// </summary>
         /// <typeparam name="T">The type of elements in the collection.</typeparam>
-        /// <param name="obj">The collection to which the element should be added.</param>
-        /// <param name="data">The element to add to the collection.</param>
+        /// <param name="collection">The collection to which the element should be added.</param>
+        /// <param name="item">The element to add to the collection.</param>
         /// <remarks>
         /// This extension method checks if the provided element is null. If the element is not null,
         /// it is added to the collection using the <see cref="ICollection{T}.Add"/> method.
         /// If the element is null, no action is taken, and the method returns without modifying the collection.
         /// </remarks>
         /*******************************************************************************/
-        public static void AddExceptNull<T>(this IEnumerable<T> obj, T data)
+        public static void AddExceptNull<T>(this ICollection<T> collection, T item)
         {
-            if (data == null) return;
+            if (item == null) return;
 
-            obj.Append(data);
+            collection.Add(item);
         }
 
 
@@ -101,14 +150,73 @@ namespace Mythosia
         /// An extension method that adds non-null elements from the specified collection.
         /// </summary>
         /// <typeparam name="T">The type of elements in the collection</typeparam>
-        /// <param name="obj">The collection to which elements will be added</param>
-        /// <param name="toAddData">The collection containing elements to be added</param>
+        /// <param name="collection">The collection to which elements will be added</param>
+        /// <param name="toAddList">The collection containing elements to be added</param>
         /*******************************************************************************/
-        public static void AddRangeExceptNull<T>(this IEnumerable<T> obj, IEnumerable<T> toAddData)
+        public static void AddRangeExceptNull<T>(this ICollection<T> collection, IEnumerable<T> toAddList)
         {
-            foreach(var item in toAddData) obj.AddExceptNull(item);
+            foreach(var item in toAddList) collection.AddExceptNull(item);
         }
 
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Adds the non-null elements from the specified collection to the target collection in parallel, while excluding null elements.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collections.</typeparam>
+        /// <param name="collection">The target collection.</param>
+        /// <param name="toAddList">The collection from which to add the elements.</param>
+        /// <param name="options">The parallel options to control the degree of parallelism and other settings.</param>
+        /// <remarks>
+        /// <b><i>Note: The order of element addition is not guaranteed due to parallel execution.</i></b>
+        /// </remarks>
+        /*******************************************************************************/
+        public static void AddRangeExceptNullParallel<T>(this ICollection<T> collection, IEnumerable<T> toAddList, ParallelOptions options)
+        {
+            Parallel.ForEach(toAddList, options, item =>
+            {
+                if (item == null) return;
+
+                collection.Add(item);
+            });
+        }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// Adds the non-null elements from the specified collection to the target collection in parallel, while excluding null elements.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collections.</typeparam>
+        /// <param name="collection">The target collection.</param>
+        /// <param name="toAddList">The collection from which to add the elements.</param>
+        /// <param name="taskCount">
+        /// The number of tasks to be used for parallel execution. Use 0 to let the system determine the degree of parallelism.
+        /// </param>
+        /// <remarks>
+        /// <b><i>Note: The order of element addition is not guaranteed due to parallel execution.</i></b> 
+        /// </remarks>
+        /*******************************************************************************/
+        public static void AddRangeExceptNullParallel<T>(this ICollection<T> collection, IEnumerable<T> toAddList, int taskCount = 0)
+        {
+            if (taskCount > 0)
+            {
+                ParallelOptions options = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = taskCount
+                };
+
+                collection.AddRangeParallel(toAddList, options);
+            }
+            else
+            {
+                Parallel.ForEach(toAddList, item =>
+                {
+                    if (item == null) return;
+
+                    collection.Add(item);
+                });
+            }
+        }
 
 
         /*******************************************************************************/
@@ -340,17 +448,14 @@ namespace Mythosia
         /*******************************************************************************/
         public static bool AllEqual<T>(this IEnumerable<T> enumerable)
         {
-            using (var enumerator = enumerable.GetEnumerator())
-            {
-                if (!enumerator.MoveNext())
-                    return true;
+            using var enumerator = enumerable.GetEnumerator();
+            if (!enumerator.MoveNext()) return true;
 
-                T firstElement = enumerator.Current;
-                while (enumerator.MoveNext())
-                {
-                    if (!EqualityComparer<T>.Default.Equals(enumerator.Current, firstElement))
-                        return false;
-                }
+            T firstElement = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                if (!EqualityComparer<T>.Default.Equals(enumerator.Current, firstElement))
+                    return false;
             }
             return true;
         }
