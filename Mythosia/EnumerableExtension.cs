@@ -10,25 +10,16 @@ namespace Mythosia
 {
     public static class EnumerableExtension
     {
-        public static IEnumerable<byte> Append(this IEnumerable<byte> data, byte toAddData)
+        /*******************************************************************************/
+        /// <summary>
+        /// An extension method that appends the elements from the specified collection to the existing data collection.
+        /// </summary>
+        /// <param name="data">The existing data collection</param>
+        /// <param name="toAddData">The collection containing elements to be appended</param>
+        /*******************************************************************************/
+        public static void AppendRange(this IEnumerable<byte> data, IEnumerable<byte> toAddData)
         {
-            var result = data.ToList();
-            if (data.Count() <= 0) return result;
-
-            result.Add(toAddData);
-
-            return result;
-        }
-
-
-        public static IEnumerable<byte> AppendRange(this IEnumerable<byte> data, IEnumerable<byte> toAddData)
-        {
-            var result = data.ToList();
-            if (data.Count() <= 0) return result;
-
-            result.AddRange(toAddData);
-
-            return result;
+            foreach (var item in toAddData) data.Append(item);
         }
 
 
@@ -38,7 +29,9 @@ namespace Mythosia
         /// </summary>
         /// <typeparam name="T">The type of the elements in the collection.</typeparam>
         /// <param name="obj">The enumerable collection to join.</param>
-        /// <param name="connector">The string used to connect the elements in the resulting string. Default value is a comma (,).</param>
+        /// <param name="connector">
+        /// The string used to connect the elements in the resulting string. Default value is a comma (,).
+        /// </param>
         /// <returns>A string that contains the joined elements of the collection.</returns>
         /*******************************************************************************/
         public static string JoinItems<T>(this IEnumerable<T> obj, string connector = ",") => string.Join(connector, obj);
@@ -95,12 +88,27 @@ namespace Mythosia
         /// If the element is null, no action is taken, and the method returns without modifying the collection.
         /// </remarks>
         /*******************************************************************************/
-        public static void AddExceptNull<T>(this ICollection<T> obj, T data)
+        public static void AddExceptNull<T>(this IEnumerable<T> obj, T data)
         {
             if (data == null) return;
 
-            obj.Add(data);
+            obj.Append(data);
         }
+
+
+        /*******************************************************************************/
+        /// <summary>
+        /// An extension method that adds non-null elements from the specified collection.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collection</typeparam>
+        /// <param name="obj">The collection to which elements will be added</param>
+        /// <param name="toAddData">The collection containing elements to be added</param>
+        /*******************************************************************************/
+        public static void AddRangeExceptNull<T>(this IEnumerable<T> obj, IEnumerable<T> toAddData)
+        {
+            foreach(var item in toAddData) obj.AddExceptNull(item);
+        }
+
 
 
         /*******************************************************************************/
@@ -354,6 +362,7 @@ namespace Mythosia
         }
 
         public static string ToASCIIString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.ASCII);
+        public static string ToBase64String(this IEnumerable<byte> data) => Convert.ToBase64String(data.ToArray());
         public static string ToUTF7String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF7);
         public static string ToUTF8String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF8);
         public static string ToUnicodeString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.Unicode);

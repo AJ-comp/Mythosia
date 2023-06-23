@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Numerics;
 using System.Text;
 
@@ -225,6 +226,103 @@ namespace Mythosia
             }
 
             return $"{value:0.##}{suffixes[suffixIndex]}";
+        }
+
+
+        public static IEnumerable<byte> ToByteArray(this short data) => BitConverter.GetBytes(data);
+        public static IEnumerable<byte> ToByteArray(this ushort data) => BitConverter.GetBytes(data);
+        public static IEnumerable<byte> ToByteArray(this int data) => BitConverter.GetBytes(data);
+        public static IEnumerable<byte> ToByteArray(this uint data) => BitConverter.GetBytes(data);
+        public static IEnumerable<byte> ToByteArray(this float data) => BitConverter.GetBytes(data);
+        public static IEnumerable<byte> ToByteArray(this double data) => BitConverter.GetBytes(data);
+
+
+        /// <summary>
+        /// Converts a short value from host byte order to network byte order.
+        /// </summary>
+        public static short HostToNetworkEndian(this short data)
+            => (BitConverter.IsLittleEndian) ? IPAddress.HostToNetworkOrder(data) : data;
+
+        /// <summary>
+        /// Converts a short value from network byte order to host byte order.
+        /// </summary>
+        public static short NetworkToHostEndian(this short data)
+            => (BitConverter.IsLittleEndian) ? IPAddress.NetworkToHostOrder(data) : data;
+
+        /// <summary>
+        /// Converts a ushort value from host byte order to network byte order.
+        /// </summary>
+        public static ushort HostToNetworkEndian(this ushort data)
+            => (BitConverter.IsLittleEndian) ? (ushort)IPAddress.HostToNetworkOrder((short)data) : data;
+
+        /// <summary>
+        /// Converts a ushort value from network byte order to host byte order.
+        /// </summary>
+        public static ushort NetworkToHostEndian(this ushort data)
+            => (BitConverter.IsLittleEndian) ? (ushort)IPAddress.NetworkToHostOrder((short)data) : data;
+
+        /// <summary>
+        /// Converts a uint value from host byte order to network byte order.
+        /// </summary>
+        public static uint HostToNetworkEndian(this uint data)
+            => (BitConverter.IsLittleEndian) ? (uint)IPAddress.HostToNetworkOrder((int)data) : data;
+
+        /// <summary>
+        /// Converts a uint value from network byte order to host byte order.
+        /// </summary>
+        public static uint NetworkToHostEndian(this uint data)
+            => (BitConverter.IsLittleEndian) ? (uint)IPAddress.NetworkToHostOrder((int)data) : data;
+
+        /// <summary>
+        /// Converts an int value from host byte order to network byte order.
+        /// </summary>
+        public static int HostToNetworkEndian(this int data)
+            => (BitConverter.IsLittleEndian) ? IPAddress.HostToNetworkOrder(data) : data;
+
+        /// <summary>
+        /// Converts an int value from network byte order to host byte order.
+        /// </summary>
+        public static int NetworkToHostEndian(this int data)
+            => (BitConverter.IsLittleEndian) ? IPAddress.NetworkToHostOrder(data) : data;
+
+        /// <summary>
+        /// Converts a float value from host byte order to network byte order.
+        /// </summary>
+        public static float HostToNetworkEndian(this float data)
+        {
+            byte[] bytes = BitConverter.GetBytes(data);
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        /// <summary>
+        /// Converts a float value from network byte order to host byte order.
+        /// </summary>
+        public static float NetworkToHostEndian(this float data)
+        {
+            byte[] bytes = BitConverter.GetBytes(data);
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        /// <summary>
+        /// Converts a double value from host byte order to network byte order.
+        /// </summary>
+        public static double HostToNetworkEndian(this double data)
+        {
+            byte[] bytes = BitConverter.GetBytes(data);
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            return BitConverter.ToDouble(bytes, 0);
+        }
+
+        /// <summary>
+        /// Converts a double value from network byte order to host byte order.
+        /// </summary>
+        public static double NetworkToHostEndian(this double data)
+        {
+            byte[] bytes = BitConverter.GetBytes(data);
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            return BitConverter.ToDouble(bytes, 0);
         }
 
 
