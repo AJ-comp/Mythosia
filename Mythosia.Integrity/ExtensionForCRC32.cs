@@ -37,9 +37,12 @@ namespace Mythosia.Integrity
         /*******************************************/
         public static IEnumerable<byte> WithCRC32(this IEnumerable<byte> data, CRC32Type type = CRC32Type.Basic)
         {
-            if (type == CRC32Type.Basic) return data.AppendRange(BitConverter.GetBytes(data.CRC32(type)));
+            List<byte> result = new List<byte>();
+            result.AddRange(data);
 
-            return new List<byte>();
+            if (type == CRC32Type.Basic) result.AddRange(data.CRC32(type).ToByteArray());
+
+            return result;
         }
     }
 }

@@ -88,8 +88,7 @@ namespace Mythosia.Integrity
         /// <see cref="https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/"/>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .CheckSum8 instead.")]
-        public static byte CheckSum8Xor(this IEnumerable<byte> data)
+        private static byte CheckSum8Xor(this IEnumerable<byte> data)
         {
             byte result = 0;
 
@@ -105,9 +104,14 @@ namespace Mythosia.Integrity
         /// <param name="data"></param>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .WithCheckSum8 instead.")]
-        public static IEnumerable<byte> WithCheckSum8Xor(this IEnumerable<byte> data)
-            => data.AppendRange(BitConverter.GetBytes(data.CheckSum8Xor()));
+        private static IEnumerable<byte> WithCheckSum8Xor(this IEnumerable<byte> data)
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(data);
+            result.Add(data.CheckSum8Xor());
+
+            return result;
+        }
 
 
         /*****************************************************/
@@ -118,14 +122,11 @@ namespace Mythosia.Integrity
         /// <see cref="https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/"/>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .CheckSum8 instead.")]
-        public static byte CheckSum8Modulo256(this IEnumerable<byte> data)
+        private static byte CheckSum8Modulo256(this IEnumerable<byte> data)
         {
-            byte result = 0;
-
             UInt64 sum = 0;
             for (int i = 0; i < data.Count(); i++) sum += data.ElementAt(i);
-            result = (byte)(sum % 256);
+            byte result = (byte)(sum % 256);
 
             return result;
         }
@@ -137,9 +138,14 @@ namespace Mythosia.Integrity
         /// <param name="data"></param>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .WithCheckSum8 instead.")]
-        public static IEnumerable<byte> WithCheckSum8Modulo256(this IEnumerable<byte> data)
-            => data.AppendRange(BitConverter.GetBytes(data.CheckSum8Modulo256()));
+        private static IEnumerable<byte> WithCheckSum8Modulo256(this IEnumerable<byte> data)
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(data);
+            result.Add(data.CheckSum8Modulo256());
+
+            return result;
+        }
 
 
         /*****************************************************/
@@ -150,14 +156,11 @@ namespace Mythosia.Integrity
         /// <see cref="https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/"/>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .CheckSum8 instead.")]
-        public static byte CheckSum8TwosComplement(this IEnumerable<byte> data)
+        private static byte CheckSum8TwosComplement(this IEnumerable<byte> data)
         {
-            byte result = 0;
-
             UInt64 sum = 0;
             for (int i = 0; i < data.Count(); i++) sum += data.ElementAt(i);
-            result = (byte)(0x100 - sum);
+            byte result = (byte)(0x100 - sum);
 
             return result;
         }
@@ -169,8 +172,13 @@ namespace Mythosia.Integrity
         /// <param name="data"></param>
         /// <returns></returns>
         /*****************************************************/
-        [Obsolete("This method is deprecated, please use the extension method .WithCheckSum8 instead.")]
-        public static IEnumerable<byte> WithCheckSum8TwosComplement(this IEnumerable<byte> data)
-            => data.AppendRange(BitConverter.GetBytes(data.CheckSum8TwosComplement()));
+        private static IEnumerable<byte> WithCheckSum8TwosComplement(this IEnumerable<byte> data)
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(data);
+            result.Add(data.CheckSum8TwosComplement());
+
+            return result;
+        }
     }
 }

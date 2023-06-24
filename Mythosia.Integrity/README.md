@@ -2,7 +2,6 @@
 Please see https://www.lammertbies.nl/comm/info/crc-calculation?crc=8005&method=hex
 Please see https://crccalc.com/
 
-
 ```c#
 using Mythosia;
 using Mythosia.Integrity;
@@ -38,6 +37,36 @@ var dataWithCRC = data.WithCRC16(CRC16Type.DNP);
 var crc = data.CRC32();
 var dataWithCRC = data.WithCRC32();
 ```
+
+
+# SHA, MD5
+Please see https://emn178.github.io/online-tools/sha1.html
+
+```c#
+using Mythosia;
+using Mythosia.Integrity;
+
+// Example for SHA1
+var sha = data.IVHashCode();
+var dataWithSha = data.WithIVHashCode();
+
+// Example for SHA256
+var sha256 = data.IVHashCode(IVHashType.SHA256);
+var dataWithSha256 = data.WithIVHashCode(IVHashType.SHA256);
+
+// Example for SHA384
+var sha384 = data.IVHashCode(IVHashType.SHA384);
+var dataWithSha384 = data.WithIVHashCode(IVHashType.SHA384);
+
+// Example for SHA512
+var sha512 = data.IVHashCode(IVHashType.SHA512);
+var dataWithSha512 = data.WithIVHashCode(IVHashType.SHA512);
+
+// Example for MD5
+var md5 = data.IVHashCode(IVHashType.MD5);
+var dataWithMD5 = data.WithIVHashCode(IVHashType.MD5);
+```
+
 
 
 # Checksum

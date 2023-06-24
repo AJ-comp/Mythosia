@@ -79,7 +79,7 @@ namespace Mythosia.Integrity
         }
 
 
-        private static byte[] _crc8x_table =
+        private static readonly byte[] _crc8x_table =
         {
             0x00, 0x1D, 0x3A, 0x27, 0x74, 0x69, 0x4E, 0x53, //1
             0xE8, 0xF5, 0xD2, 0xCF, 0x9C, 0x81, 0xA6, 0xBB, //2
@@ -116,7 +116,7 @@ namespace Mythosia.Integrity
         };
 
 
-        private static byte[] _crc8NormalTable = // CCITT?
+        private static readonly byte[] _crc8NormalTable = // CCITT?
         {
              0x00, 0x07, 0x0E, 0x09, 0x1C, 0x1B, 0x12, 0x15, 0x38, 0x3F, 0x36, 0x31, 0x24, 
              0x23, 0x2A, 0x2D, 0x70, 0x77, 0x7E, 0x79, 0x6C, 0x6B, 0x62, 0x65, 0x48, 0x4F, 
@@ -141,7 +141,7 @@ namespace Mythosia.Integrity
         };
 
 
-        static byte[] _crc8MaximTable =
+        private static readonly byte[] _crc8MaximTable =
         {
              0,  94, 188, 226,  97,  63, 221, 131, 194, 156, 126,  32, 163, 253,  31,  65,
            157, 195,  33, 127, 252, 162,  64,  30,  95,   1, 227, 189,  62,  96, 130, 220,

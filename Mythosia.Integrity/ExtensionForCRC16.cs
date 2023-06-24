@@ -43,12 +43,15 @@ namespace Mythosia.Integrity
         /*******************************************/
         public static IEnumerable<byte> WithCRC16(this IEnumerable<byte> data, CRC16Type type = CRC16Type.Basic)
         {
-            if (type == CRC16Type.Basic) return data.AppendRange(BitConverter.GetBytes(CRC.ComputeCRC16(data)));
-            else if (type == CRC16Type.Modbus) return data.AppendRange(BitConverter.GetBytes(CRC.ComputeCRC16Modbus(data)));
-            else if (type == CRC16Type.CCITTxModem) return data.AppendRange(BitConverter.GetBytes(CRC.ComputeCCITTxModem(data)));
-            else if (type == CRC16Type.DNP) return data.AppendRange(BitConverter.GetBytes(CRC.ComputeDNP(data)));
+            List<byte> result = new List<byte>();
+            result.AddRange(data);
 
-            return new List<byte>();
+            if (type == CRC16Type.Basic) result.AddRange(BitConverter.GetBytes(CRC.ComputeCRC16(data)));
+            else if (type == CRC16Type.Modbus) result.AddRange(BitConverter.GetBytes(CRC.ComputeCRC16Modbus(data)));
+            else if (type == CRC16Type.CCITTxModem) result.AddRange(BitConverter.GetBytes(CRC.ComputeCCITTxModem(data)));
+            else if (type == CRC16Type.DNP) result.AddRange(BitConverter.GetBytes(CRC.ComputeDNP(data)));
+
+            return result;
         }
     }
 }

@@ -123,12 +123,12 @@ namespace Mythosia.Integrity
 
 
 
-        private static ushort P_16 = 0xA001;
-        private static uint P_32 = 0xEDB88320;
-        private static ushort P_CCITT = 0x1021;
-        private static ushort P_DNP = 0xA6BC;
-        private static ushort P_KERMIT = 0x8408;
-        private static ushort P_SICK = 0x8005;
+        private static readonly ushort P_16 = 0xA001;
+        private static readonly uint P_32 = 0xEDB88320;
+        private static readonly ushort P_CCITT = 0x1021;
+        private static readonly ushort P_DNP = 0xA6BC;
+        private static readonly ushort P_KERMIT = 0x8408;
+        private static readonly ushort P_SICK = 0x8005;
 
 
         /*******************************************************************\
