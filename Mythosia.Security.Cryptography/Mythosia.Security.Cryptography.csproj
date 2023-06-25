@@ -3,27 +3,44 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Description>The goal of this project is to support convenience through an extension function when using an encryption class (example: AES, DES)
+    <Description>support symmetric algorithm
+1. AES128
+2. AES192
+3. AES256
+4. 3DES
+5. DES
+6. SEED
 
-You can use encryption function from just byte array or string if you use a this library.
-
-for example:
-var dataEncrypted = "test123456".ToUTF8Array().EncryptAES(key, iv);
-var dataDecrypted = dataEncrypted.DecryptAES128(key, iv);
-
-// if you want to convert to string, here the stringDecrypted will be "test123456"
-var stringDecrypted = dataDecrypted.ToUTF8String();
-
+support HashCode for IV
+(Integrity Verification)
+1. SHA1
+2. SHA256
+3. SHA384
+4. SHA512
+5. MD2
+6. MD4
+7. MD5
 
 
 refer to https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography for detail.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <Version>1.0.1</Version>
+    <PackageTags>Crypto AES128 AES192 AES256 3DES DES SEED SHA MD2 MD4 MD5</PackageTags>
+    <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mythosia\Mythosia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace Mythosia.Integrity
+namespace Mythosia.Security.Cryptography
 {
     public enum IVHashType
     {
@@ -11,6 +12,8 @@ namespace Mythosia.Integrity
         SHA256,
         SHA384,
         SHA512,
+        MD2,
+        MD4,
         MD5,
     }
 
@@ -29,6 +32,8 @@ namespace Mythosia.Integrity
             else if (type == IVHashType.SHA256) return data.GetSHA256();
             else if (type == IVHashType.SHA384) return data.GetSHA384();
             else if (type == IVHashType.SHA512) return data.GetSHA512();
+            else if (type == IVHashType.MD2) return data.GetMD2();
+            else if (type == IVHashType.MD4) return data.GetMD4();
             else if (type == IVHashType.MD5) return data.GetMD5();
             else throw new NotImplementedException();
         }
@@ -50,6 +55,8 @@ namespace Mythosia.Integrity
             else if (type == IVHashType.SHA256) result.AddRange(data.GetSHA256());
             else if (type == IVHashType.SHA384) result.AddRange(data.GetSHA384());
             else if (type == IVHashType.SHA512) result.AddRange(data.GetSHA512());
+            else if (type == IVHashType.MD2) result.AddRange(data.GetMD2());
+            else if (type == IVHashType.MD4) result.AddRange(data.GetMD4());
             else if (type == IVHashType.MD5) result.AddRange(data.GetMD5());
             else throw new NotImplementedException();
 
@@ -82,15 +89,22 @@ namespace Mythosia.Integrity
         }
 
 
-        public static IEnumerable<byte> GetMD5(this IEnumerable<byte> data)
+        public static IEnumerable<byte> GetMD2(this IEnumerable<byte> data)
         {
-            using var md5 = MD5.Create();
-            return md5.ComputeHash(data.ToArray());
+            var md2 = new MD2();
+            return md2.ComputeHash(data.ToArray());
         }
 
+        public static IEnumerable<byte> GetMD4(this IEnumerable<byte> data)
+        {
+            var md4 = new MD4();
+            return md4.ComputeHash(data.ToArray());
+        }
 
-
-
-
+        public static IEnumerable<byte> GetMD5(this IEnumerable<byte> data)
+        {
+            using var md4 = MD5.Create();
+            return md4.ComputeHash(data.ToArray());
+        }
     }
 }

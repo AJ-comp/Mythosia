@@ -8,11 +8,10 @@ The IV value is {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}.
 
 1. Example
 ```c#
-// You can set this value to whatever you want. (It must be a 16 byte array)
-byte[] SeedKey = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5 };
+var key = KeyGenerator.GenerateSEEDKey();
 
-var dataEncrypted = "test".ToUTF8Array().EncryptSEED(SeedKey);	// encrypt with SEED the "test"
-var dataDecrypted = dataEncrypted.DecryptSEED(SeedKey);		// decrypt with SEED
+var dataEncrypted = "test".ToUTF8Array().EncryptSEED(key);	// encrypt with SEED the "test"
+var dataDecrypted = dataEncrypted.DecryptSEED(key);		// decrypt with SEED
 
 var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert to string, here the stringDecrypted will be "test"
 ```
@@ -52,12 +51,65 @@ var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert t
 ```
 
 
+# DES
+
+1. Example
+```c#
+using Mythosia;
+using Mythosia.Security.Cryptography;
+
+var key = KeyGenerator.GenerateDESKey();
+var iv = KeyGenerator.GenerateDESIV();
+
+var dataEncrypted = "test123456".ToUTF8Array().EncryptDES(key, iv);		// encrypt with DES the "test123456" string
+var dataDecrypted = dataEncrypted.DecryptDES(key, iv);		// decrypt with DES
+
+var stringDecrypted = dataDecrypted.ToUTF8String();		// if you want to convert to string, here the stringDecrypted will be "test123456"
+```
+
+
+# SHA, MD2, MD4, MD5
+Please see https://emn178.github.io/online-tools/sha1.html
+
+```c#
+using Mythosia;
+using Mythosia.Integrity;
+
+// Example for SHA1
+var sha = data.IVHashCode();
+var dataWithSha = data.WithIVHashCode();
+
+// Example for SHA256
+var sha256 = data.IVHashCode(IVHashType.SHA256);
+var dataWithSha256 = data.WithIVHashCode(IVHashType.SHA256);
+
+// Example for SHA384
+var sha384 = data.IVHashCode(IVHashType.SHA384);
+var dataWithSha384 = data.WithIVHashCode(IVHashType.SHA384);
+
+// Example for SHA512
+var sha512 = data.IVHashCode(IVHashType.SHA512);
+var dataWithSha512 = data.WithIVHashCode(IVHashType.SHA512);
+
+// Example for MD2
+var md2 = data.IVHashCode(IVHashType.MD2);
+var dataWithMD2 = data.WithIVHashCode(IVHashType.MD2);
+
+// Example for MD4
+var md4 = data.IVHashCode(IVHashType.MD4);
+var dataWithMD4 = data.WithIVHashCode(IVHashType.MD4);
+
+// Example for MD5
+var md5 = data.IVHashCode(IVHashType.MD5);
+var dataWithMD5 = data.WithIVHashCode(IVHashType.MD5);
+```
+
+
+
 # Application
 
-1. Using with polymorphism
+1. Using SymmetricAlgorithm with polymorphism
 ```c#
-// if you want to use polymorphism, you can do as below.
-
 using Mythosia;
 using Mythosia.Security.Cryptography;
 
@@ -66,7 +118,7 @@ string contentToEncrypt = "test123456";
 // select the one from below
 // SEED algorithm is not supported yet but will be supported soon
 SymmetricAlgorithm symmetricAlgorithm = Aes.Create();
-SymmetricAlgorithm symmetricAlgorithm = 3DES.Create();
+SymmetricAlgorithm symmetricAlgorithm = TripleDES.Create();
 SymmetricAlgorithm symmetricAlgorithm = DES.Create();
 
 // en-decryption with selected algorithm
@@ -74,7 +126,25 @@ var encrypted = symmetricAlgorithm.Encrypt(contentToEncrypt.ToUTF8Array(), key, 
 var decrypted = symmetricAlgorithm.Decrypt(encrypted, key, iv).ToUTF8String();
 ```
 
-2. Using with CRC
+2. Using HashAlgorithm with polymorphism
+```c#
+using Mythosia;
+using Mythosia.Integrity;
+
+string contentToEncrypt = "test123456";
+
+// select the one from below
+// MD4 also support to use as below.
+HashAlgorithm hashAlgorithm = SHA1.Create();
+HashAlgorithm hashAlgorithm = new MD2();		// only use new MD2(); don't use MD2.Create();
+HashAlgorithm hashAlgorithm = new MD4();		// only use new MD4(); don't use MD4.Create();
+HashAlgorithm hashAlgorithm = MD5.Create();
+
+// compute hash value using a selected hash algorithm for contentToEncrypt.
+hashAlgorithm.ComputeHash(contentToEncrypt.ToUTF8Array());
+```
+
+3. Using with CRC
 ```c#
 // if you have a Mythosia.Integrity library, you can do as below.
 

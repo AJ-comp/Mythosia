@@ -1,3 +1,6 @@
+HashAlgorithm is moved Mythosia.Security.Cryptography namespace.
+Please download Mythosia.Security.Cryptography to use it.
+
 # CRC
 Please see https://www.lammertbies.nl/comm/info/crc-calculation?crc=8005&method=hex
 Please see https://crccalc.com/
@@ -39,36 +42,6 @@ var dataWithCRC = data.WithCRC32();
 ```
 
 
-# SHA, MD5
-Please see https://emn178.github.io/online-tools/sha1.html
-
-```c#
-using Mythosia;
-using Mythosia.Integrity;
-
-// Example for SHA1
-var sha = data.IVHashCode();
-var dataWithSha = data.WithIVHashCode();
-
-// Example for SHA256
-var sha256 = data.IVHashCode(IVHashType.SHA256);
-var dataWithSha256 = data.WithIVHashCode(IVHashType.SHA256);
-
-// Example for SHA384
-var sha384 = data.IVHashCode(IVHashType.SHA384);
-var dataWithSha384 = data.WithIVHashCode(IVHashType.SHA384);
-
-// Example for SHA512
-var sha512 = data.IVHashCode(IVHashType.SHA512);
-var dataWithSha512 = data.WithIVHashCode(IVHashType.SHA512);
-
-// Example for MD5
-var md5 = data.IVHashCode(IVHashType.MD5);
-var dataWithMD5 = data.WithIVHashCode(IVHashType.MD5);
-```
-
-
-
 # Checksum
 
 ```c#
@@ -89,4 +62,28 @@ var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.TwosComplement);
 
 var checksum = data.CheckSum8(CheckSum8Type.NMEA);
 var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.NMEA);
+```
+
+
+
+# Application
+
+1. Using with polymorphism
+```c#
+// if you want to use polymorphism, you can do as below.
+
+using Mythosia;
+using Mythosia.Integrity;
+
+string contentToEncrypt = "test123456";
+
+// select the one from below
+// MD4 also support to use as below.
+HashAlgorithm hashAlgorithm = SHA1.Create();
+HashAlgorithm hashAlgorithm = new MD2();		// only use new MD2(); don't use MD2.Create();
+HashAlgorithm hashAlgorithm = new MD4();		// only use new MD4(); don't use MD4.Create();
+HashAlgorithm hashAlgorithm = MD5.Create();
+
+// compute hash value using a selected hash algorithm for contentToEncrypt.
+hashAlgorithm.ComputeHash(contentToEncrypt.ToUTF8Array());
 ```

@@ -23,19 +23,11 @@ support CRC16:
 4. CRC16 DNP
 
 support CRC32
-1. CRC32
-
-support HashCode for IV
-(Integrity Verification)
-1. SHA1
-2. SHA256
-3. SHA384
-4. SHA512
-5. MD5</Description>
-    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16(modbus) CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement SHA MD5</PackageTags>
+1. CRC32</Description>
+    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16(modbus) CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement</PackageTags>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</RepositoryUrl>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>2.0.0.1</AssemblyVersion>
     <FileVersion>2.0.0.1</FileVersion>

@@ -8,7 +8,7 @@ namespace Mythosia.Security.Cryptography
     {
         #region SSN
 
-        private static uint[] SS0 = new uint[256]
+        private static readonly uint[] SS0 = new uint[256]
         {
             0x2989a1a8, 0x05858184, 0x16c6d2d4, 0x13c3d3d0, 0x14445054, 0x1d0d111c, 0x2c8ca0ac, 0x25052124,
             0x1d4d515c, 0x03434340, 0x18081018, 0x1e0e121c, 0x11415150, 0x3cccf0fc, 0x0acac2c8, 0x23436360,
@@ -44,7 +44,7 @@ namespace Mythosia.Security.Cryptography
             0x28c8e0e8, 0x1b0b1318, 0x05050104, 0x39497178, 0x10809090, 0x2a4a6268, 0x2a0a2228, 0x1a8a9298
         };
 
-        private static uint[] SS1 = new uint[256]
+        private static readonly uint[] SS1 = new uint[256]
         {
             0x38380830, 0xe828c8e0, 0x2c2d0d21, 0xa42686a2, 0xcc0fcfc3, 0xdc1eced2, 0xb03383b3, 0xb83888b0,
             0xac2f8fa3, 0x60204060, 0x54154551, 0xc407c7c3, 0x44044440, 0x6c2f4f63, 0x682b4b63, 0x581b4b53,
@@ -80,7 +80,7 @@ namespace Mythosia.Security.Cryptography
             0xd819c9d1, 0x4c0c4c40, 0x80038383, 0x8c0f8f83, 0xcc0ecec2, 0x383b0b33, 0x480a4a42, 0xb43787b3
         };
 
-        private static uint[] SS2 = new uint[256]
+        private static readonly uint[] SS2 = new uint[256]
         {
             0xa1a82989, 0x81840585, 0xd2d416c6, 0xd3d013c3, 0x50541444, 0x111c1d0d, 0xa0ac2c8c, 0x21242505,
             0x515c1d4d, 0x43400343, 0x10181808, 0x121c1e0e, 0x51501141, 0xf0fc3ccc, 0xc2c80aca, 0x63602343,
@@ -116,7 +116,7 @@ namespace Mythosia.Security.Cryptography
             0xe0e828c8, 0x13181b0b, 0x01040505, 0x71783949, 0x90901080, 0x62682a4a, 0x22282a0a, 0x92981a8a
         };
 
-        private static uint[] SS3 = new uint[256]
+        private static readonly uint[] SS3 = new uint[256]
         {
             0x08303838, 0xc8e0e828, 0x0d212c2d, 0x86a2a426, 0xcfc3cc0f, 0xced2dc1e, 0x83b3b033, 0x88b0b838,
             0x8fa3ac2f, 0x40606020, 0x45515415, 0xc7c3c407, 0x44404404, 0x4f636c2f, 0x4b63682b, 0x4b53581b,
@@ -389,13 +389,11 @@ namespace Mythosia.Security.Cryptography
             return Encoding.UTF8.GetString(SEED.Decrypt(sData, seedKey));
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .EncryptSeed instead.")]
         internal static byte[] Encrypt(byte[] Data, byte[] seedKey)
         {
             return SEED.Encrypt(Data, seedKey, true);
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .EncryptSeed instead.")]
         internal static byte[] Encrypt(byte[] Data, byte[] seedKey, bool cbcPad)
         {
             int nOutSize = (int)((Data.Length) / 16) * 16;
@@ -451,17 +449,14 @@ namespace Mythosia.Security.Cryptography
             return OutData;
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .DecryptSeed instead.")]
         internal static byte[] Decrypt(byte[] Data, byte[] seedKey)
         {
             return SEED.Decrypt(Data, seedKey, true);
         }
 
-        [Obsolete("This method is deprecated, please use the extension method .DecryptSeed instead.")]
         internal static byte[] Decrypt(byte[] Data, byte[] seedKey, bool cbcPad)
         {
             int nOutSize = Data.Length;
-            int nInSize = Data.Length;
 
             byte[] OutData = new byte[nOutSize];
 

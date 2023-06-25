@@ -11,17 +11,7 @@ namespace Mythosia.Security.Cryptography
 {
     public static class ExtensionForCrypto
     {
-        /***************************************************************************/
-        /// <summary>
-        /// Encrypts the specified data using the provided symmetric algorithm, key, and IV.
-        /// </summary>
-        /// <param name="symmertric">The symmetric algorithm to use for encryption.</param>
-        /// <param name="toEncryptData">The data to encrypt.</param>
-        /// <param name="key">The key used for encryption.</param>
-        /// <param name="iv">The initialization vector used for encryption.</param>
-        /// <returns>The encrypted data.</returns>
-        /***************************************************************************/
-        public static IEnumerable<byte> Encrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv)
+        private static IEnumerable<byte> Encrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> toEncryptData)
         {
             ICryptoTransform encryptor = symmertric.CreateEncryptor(symmertric.Key, symmertric.IV);
 
@@ -46,15 +36,26 @@ namespace Mythosia.Security.Cryptography
 
         /***************************************************************************/
         /// <summary>
-        /// Decrypts the encrypted data using the specified symmetric algorithm, key, and initialization vector (IV).
+        /// Encrypts the specified data using the provided symmetric algorithm, key, and IV.
         /// </summary>
-        /// <param name="symmetric">The symmetric algorithm used for decryption.</param>
-        /// <param name="encryptedData">The encrypted data to be decrypted.</param>
-        /// <param name="key">The key used for decryption.</param>
-        /// <param name="iv">The initialization vector (IV) used for decryption.</param>
-        /// <returns>The decrypted data.</returns>
+        /// <param name="symmertric">The symmetric algorithm to use for encryption.</param>
+        /// <param name="toEncryptData">The data to encrypt.</param>
+        /// <param name="key">The key used for encryption.</param>
+        /// <param name="iv">The initialization vector used for encryption.</param>
+        /// <returns>The encrypted data.</returns>
         /***************************************************************************/
-        public static IEnumerable<byte> Decrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv)
+        public static IEnumerable<byte> Encrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv)
+        {
+            symmertric.Key = key.ToArray();
+            symmertric.IV = iv.ToArray();
+
+            return symmertric.Encrypt(toEncryptData);
+        }
+
+
+
+
+        private static IEnumerable<byte> Decrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> encryptedData)
         {
             ICryptoTransform decryptor = symmertric.CreateDecryptor(symmertric.Key, symmertric.IV);
 
@@ -75,6 +76,25 @@ namespace Mythosia.Security.Cryptography
 
             return decrypted;
             */
+        }
+
+
+        /***************************************************************************/
+        /// <summary>
+        /// Decrypts the encrypted data using the specified symmetric algorithm, key, and initialization vector (IV).
+        /// </summary>
+        /// <param name="symmetric">The symmetric algorithm used for decryption.</param>
+        /// <param name="encryptedData">The encrypted data to be decrypted.</param>
+        /// <param name="key">The key used for decryption.</param>
+        /// <param name="iv">The initialization vector (IV) used for decryption.</param>
+        /// <returns>The decrypted data.</returns>
+        /***************************************************************************/
+        public static IEnumerable<byte> Decrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> encryptedData, IEnumerable<byte> key, IEnumerable<byte> iv)
+        {
+            symmertric.Key = key.ToArray();
+            symmertric.IV = iv.ToArray();
+
+            return symmertric.Decrypt(encryptedData);
         }
 
 
