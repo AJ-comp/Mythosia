@@ -472,5 +472,22 @@ namespace Mythosia
         public static string ToUTF8String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF8);
         public static string ToUnicodeString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.Unicode);
         public static string ToUTF32String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF32);
+
+
+        public static IEnumerable<T> Copy<T>(this IEnumerable<T> data)
+        {
+            List<T> result = new List<T>();
+            result.AddRange(data);
+
+            return result;
+        }
+
+
+        public static T[] Copy<T>(this T[] data)
+        {
+            T[] copy = new T[data.Length];
+            Array.Copy(data, copy, data.Length);
+            return copy;
+        }
     }
 }

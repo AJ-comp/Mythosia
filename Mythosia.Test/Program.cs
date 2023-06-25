@@ -4,15 +4,16 @@ using Mythosia.Test;
 using Mythosia.Security.Cryptography;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Concurrent;
 
 
-IntegrityTest integrityTest = new IntegrityTest();
+IntegrityTest integrityTest = new();
 integrityTest.StartTest();
 
-EnumerableTest enumTest = new EnumerableTest();
+EnumerableTest enumTest = new();
 enumTest.StartTest(new List<byte>() { 10, 16, 15, 30, 45, 65 });
 
-CryptographyTest cryptographyTest = new CryptographyTest();
+CryptographyTest cryptographyTest = new();
 cryptographyTest.StartTest("test12345");
 
 SymmetricAlgorithm symmetricAlgorithm = Aes.Create();

@@ -45,16 +45,16 @@ test.AddRangeParallel(newItems);    // add items as parallel
 ```c#
 using Mythosia;
 
-// if you have a function that success or fails according to condition as below.
+// If you have a function that success or fails according to condition as below.
 bool WireConnect()
 {
     // Check whether the wire is connected
-    // if connected to wire is returned true else false.
+    // If connected to wire return true else false.
 }
 
 
-// here you may want to call the function repeat to specified timeout.
-// then you can solute just call the function as below.
+// Here you may want to call the function to repeat to specified timeout.
+// Then you can solute just by calling the function "Retry" as below. 
 void Test()
 {
     var func = WireConnect;             // you need c# 10.0
@@ -63,5 +63,14 @@ void Test()
     if(result) Console.WriteLine("Success");
     else Console.WriteLine("Failed");
 }
+
+```
+
+## Stream
+```c#
+using Mythosia;
+
+int test = 10;
+test.SerializeUsingMarshal();   // Serialize
 
 ```

@@ -211,6 +211,31 @@ namespace Mythosia
         */
 
 
+        /// <summary>
+        /// Converts a numeric value to a prefixed hexadecimal string representation using Marshal serialization.
+        /// The numeric value is first serialized using the Marshal class, and then the resulting byte array
+        /// is converted to a prefixed hexadecimal string. Optionally, the hex digits can be separated by a specified connector.
+        /// </summary>
+        /// <typeparam name="T">The type of the numeric value.</typeparam>
+        /// <param name="number">The numeric value to be converted.</param>
+        /// <param name="separated">Specifies whether to separate the hex digits with a connector.</param>
+        /// <returns>The prefixed hexadecimal string representation of the numeric value.</returns>
+        public static string ToPrefixedHexString<T>(this T number, bool separated = false) where T : struct, IComparable, IFormattable, IConvertible
+            => number.SerializeUsingMarshal().ToPrefixedHexString(separated);
+
+
+        /// <summary>
+        /// Converts a numeric value to an unprefixed hexadecimal string representation using Marshal serialization.
+        /// The numeric value is first serialized using the Marshal class, and then the resulting byte array
+        /// is converted to an unprefixed hexadecimal string. The hex digits are separated by a specified connector.
+        /// </summary>
+        /// <typeparam name="T">The type of the numeric value.</typeparam>
+        /// <param name="number">The numeric value to be converted.</param>
+        /// <param name="connector">The connector used to separate the hex digits.</param>
+        /// <returns>The unprefixed hexadecimal string representation of the numeric value.</returns>
+        public static string ToUnPrefixedHexString<T>(this T number, string connector = " ") where T : struct, IComparable, IFormattable, IConvertible
+            => number.SerializeUsingMarshal().ToUnPrefixedHexString(connector);
+
 
         public static string ToSIPrefix<T>(this T number) where T : struct, IComparable, IFormattable, IConvertible
         {
@@ -229,12 +254,8 @@ namespace Mythosia
         }
 
 
-        public static IEnumerable<byte> ToByteArray(this short data) => BitConverter.GetBytes(data);
-        public static IEnumerable<byte> ToByteArray(this ushort data) => BitConverter.GetBytes(data);
-        public static IEnumerable<byte> ToByteArray(this int data) => BitConverter.GetBytes(data);
-        public static IEnumerable<byte> ToByteArray(this uint data) => BitConverter.GetBytes(data);
-        public static IEnumerable<byte> ToByteArray(this float data) => BitConverter.GetBytes(data);
-        public static IEnumerable<byte> ToByteArray(this double data) => BitConverter.GetBytes(data);
+        public static byte[] ToByteArray<T>(this T data) where T : struct, IComparable, IFormattable, IConvertible
+            => data.SerializeUsingMarshal();
 
 
         /// <summary>
@@ -332,6 +353,23 @@ namespace Mythosia
             var distance = BitConverter.GetBytes(data);
             Array.Reverse(distance);
             return BitConverter.ToDouble(distance, 0);
+        }
+
+
+
+        internal static bool IsNumericType<T>(this T data) where T : struct, IComparable, IFormattable, IConvertible
+        {
+            bool result = true;
+            try
+            {
+                double value = Convert.ToDouble(data);
+            }
+            catch
+            {
+                result = false;
+            }
+
+            return result;
         }
     }
 }
