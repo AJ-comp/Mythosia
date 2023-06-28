@@ -39,8 +39,16 @@ test.AddExceptNull(item);  // add item if item is not null
 new List&lt;byte&gt; newItems = new List&lt;bye&gt;(){ 0x01, 0x02 };
 test.AddRangeParallel(newItems);    // add items as parallel
 </Description>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>

@@ -63,27 +63,3 @@ var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.TwosComplement);
 var checksum = data.CheckSum8(CheckSum8Type.NMEA);
 var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.NMEA);
 ```
-
-
-
-# Application
-
-1. Using with polymorphism
-```c#
-// if you want to use polymorphism, you can do as below.
-
-using Mythosia;
-using Mythosia.Integrity;
-
-string contentToEncrypt = "test123456";
-
-// select the one from below
-// MD4 also support to use as below.
-HashAlgorithm hashAlgorithm = SHA1.Create();
-HashAlgorithm hashAlgorithm = new MD2();		// only use new MD2(); don't use MD2.Create();
-HashAlgorithm hashAlgorithm = new MD4();		// only use new MD4(); don't use MD4.Create();
-HashAlgorithm hashAlgorithm = MD5.Create();
-
-// compute hash value using a selected hash algorithm for contentToEncrypt.
-hashAlgorithm.ComputeHash(contentToEncrypt.ToUTF8Array());
-```

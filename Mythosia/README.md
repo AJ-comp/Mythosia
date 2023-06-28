@@ -70,7 +70,36 @@ void Test()
 ```c#
 using Mythosia;
 
-int test = 10;
-test.SerializeUsingMarshal();   // Serialize
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class TestMarshalClass
+{
+    public int a;
+    public int b;
+}
+
+TestMarshalClass test = new();
+
+var serializeData = test.SerializeUsingMarshal();   // Serialize
+test.DeSerializeUsingMarshal(serializeData);    // Deserialize to test
+
+```
+
+
+## Enum
+```c#
+using Mythosia;
+
+public enum CarBrand
+{
+    [Description("Mercedes")] Benz = 0,
+    [Description("Bayerische Motoren Werke AG")] BMW,
+}
+
+CarBrand test = CarBrand.Benz;
+var value = test.ToDescription();   // value is "Mercedes"
+
+int carBrand = 1;
+var enum = carBrand.ToEnum<CarBrand>();   // enum is CarBrand.BMW
+var enum = "Mercedes".GetEnumFromDescription<CarBrand>();   // enum is CarBrand.Benz
 
 ```
