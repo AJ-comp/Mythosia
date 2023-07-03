@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Mythosia
 {
-    internal interface ICustomMarshal
+    public interface ICustomMarshal
     {
         void Deserialize(byte[] from);
 

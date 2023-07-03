@@ -9,8 +9,9 @@ using Mythosia;
 
 var data = "12345".ToDefaultArray(); // Equal with Encoding.Default.GetBytes("12345");
 var data = "12345".ToASCIIArray(); // Equal with Encoding.ASCII.GetBytes("12345");
-var data = "12345".ToUTF8Array(); // Equal with Encoding.ASCII.GetBytes("12345");
-var data = "12345".ToUTF32Array(); // Equal with Encoding.ASCII.GetBytes("12345");
+var data = "12345".ToUTF8Array(); // Equal with Encoding.UTF8.GetBytes("12345");
+var data = "12345".ToUTF32Array(); // Equal with Encoding.UTF32.GetBytes("12345");
+
 var data = "=".Repeat(10); // data is "=========="
 ```
 
@@ -20,7 +21,16 @@ using Mythosia;
 
 var result = 56.IsInRange(0, 100);  // result is true 
 var result = 56.IsInRange(0, 30);   // result is false
-var data = 56000000.ToSIPrefix();   // data is "56 M"
+
+var data = 56000000.ToSIPrefix();   // data is "56 M"  (find the unit that can present the best simple)
+var data = 56000000.ToSIPrefix(SIPrefixUnit.Kilo); // data is "56000 k"
+var data = 56000000.ToSIPrefix(SIPrefixUnit.Giga, 5); // data is "0.056 G"  (the second param means the maximum number of digits after decimal point)
+
+var data = 1.4235123.ToSIPrefix();  // data is "1.42"  (find the unit that can present the best simple)
+var data = 1.4235123.ToSIPrefix(SIPrefixUnit.Mili);  // data is "1423.51 m"
+var data = 1.4235123.ToSIPrefix(SIPrefixUnit.Mili, 5);  // data is "1423.5123 m" 
+var data = 1.4235123.ToSIPrefix(SIPrefixUnit.Micro);  // data is "1423512.3 u"
+
 var data = 423.42031.HostToNetworkEndian();	// change endian (host to big)
 var data = 234.52.ToByteArray();	// Equal with BitConverter.GetBytes(234.52);
 ```
@@ -34,6 +44,7 @@ var result = test.ToUnPrefixedHexString();			// result is "ff ab 01 00 ee"
 var result = test.ToPrefixedHexString();			// result is "0xffab0100ee"
 var result = test.ToEncodedString(Encoding.GetEncoding("ISO-8859-1"));		// convert string as "ISO-8859-1" format
 var result = test.ToASCIIString();	// equal with Encoding.ASCII.GetString(test.ToArray(), 0, test.Count());
+
 var result = test.IndexOf(new List(){ 0xab, 0x01 });	// return the index that subsequence is finded.
 test.AddExceptNull(item);					// add item if item is not null
 
@@ -97,9 +108,32 @@ public enum CarBrand
 
 CarBrand test = CarBrand.Benz;
 var value = test.ToDescription();   // value is "Mercedes"
+var enum = value.GetEnumFromDescription<CarBrand>();   // enum is CarBrand.Benz
 
 int carBrand = 1;
 var enum = carBrand.ToEnum<CarBrand>();   // enum is CarBrand.BMW
-var enum = "Mercedes".GetEnumFromDescription<CarBrand>();   // enum is CarBrand.Benz
+
+```
+
+
+## DataStruct
+```c#
+using Mythosia;
+using Mythosia.Collections;
+
+CircularQueue<byte> testQ = new (3);    // create circular queue with max size is 3
+
+testQ.Enqueue(10);  // 10
+testQ.Enqueue(5);   // 10 5
+testQ.Enqueue(26);   // 10 5 26
+testQ.Enqueue(16);   // 16 5 26
+
+
+// if you want to use a thread-safe circular queue, 
+// all you have to do is create a circular queue with the true parameter as below.
+
+CircularQueue<byte> testQ = new (3, true);  // create thread-safe circular queue
+
+
 
 ```
