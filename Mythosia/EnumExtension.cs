@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace Mythosia
@@ -119,6 +120,9 @@ namespace Mythosia
         /*******************************************************************************/
         public static T GetEnumFromDescription<T>(this string description) where T : Enum
         {
+            // this logic is operate but need test
+//            Enum.GetValues(typeof(T)).Cast<T>().FirstOrDefault(v => v.ToDescription() == description);
+
             Type enumType = typeof(T);
             if (!enumType.IsEnum)
             {

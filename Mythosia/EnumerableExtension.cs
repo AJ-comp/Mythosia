@@ -443,12 +443,12 @@ namespace Mythosia
         /// Determines whether all elements in the enumerable are equal.
         /// </summary>
         /// <typeparam name="T">The type of elements in the enumerable.</typeparam>
-        /// <param name="enumerable">The enumerable to check.</param>
+        /// <param name="source">The enumerable to check.</param>
         /// <returns>True if all elements are equal; otherwise, false.</returns>
         /*******************************************************************************/
-        public static bool AllEqual<T>(this IEnumerable<T> enumerable)
+        public static bool AllEqual<T>(this IEnumerable<T> source)
         {
-            using var enumerator = enumerable.GetEnumerator();
+            using var enumerator = source.GetEnumerator();
             if (!enumerator.MoveNext()) return true;
 
             T firstElement = enumerator.Current;

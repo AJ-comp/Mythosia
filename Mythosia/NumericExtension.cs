@@ -14,6 +14,10 @@ namespace Mythosia
         Micro,
         Nano,
         Pico,
+        Femto,
+        Atto,
+        Zepto,
+        Yocto,
 
         Kilo = 101,
         Mega,
@@ -176,25 +180,31 @@ namespace Mythosia
 
 
         /// <summary>
-        /// Converts the numeric value to a string representation with SI prefix (k, M, G, etc.).
+        /// Converts the given number to a string representation using the specified SI prefix unit and decimal count.
         /// </summary>
-        /// <typeparam name="T">The type of the numeric value.</typeparam>
-        /// <param name="number">The numeric value to convert.</param>
-        /// <returns>A string representation of the numeric value with SI prefix.</returns>
-        /// <remarks>
-        /// This method converts the numeric value to a string representation using SI prefixes (kilo, mega, giga, etc.) to indicate
-        /// the magnitude of the value. The value is divided by 1,000 and a corresponding SI prefix is added (e.g., k for kilo, M for mega).
-        /// The conversion is performed up to the Yotta (Y) prefix.
-        /// </remarks>
+        /// <typeparam name="T">The type of the number.</typeparam>
+        /// <param name="number">The number to convert.</param>
+        /// <param name="unit">The SI prefix unit to use. Defaults to Auto.</param>
+        /// <param name="decimalCount">The number of decimal places to include. Defaults to 2.</param>
+        /// <see cref="https://m.blog.naver.com/alluck/220931066035"/>
+        /// <returns>The string representation of the number with the SI prefix unit and specified decimal count.</returns>
         public static string ToSIPrefix<T>(this T number, SIPrefixUnit unit = SIPrefixUnit.Auto, int decimalCount = 2) where T : struct, IComparable, IFormattable, IConvertible
             => number.ToSIPrefixCore(unit, decimalCount);
 
 
+        /// <summary>
+        /// Converts the given number to a string representation using the specified SI prefix unit and decimal count.
+        /// </summary>
+        /// <typeparam name="T">The type of the number.</typeparam>
+        /// <param name="number">The number to convert.</param>
+        /// <param name="unit">The SI prefix unit to use.</param>
+        /// <param name="decimalCount">The number of decimal places to include.</param>
+        /// <returns>The string representation of the number with the SI prefix unit and specified decimal count.</returns>
         internal static string ToSIPrefixCore<T>(this T number, SIPrefixUnit unit, int decimalCount) where T : struct, IComparable, IFormattable, IConvertible
         {
             double value = Convert.ToDouble(number);
 
-            string[] decimalSuffixes = { "", " m", "μ", " n", " p" };
+            string[] decimalSuffixes = { "", " m", "μ", " n", " p", " f", " a", " z", " y" };
             string[] suffixes = { "", " k", " M", " G", " T", " P", " E", " Z", " Y" };
             int suffixIndex = (int)unit;
 
@@ -244,7 +254,7 @@ namespace Mythosia
 
         internal static string FindSuitableValueForDecimal(this double value, int decimalCount)
         {
-            string[] prefixes = { "", "m", "µ", "n", "p" };
+            string[] prefixes = { "", " m", "µ", " n", " p", " f", " a", " z", " y" };
 
             int index = 0;
             while (value < 1.0 && index > -prefixes.Length + 1)

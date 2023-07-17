@@ -22,6 +22,7 @@ using Mythosia;
 var result = 56.IsInRange(0, 100);  // result is true 
 var result = 56.IsInRange(0, 30);   // result is false
 
+// see https://m.blog.naver.com/alluck/220931066035
 var data = 56000000.ToSIPrefix();   // data is "56 M"  (find the unit that can present the best simple)
 var data = 56000000.ToSIPrefix(SIPrefixUnit.Kilo); // data is "56000 k"
 var data = 56000000.ToSIPrefix(SIPrefixUnit.Giga, 5); // data is "0.056 G"  (the second param means the maximum number of digits after decimal point)
