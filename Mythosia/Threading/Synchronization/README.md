@@ -45,8 +45,10 @@ while(true)
 
 ```
 
-In the case of the delegate method above is synchronized globally. (use static SemaphoreSlim internally)
-In other words, if AllocateUniqueID is executing the WriteLogAsync is not executed until the AllocateUniqueID function is ended.
+
+In the case of the delegate method above is synchronized globally. (use static SemaphoreSlim internally) <br/>
+In other words, if AllocateUniqueID is executing the WriteLogAsync is not executed until the AllocateUniqueID function is ended <br/>
+because of share the same semaphore.<br/>
 So, if you want to write code that accesses multiple critical sections independent of each other, the method below is more efficient.
 
 
@@ -69,3 +71,8 @@ while(true)
 
 
 ```
+
+
+The example shows to be synchronized with each semaphore basis. <br/>
+Now AllocateUniqueID and WriteLogAsync function is managed independently of each other. <br/>
+In other words, while the AllocateUniqueID is executing the WriteLogAsync also can be executed because of semaphore is different.

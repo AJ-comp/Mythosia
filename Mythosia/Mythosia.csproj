@@ -7,15 +7,21 @@
     <Title>Mythosia</Title>
     <RepositoryUrl>https://github.com/AJ-comp/Mythosia</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>string, numeric, enumerable, delegate, parallel, extension, helper</PackageTags>
+    <PackageTags>AsyncLock, string, numeric, enumerable, delegate, parallel, extension, helper</PackageTags>
     <Authors>JJW</Authors>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>This project supports custom functions for user's clean code that are not directly provided by .NET.
 
-# The recent added functions
-1. Exclusive execution for async function 
-(refer to https://github.com/AJ-comp/Mythosia/tree/master/Mythosia/Threading/Synchronization)
+# Fixed
+example assume there is a variable that has -32768.
+in the previous, the hex format of the value on little-endian system is as below 
+    "0080"
+in big endian is as below
+    "8000"
+
+this is confusing so from this version hex format of the value is always looks as below (don't care endian)
+    "8000"
 
 
 # Other functions 
@@ -42,7 +48,7 @@ test.AddExceptNull(item);  // add item if item is not null
 new List&lt;byte&gt; newItems = new List&lt;bye&gt;(){ 0x01, 0x02 };
 test.AddRangeParallel(newItems);    // add items as parallel
 </Description>
-    <Version>1.1.5</Version>
+    <Version>1.2.0</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

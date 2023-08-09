@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Numerics;
 using System.Text;
@@ -163,7 +164,12 @@ namespace Mythosia
         /// <param name="separated">Specifies whether to separate the hex digits with a connector.</param>
         /// <returns>The prefixed hexadecimal string representation of the numeric value.</returns>
         public static string ToPrefixedHexString<T>(this T number, bool separated = false) where T : struct, IComparable, IFormattable, IConvertible
-            => number.SerializeUsingMarshal().ToPrefixedHexString(separated);
+        {
+            var temp = number.SerializeUsingMarshal();
+            var result = (BitConverter.IsLittleEndian) ? temp.Reverse() : temp;
+
+            return result.ToPrefixedHexString(separated);
+        }
 
 
         /// <summary>
@@ -176,7 +182,12 @@ namespace Mythosia
         /// <param name="connector">The connector used to separate the hex digits.</param>
         /// <returns>The unprefixed hexadecimal string representation of the numeric value.</returns>
         public static string ToUnPrefixedHexString<T>(this T number, string connector = " ") where T : struct, IComparable, IFormattable, IConvertible
-            => number.SerializeUsingMarshal().ToUnPrefixedHexString(connector);
+        {
+            var temp = number.SerializeUsingMarshal();
+            var result = (BitConverter.IsLittleEndian) ? temp.Reverse() : temp;
+
+            return result.ToUnPrefixedHexString(connector);
+        }
 
 
         /// <summary>

@@ -8,6 +8,112 @@ namespace Mythosia
 {
     public static class DelegateExtension
     {
+        [Obsolete("The Retry method is obsolete and will be removed in the future versions. Consider using RetryIfFailed method instead.")]
+        public static bool Retry(this Func<bool> action, uint timeout_ms, int retryInterval_ms = 0) => action.RetryIfFailed(timeout_ms, retryInterval_ms);
+
+        [Obsolete("The Retry method is obsolete and will be removed in the future versions. Consider using RetryIfFailed method instead.")]
+        public static bool Retry<T>(this Func<T, bool> action, T arg, uint timeout_ms, int retryInterval_ms = 0) => action.RetryIfFailed(arg, timeout_ms, retryInterval_ms);
+
+        [Obsolete ("The Retry method is obsolete and will be removed in the future versions. Consider using RetryIfFailed method instead.")]
+        public static bool Retry<T1, T2>(this Func<T1, T2, bool> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
+            => action.RetryIfFailed(arg1, arg2, timeout_ms, retryInterval_ms);
+
+        [Obsolete("The Retry method is obsolete and will be removed in the future versions. Consider using RetryIfFailed method instead.")]
+        public static bool Retry<T1, T2, T3>(this Func<T1, T2, T3, bool> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
+            => action.RetryIfFailed(arg1, arg2, arg3, timeout_ms, retryInterval_ms);
+
+        [Obsolete("The RetryAsync method is obsolete and will be removed in the future versions. Consider using RetryIfFailedAsync method instead.")]
+        public static async Task<bool> RetryAsync(this Func<Task<bool>> action, uint timeout_ms, int retryInterval_ms = 0)
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime;
+
+            bool result;
+            while (true)
+            {
+                result = await action.Invoke();
+                if (result) break;
+
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
+            }
+
+            return result;
+        }
+
+
+        [Obsolete("The RetryAsync method is obsolete and will be removed in the future versions. Consider using RetryIfFailedAsync method instead.")]
+        public static async Task<bool> RetryAsync<T1>(this Func<T1, Task<bool>> action, T1 arg, uint timeout_ms, int retryInterval_ms = 0)
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime;
+
+            bool result;
+            while (true)
+            {
+                result = await action.Invoke(arg);
+                if (result) break;
+
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
+            }
+
+            return result;
+        }
+
+
+        [Obsolete("The RetryAsync method is obsolete and will be removed in the future versions. Consider using RetryIfFailedAsync method instead.")]
+        public static async Task<bool> RetryAsync<T1, T2>(this Func<T1, T2, Task<bool>> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime;
+
+            bool result;
+            while (true)
+            {
+                result = await action.Invoke(arg1, arg2);
+                if (result) break;
+
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
+            }
+
+            return result;
+        }
+
+        [Obsolete("The RetryAsync method is obsolete and will be removed in the future versions. Consider using RetryIfFailedAsync method instead.")]
+        public static async Task<bool> RetryAsync<T1, T2, T3>(this Func<T1, T2, T3, Task<bool>> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime;
+
+            bool result;
+            while (true)
+            {
+                result = await action.Invoke(arg1, arg2, arg3);
+                if (result) break;
+
+                elapsedTime = DateTime.Now - startTime;
+                if (elapsedTime.TotalMilliseconds >= timeout_ms) break; // Timeout occurred
+
+                if (retryInterval_ms > 0) await Task.Delay(retryInterval_ms);
+            }
+
+            return result;
+        }
+
+
+
+
+
+
+
         /*******************************************************************************/
         /// <summary>
         /// Executes the specified action and retries the execution until it returns true or the timeout is reached.
@@ -17,7 +123,7 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between retries in milliseconds. If set to 0, no interval is applied.</param>
         /// <returns>A boolean value indicating whether the action returns true within the timeout period.</returns>
         /*******************************************************************************/
-        public static bool Retry(this Func<bool> action, uint timeout_ms, int retryInterval_ms = 0)
+        public static bool RetryIfFailed(this Func<bool> action, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -38,6 +144,7 @@ namespace Mythosia
         }
 
 
+
         /*******************************************************************************/
         /// <summary>
         /// Executes the specified action with the given argument and retries the execution until it returns true or the timeout is reached.
@@ -49,7 +156,7 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between retries in milliseconds. If set to 0, no interval is applied.</param>
         /// <returns>True if the action returns true within the timeout period, false otherwise.</returns>
         /*******************************************************************************/
-        public static bool Retry<T>(this Func<T, bool> action, T arg, uint timeout_ms, int retryInterval_ms = 0)
+        public static bool RetryIfFailed<T>(this Func<T, bool> action, T arg, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -83,7 +190,8 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between retries in milliseconds. If set to 0, no interval is applied.</param>
         /// <returns>True if the action returns true within the timeout period, false otherwise.</returns>
         /*******************************************************************************/
-        public static bool Retry<T1, T2>(this Func<T1, T2, bool> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
+        [Obsolete("The Retry method is obsolete and will be removed in the future versions. Consider using RetryIfFailed method instead.")]
+        public static bool RetryIfFailed<T1, T2>(this Func<T1, T2, bool> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -119,7 +227,7 @@ namespace Mythosia
         /// <param name="retryInterval_ms">The interval between retries in milliseconds. If set to 0, no interval is applied.</param>
         /// <returns>True if the action returns true within the timeout period, false otherwise.</returns>
         /*******************************************************************************/
-        public static bool Retry<T1, T2, T3>(this Func<T1, T2, T3, bool> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
+        public static bool RetryIfFailed<T1, T2, T3>(this Func<T1, T2, T3, bool> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -151,7 +259,7 @@ namespace Mythosia
         /// A task representing the asynchronous operation. The task will complete with a boolean value indicating whether the action returns true within the timeout period.
         /// </returns>
         /*******************************************************************************/
-        public static async Task<bool> RetryAsync(this Func<Task<bool>> action, uint timeout_ms, int retryInterval_ms = 0)
+        public static async Task<bool> RetryIfFailedAsync(this Func<Task<bool>> action, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -185,7 +293,7 @@ namespace Mythosia
         /// A task representing the asynchronous operation. The task will complete with a boolean value indicating whether the action returns true within the timeout period.
         /// </returns>
         /*******************************************************************************/
-        public static async Task<bool> RetryAsync<T1>(this Func<T1, Task<bool>> action, T1 arg, uint timeout_ms, int retryInterval_ms = 0)
+        public static async Task<bool> RetryIfFailedAsync<T1>(this Func<T1, Task<bool>> action, T1 arg, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -221,7 +329,7 @@ namespace Mythosia
         /// A task representing the asynchronous operation. The task will complete with a boolean value indicating whether the action returns true within the timeout period.
         /// </returns>
         /*******************************************************************************/
-        public static async Task<bool> RetryAsync<T1, T2>(this Func<T1, T2, Task<bool>> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
+        public static async Task<bool> RetryIfFailedAsync<T1, T2>(this Func<T1, T2, Task<bool>> action, T1 arg1, T2 arg2, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
@@ -259,7 +367,7 @@ namespace Mythosia
         /// A task representing the asynchronous operation. The task will complete with a boolean value indicating whether the action returns true within the timeout period.
         /// </returns>
         /*******************************************************************************/
-        public static async Task<bool> RetryAsync<T1, T2, T3>(this Func<T1, T2, T3, Task<bool>> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
+        public static async Task<bool> RetryIfFailedAsync<T1, T2, T3>(this Func<T1, T2, T3, Task<bool>> action, T1 arg1, T2 arg2, T3 arg3, uint timeout_ms, int retryInterval_ms = 0)
         {
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime;
