@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Mythosia.Integrity
+namespace Mythosia.Integrity.CRC
 {
     public static class ExtensionForCRC32
     {
-        public enum CRC32Type
-        {
-            Basic,
-        }
-
         /*******************************************/
         /// <summary>
         /// This function returns the CRC32 value
@@ -20,11 +16,7 @@ namespace Mythosia.Integrity
         /*******************************************/
         public static uint CRC32(this IEnumerable<byte> data, CRC32Type type = CRC32Type.Basic)
         {
-            uint result = 0;
-
-            if (type == CRC32Type.Basic) result = CRC.ComputeCRC32(data);
-
-            return result;
+            return BitConverter.ToUInt32(new CRC32(type).Compute(data).ToArray(), 0);
         }
 
         /*******************************************/
@@ -37,12 +29,7 @@ namespace Mythosia.Integrity
         /*******************************************/
         public static IEnumerable<byte> WithCRC32(this IEnumerable<byte> data, CRC32Type type = CRC32Type.Basic)
         {
-            List<byte> result = new List<byte>();
-            result.AddRange(data);
-
-            if (type == CRC32Type.Basic) result.AddRange(data.CRC32(type).ToByteArray());
-
-            return result;
+            return new CRC32(type).Encode(data);
         }
     }
 }

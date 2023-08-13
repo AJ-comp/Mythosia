@@ -2,8 +2,9 @@ HashAlgorithm is moved Mythosia.Security.Cryptography namespace.
 Please download Mythosia.Security.Cryptography to use it.
 
 # CRC
-Please see https://www.lammertbies.nl/comm/info/crc-calculation?crc=8005&method=hex
-Please see https://crccalc.com/
+Please see 
+https://www.lammertbies.nl/comm/info/crc-calculation?crc=8005&method=hex
+https://crccalc.com/
 
 ```c#
 using Mythosia;
@@ -43,6 +44,8 @@ var dataWithCRC = data.WithCRC32();
 
 
 # Checksum
+Please see
+https://www.scadacore.com/tools/programming-calculators/online-checksum-calculator/
 
 ```c#
 using Mythosia;
@@ -62,4 +65,43 @@ var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.TwosComplement);
 
 var checksum = data.CheckSum8(CheckSum8Type.NMEA);
 var dataWithChecksum = data.WithCheckSum8(CheckSum8Type.NMEA);
+```
+
+
+
+# Application
+
+if you want to use the polymorphism, you can use is as below.
+
+```c#
+using Mythosia;
+using Mythosia.Integrity;
+
+var content = "123456789".ToASCIIArray();
+
+ErrorDetection errDetection = new Checksum8();
+var checksum = errDetection.Compute(content);
+var encodeData = errDetection.Encode(content);			// encodeData is content + checksum
+var decodeData = errDetection.Decode(encodeData);		// decodeData is equal with content
+
+errDetection = new Checksum8(Checksum8Type.Modulo256);	// change to the modulo256 checksum
+checksum = errDetection.Compute();
+var encodeData = errDetection.Encode(content);			// encodeData is content + checksum
+var decodeData = errDetection.Decode(encodeData);		// decodeData is equal with content
+
+errDetection = new CRC8();							// change to the CRC8
+var crc = errDetection.Compute();
+var encodeData = errDetection.Encode(content);			// encodeData is content + crc
+var decodeData = errDetection.Decode(encodeData);		// decodeData is equal with content
+
+errDetection = new CRC16();							// change to the CRC16
+crc = errDetection.Compute();
+var encodeData = errDetection.Encode(content);			// encodeData is content + crc
+var decodeData = errDetection.Decode(encodeData);		// decodeData is equal with content
+
+errDetection = new CRC32();							// change to the CRC32
+crc = errDetection.Compute();
+var encodeData = errDetection.Encode(content);			// encodeData is content + crc
+var decodeData = errDetection.Decode(encodeData);		// decodeData is equal with content
+
 ```
