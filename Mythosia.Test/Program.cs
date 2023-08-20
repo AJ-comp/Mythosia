@@ -1,24 +1,37 @@
 ﻿using Mythosia;
-using Mythosia.Integrity;
-using Mythosia.Test;
+using Mythosia.Collections;
+using Mythosia.Integrity.CRC;
 using Mythosia.Security.Cryptography;
-using System.Security.Cryptography;
-using System.Text;
-using System.Collections.Concurrent;
+using Mythosia.Test;
 
 
-IntegrityTest integrityTest = new();
-integrityTest.StartTest();
+//AttributeTest attributeTest = new AttributeTest();
+//await attributeTest.StartTest();
 
-EnumerableTest enumTest = new();
-enumTest.StartTest(new List<byte>() { 10, 16, 15, 30, 45, 65 });
+CircularQueue<byte> q = new CircularQueue<byte>(3);
+
+q.Enqueue(0x0a);
+q.Enqueue(0x30);
+q.Enqueue(0x1f);
+q.Enqueue(0x22);
+q.Enqueue(0x25);
+var data = q.WithCRC16();
+
+StreamTest streamTest = new();
+streamTest.StartTest();
+
+/*
+SymmetricAlgorithm symm = new SEED();
+var key = KeyGenerator.GenerateSEEDKey();
+var iv = KeyGenerator.GenerateSEEDIV();
+var enc = symm.Encrypt("test12345".ToUTF8Array(), key, iv);
+symm.Decrypt(enc, key, iv);
+*/
+
+/*
+var shake = new Shake128();
+var outPut = shake.ComputeHash("test12345".ToUTF8Array(), 128);
+*/
 
 CryptographyTest cryptographyTest = new();
 cryptographyTest.StartTest("test12345");
-
-SymmetricAlgorithm symmetricAlgorithm = Aes.Create();
-var key = KeyGenerator.GenerateAES128Key();
-var iv = KeyGenerator.GenerateAES128IV();
-
-var encrypted = symmetricAlgorithm.Encrypt("test123456".ToUTF8Array(), key, iv);
-Console.WriteLine(symmetricAlgorithm.Decrypt(encrypted, key, iv).ToUTF8String());
