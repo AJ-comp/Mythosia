@@ -28,7 +28,7 @@ async WriteLogAsync(string data)
 	// (Critical Section) IO exectuion
 }
 
-//but async keyword can't be compatibled with lock keyword.
+// but async keyword can't be compatibled with lock keyword.
 // in this situation, you can achieve the goal using as below.
 
 while(true)

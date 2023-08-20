@@ -3,7 +3,7 @@ This project supports custom functions that are not directly provided by .NET as
 The extensions supported by this project include the following. <br/>
 
 
-## String
+## To string
 ```c#
 using Mythosia;
 
@@ -13,9 +13,11 @@ var data = "12345".ToUTF8Array(); // Equal with Encoding.UTF8.GetBytes("12345");
 var data = "12345".ToUTF32Array(); // Equal with Encoding.UTF32.GetBytes("12345");
 
 var data = "=".Repeat(10); // data is "=========="
+
 ```
 
-## Numeric (sbyte, byte, short, ushort, int, uint, float, double)
+
+## To numeric string (sbyte, byte, short, ushort, int, uint, float, double)
 ```c#
 using Mythosia;
 
@@ -36,13 +38,55 @@ var data = 423.42031.HostToNetworkEndian();	// change endian (host to big)
 var data = 234.52.ToByteArray();	// Equal with BitConverter.GetBytes(234.52);
 ```
 
-## Enumerable (included ConcurrentBag)
+
+## To Numeric array (ushort, uint, ulong)
 ```c#
 using Mythosia;
 
-new List<byte> test = new List<byte>(){0xff, 0xab, 0x01, 0x00, 0xee};
-var result = test.ToUnPrefixedHexString();			// result is "ff ab 01 00 ee"
-var result = test.ToPrefixedHexString();			// result is "0xffab0100ee"
+List<byte> test = new List<byte>() { 10, 16, 15, 30, 45, 65, 90, 32 };
+
+// if system endian is little endian then result is 0x100a, 0x1e0f, 0x412d, 0x205a
+// if system endian is big endian then result is 0x0a10, 0x0f1e, 0x2d41, 0x5a20
+var result = test.ToUShortArray();
+
+// if system endian is little endian then result is 0x1e0f100a, 0x205a412d
+// if system endian is big endian then result is 0x0a100f1e, 0x2d415a20
+var result = test.ToUIntArray();
+
+// if system endian is little endian then result is 0x205a412d1e0f100a
+// if system endian is big endian then result is 0x0a100f1e2d415a20
+var result = test.ToULongArray();
+
+```
+
+
+## Notation
+```c#
+using Mythosia;
+
+private List<byte> test = new List<byte>() { 10, 16, 15, 30, 45, 65 };
+
+// binary
+test.ToBinaryString();  // result is "000010100001000000001111000111100010110101000001"
+test.ToBinaryString(BinaryPartitionSize.Bit2) // result is "00 00 10 10 00 01 00 00 00 00 11 11 00 01 11 10 00 10 11 01 01 00 00 01"
+test.ToBinaryString(BinaryPartitionSize.HalfByte) // result is "0000 1010 0001 0000 0000 1111 0001 1110 0010 1101 0100 0001"
+test.ToBinaryString(BinaryPartitionSize.Byte) // result is "00001010 00010000 00001111 00011110 00101101 01000001"
+test.ToBinaryString(BinaryPartitionSize.Byte, "0b") // result is "0b00001010 0b00010000 0b00001111 0b00011110 0b00101101 0b01000001"
+
+// hex
+var result = test.ToHexStringL();  // result is  "0a100f1e2d41"
+var result = test.ToHexStringL(HexPartitionSize.Byte);  // result is "0a 10 0f 1e 2d 41
+var result = test.ToHexStringL(HexPartitionSize.Byte2); // result is "0a10 0f1e 2d41"
+
+var result = test.ToHexStringU(HexPartitionSize.Byte2);  // result is "0A10 0F1E 2D41"
+var result = test.ToHexStringU(HexPartitionSize.Byte2, "0x");  // result is "0x0A10 0x0F1E 0x2D41"
+var result = test.ToHexStringU(HexPartitionSize.Byte2, "", "h");  // result is "0A10h 0F1Eh 2D41h"
+
+```
+
+
+## Enumerable (included ConcurrentBag)
+```c#
 var result = test.ToEncodedString(Encoding.GetEncoding("ISO-8859-1"));		// convert string as "ISO-8859-1" format
 var result = test.ToASCIIString();	// equal with Encoding.ASCII.GetString(test.ToArray(), 0, test.Count());
 
@@ -52,6 +96,7 @@ test.AddExceptNull(item);					// add item if item is not null
 new List<byte> newItems = new List<bye>(){ 0x01, 0x02 };
 test.AddRangeParallel(newItems);    // add items as parallel
 ```
+
 
 ## Delegate
 ```c#
@@ -66,11 +111,11 @@ bool WireConnect()
 
 
 // Here you may want to call the function to repeat to specified timeout.
-// Then you can solute just by calling the function "Retry" as below. 
+// Then you can solute just by calling the function "RetryIfFailed" as below. 
 void Test()
 {
     var func = WireConnect;             // you need c# 10.0
-    bool result = func.Retry(30000);      // Call WireConnect function to repeat while a maximum of 30,000 ms (the 30s) or until success
+    bool result = func.RetryIfFailed(30000);      // Call WireConnect function to repeat while a maximum of 30,000 ms (the 30s) or until success
 
     if(result) Console.WriteLine("Success");
     else Console.WriteLine("Failed");
@@ -96,7 +141,6 @@ test.DeSerializeUsingMarshal(serializeData);    // Deserialize to test
 
 ```
 
-
 ## Enum
 ```c#
 using Mythosia;
@@ -113,28 +157,5 @@ var enum = value.GetEnumFromDescription<CarBrand>();   // enum is CarBrand.Benz
 
 int carBrand = 1;
 var enum = carBrand.ToEnum<CarBrand>();   // enum is CarBrand.BMW
-
-```
-
-
-## DataStruct
-```c#
-using Mythosia;
-using Mythosia.Collections;
-
-CircularQueue<byte> testQ = new (3);    // create circular queue with max size is 3
-
-testQ.Enqueue(10);  // 10
-testQ.Enqueue(5);   // 10 5
-testQ.Enqueue(26);   // 10 5 26
-testQ.Enqueue(16);   // 16 5 26
-
-
-// if you want to use a thread-safe circular queue, 
-// all you have to do is create a circular queue with the true parameter as below.
-
-CircularQueue<byte> testQ = new (3, true);  // create thread-safe circular queue
-
-
 
 ```

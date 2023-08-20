@@ -221,34 +221,6 @@ namespace Mythosia
 
         /*******************************************************************************/
         /// <summary>
-        /// Converts the elements of an enumerable collection to their decimal string representations, separated by a delimiter.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
-        /// <param name="list">The enumerable collection to convert.</param>
-        /// <param name="delimiter">The delimiter string used to separate the decimal string representations. Default value is a single space.</param>
-        /// <returns>A string containing the decimal string representations of the elements in the collection, separated by the specified delimiter.</returns>
-        /// <exception cref="ArgumentException">Thrown when an element of the collection cannot be converted to decimal.</exception>
-        /*******************************************************************************/
-        public static string ToDecimalString<T>(this IEnumerable<T> list, string delimiter = " ")
-        {
-            StringBuilder decimalString = new StringBuilder();
-
-            foreach (var value in list)
-            {
-                // if the type is not converted to decimal then occurs exception.
-                decimalString.Append(Convert.ToDecimal(value).ToString());
-                decimalString.Append(delimiter);
-            }
-
-            if (decimalString.Length > 0)
-                decimalString.Length -= delimiter.Length; // Remove the last delimiter
-
-            return decimalString.ToString();
-        }
-
-
-        /*******************************************************************************/
-        /// <summary>
         /// Converts the given signed byte array to an unprefixed hexadecimal string representation.
         /// </summary>
         /// <param name="data">The signed byte array to convert.</param>
@@ -257,6 +229,7 @@ namespace Mythosia
         /// </param>
         /// <returns>The unprefixed hexadecimal string representation of the signed byte array.</returns>
         /*******************************************************************************/
+        [Obsolete ("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
         public static string ToUnPrefixedHexString(this IEnumerable<byte> data, string connector = " ")
         {
             string result = string.Empty;
@@ -282,6 +255,7 @@ namespace Mythosia
         /// </param>
         /// <returns>The unprefixed hexadecimal string representation of the signed byte array.</returns>
         /*******************************************************************************/
+        [Obsolete("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
         public static string ToUnPrefixedHexString(this IEnumerable<sbyte> data, string connector = " ")
         {
             string result = string.Empty;
@@ -304,6 +278,7 @@ namespace Mythosia
         /// <param name="value">The byte array to convert.</param>
         /// <returns>The prefixed hexadecimal string representation of the byte array.</returns>
         /*******************************************************************************/
+        [Obsolete("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
         public static string ToPrefixedHexString(this IEnumerable<byte> value, bool separated = false)
         {
             var result = ToUnPrefixedHexString(value, separated ? " " : "");
@@ -321,6 +296,7 @@ namespace Mythosia
         /// <param name="value">The byte array to convert.</param>
         /// <returns>The prefixed hexadecimal string representation of the byte array.</returns>
         /*******************************************************************************/
+        [Obsolete("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
         public static string ToPrefixedHexString(this IEnumerable<sbyte> value, bool separated = false)
         {
             var result = ToUnPrefixedHexString(value, separated ? " " : "");
@@ -472,6 +448,33 @@ namespace Mythosia
         public static string ToUTF8String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF8);
         public static string ToUnicodeString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.Unicode);
         public static string ToUTF32String(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.UTF32);
+
+
+        private static T[] ConvertToNumericArray<T>(byte[] data) where T : struct
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data.Length == 0) return new T[0];
+
+            int sizeOfT = Marshal.SizeOf<T>();
+            int remainder = data.Length % sizeOfT;
+            int requiredLength = data.Length + (remainder == 0 ? 0 : sizeOfT - remainder);
+            byte[] buffer = new byte[requiredLength];
+
+            Array.Copy(data, buffer, data.Length);
+
+            T[] result = new T[buffer.Length / sizeOfT];
+            Buffer.BlockCopy(buffer, 0, result, 0, buffer.Length);
+
+            return result;
+        }
+
+
+//        public static short[] ToShortArray(this IEnumerable<byte> data) => ConvertToNumericArray<short>(data.ToArray());
+        public static ushort[] ToUShortArray(this IEnumerable<byte> data) => ConvertToNumericArray<ushort>(data.ToArray());
+//        public static int[] ToIntArray(this IEnumerable<byte> data) => ConvertToNumericArray<int>(data.ToArray());
+        public static uint[] ToUIntArray(this IEnumerable<byte> data) => ConvertToNumericArray<uint>(data.ToArray());
+//        public static long[] ToLongArray(this IEnumerable<byte> data) => ConvertToNumericArray<long>(data.ToArray());
+        public static ulong[] ToULongArray(this IEnumerable<byte> data) => ConvertToNumericArray<ulong>(data.ToArray());
 
 
         public static IEnumerable<T> Copy<T>(this IEnumerable<T> data)
