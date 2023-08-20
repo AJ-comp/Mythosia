@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <LangVersion>11.0</LangVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Description>support symmetric algorithm
@@ -30,6 +31,8 @@ refer to https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Crypt
     <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Security.Cryptography</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Authors>JJW</Authors>
+    <Company>JJW</Company>
   </PropertyGroup>
 
   <ItemGroup>

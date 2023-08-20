@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -151,6 +152,12 @@ namespace Mythosia.Security.Cryptography
             0x07333437, 0xc7e3e427, 0x04202424, 0x84a0a424, 0xcbc3c80b, 0x43535013, 0x0a02080a, 0x87838407,
             0xc9d1d819, 0x4c404c0c, 0x83838003, 0x8f838c0f, 0xcec2cc0e, 0x0b33383b, 0x4a42480a, 0x87b3b437
         };
+
+        public SEED()
+        {
+//            Key = new byte[16];
+//            IV = new byte[16];
+        }
 
         #endregion
 
@@ -373,43 +380,42 @@ namespace Mythosia.Security.Cryptography
             }
         }
 
-        public string Enc(String s, String Key)
+        public string Enc(string s, string Key)
         {
-
-            byte[] sData = Encoding.UTF8.GetBytes(s);
+            byte[] sData = s.ToUTF8Array();
             byte[] seedKey = Encoding.Default.GetBytes(Key);
 
             return Convert.ToBase64String(Encrypt(sData, seedKey));
         }
 
-        public string Dec(String s, String Key)
+        public string Dec(string s, string Key)
         {
             byte[] sData = Convert.FromBase64String(s);
             byte[] seedKey = Encoding.Default.GetBytes(Key);
             return Encoding.UTF8.GetString(SEED.Decrypt(sData, seedKey));
         }
 
-        internal static byte[] Encrypt(byte[] Data, byte[] seedKey)
+        internal static byte[] Encrypt(byte[] data, byte[] seedKey)
         {
-            return SEED.Encrypt(Data, seedKey, true);
+            return SEED.Encrypt(data, seedKey, true);
         }
 
-        internal static byte[] Encrypt(byte[] Data, byte[] seedKey, bool cbcPad)
+        internal static byte[] Encrypt(byte[] data, byte[] seedKey, bool cbcPad)
         {
-            int nOutSize = (int)((Data.Length) / 16) * 16;
+            int nOutSize = (int)((data.Length) / 16) * 16;
 
             if (cbcPad)
             {
-                nOutSize = (int)((Data.Length + 16) / 16) * 16;
+                nOutSize = (int)((data.Length + 16) / 16) * 16;
             }
             else
             {
                 nOutSize = (nOutSize == 0) ? 16 : nOutSize * 16;
             }
-            int nInSize = Data.Length;
+            int nInSize = data.Length;
 
             byte[] OutData = new byte[nOutSize];
-            Buffer.BlockCopy(Data, 0, OutData, 0, nInSize);
+            Buffer.BlockCopy(data, 0, OutData, 0, nInSize);
 
             if (cbcPad)
             {
@@ -510,15 +516,58 @@ namespace Mythosia.Security.Cryptography
 
         public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV)
         {
-            throw new NotImplementedException();
+            return new SEEDTransform(rgbKey, rgbIV, true);
         }
 
         public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[] rgbIV)
         {
-            throw new NotImplementedException();
+            return new SEEDTransform(rgbKey, rgbIV, false);
         }
 
         public override void GenerateIV() => KeyGenerator.GenerateSEEDKey();
         public override void GenerateKey() => KeyGenerator.GenerateSEEDIV();
+    }
+
+
+    public class SEEDTransform : ICryptoTransform
+    {
+        private readonly bool _disposed = false;
+        private readonly bool _encrypting;
+
+        private readonly byte[] _data;
+        private readonly byte[] _key;
+        private readonly byte[] _iv;
+
+        public bool CanReuseTransform => false;
+        public bool CanTransformMultipleBlocks => false;
+        public int InputBlockSize => 16;
+        public int OutputBlockSize => 16;
+
+
+        public SEEDTransform(byte[] key, byte[] iv, bool encrypting)
+        {
+            _key = key;
+            _iv = iv;
+            _encrypting = encrypting;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+        {
+            var data = inputBuffer.Skip(inputOffset).Take(inputCount).ToArray();
+
+            if (_encrypting) SEED.Encrypt(data, _key);
+            else SEED.Decrypt(data, _key);
+
+            return data;
+        }
     }
 }

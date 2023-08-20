@@ -73,7 +73,7 @@ Please see https://emn178.github.io/online-tools/sha1.html
 
 ```c#
 using Mythosia;
-using Mythosia.Integrity;
+using Mythosia.Security.Cryptography;
 
 // Example for SHA1
 var sha = data.IVHashCode();
