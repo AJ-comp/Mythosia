@@ -439,7 +439,7 @@ namespace Mythosia
 
         public static string ToEncodedString(this IEnumerable<byte> data, Encoding encoding)
         {
-            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.AsOrToByteArray(), 0, data.Count());
+            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.AsOrToArray(), 0, data.Count());
         }
 
         public static string ToASCIIString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.ASCII);
@@ -482,7 +482,7 @@ namespace Mythosia
         /// </summary>
         /// <param name="data">The data to be converted or cast to a byte array.</param>
         /// <returns>A byte array that represents the provided data.</returns>
-        public static byte[] AsOrToByteArray(this IEnumerable<byte> data) => (data is byte[] bytes) ? bytes : data.ToArray();
+        public static byte[] AsOrToArray(this IEnumerable<byte> data) => (data is byte[] bytes) ? bytes : data.ToArray();
 
 
         public static IEnumerable<T> Copy<T>(this IEnumerable<T> data)

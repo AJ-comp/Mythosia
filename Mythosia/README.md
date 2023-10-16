@@ -15,7 +15,7 @@ var data = "12345".ToUTF8Array(); // Equal with Encoding.UTF8.GetBytes("12345");
 var data = "12345".ToUTF32Array(); // Equal with Encoding.UTF32.GetBytes("12345");
 
 IEnumerable<byte> data = new List<byte>() { 0x45, 0x46, 0x47, 0x48, 0x49 };
-var result = data.AsOrToByteArray(); // if data is byte[] then return data (O(1)) else return data.ToArray() (O(n));
+var result = data.AsOrToArray(); // if data is byte[] then return data (O(1)) else return data.ToArray() (O(n));
 
 data.ToDefaultString(); // Equal with Encoding.Default.GetString(data.AsOrToByteArray(), 0, data.Count());
 data.ToASCIIString(); // Equal with Encoding.ASCII.GetString(data.AsOrToByteArray(), 0, data.Count());
