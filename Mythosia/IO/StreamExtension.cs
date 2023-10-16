@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mythosia.IO
@@ -43,8 +43,7 @@ namespace Mythosia.IO
         private static async Task<int> ReadInt32Async(this Stream stream, int timeOut)
         {
             byte[] intBytes = new byte[4];
-            stream.ReadTimeout = timeOut;
-            await stream.ReadAsync(intBytes, 0, 4);
+            await stream.ReadExAsync(intBytes, timeOut);
 
             return BitConverter.ToInt32(intBytes, 0);
         }
@@ -57,10 +56,61 @@ namespace Mythosia.IO
         }
 
 
-        private static async Task WriteInt32Async(this Stream stream, int value)
+        private static Task WriteInt32Async(this Stream stream, int value)
         {
             byte[] buf = value.ToByteArray();
-            await stream.WriteAsync(buf, 0, buf.Length);
+            return stream.WriteAsync(buf, 0, buf.Length);
+        }
+
+
+        /// <summary>
+        /// Writes data to a stream asynchronously with a specified timeout.
+        /// </summary>
+        /// <param name="stream">The target stream to which the data will be written.</param>
+        /// <param name="buffer">The data to write to the stream.</param>
+        /// <param name="timeout">The timeout duration in milliseconds for the write operation. 
+        /// If set to -2, the default stream's WriteTimeout value will be used.</param>
+        /// <exception cref="TimeoutException">Thrown when the write operation exceeds the specified timeout duration.</exception>
+        public static async ValueTask WriteExAsync(this Stream stream, ReadOnlyMemory<byte> buffer, int timeout = -2)
+        {
+            if (timeout <= -2) timeout = stream.WriteTimeout;
+
+            using var cts = new CancellationTokenSource(timeout);
+
+            try
+            {
+                await stream.WriteAsync(buffer, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TimeoutException("The write operation has timed out.");
+            }
+        }
+
+
+        /// <summary>
+        /// Reads data from a stream asynchronously with a specified timeout.
+        /// </summary>
+        /// <param name="stream">The source stream from which the data will be read.</param>
+        /// <param name="buffer">The buffer where the read data will be stored.</param>
+        /// <param name="timeout">The timeout duration in milliseconds for the read operation. 
+        /// If set to -2, the default stream's ReadTimeout value will be used.</param>
+        /// <returns>The number of bytes read into the buffer.</returns>
+        /// <exception cref="TimeoutException">Thrown when the read operation exceeds the specified timeout duration.</exception>
+        public static async ValueTask<int> ReadExAsync(this Stream stream, Memory<byte> buffer, int timeout = -2)
+        {
+            if (timeout <= -2) timeout = stream.ReadTimeout;
+
+            using var cts = new CancellationTokenSource(timeout);
+
+            try
+            {
+                return await stream.ReadAsync(buffer, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TimeoutException("The read operation has timed out.");
+            }
         }
     }
 }

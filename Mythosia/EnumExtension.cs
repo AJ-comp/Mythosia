@@ -149,6 +149,10 @@ namespace Mythosia
         }
 
 
+        public static T GetEnumFromName<T>(this string name) where T : Enum
+            => (T)Enum.Parse(typeof(T), name);
+
+
         /*******************************************************************************/
         /// <summary>
         /// Gets the description associated with the specified enum value.

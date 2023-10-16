@@ -82,6 +82,10 @@ test.AddRangeParallel(newItems);    // add items as parallel
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
     </None>
+    <None Update="IO\README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
     <None Update="README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

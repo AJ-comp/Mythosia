@@ -107,7 +107,7 @@ namespace Mythosia
         {
             if (taskCount > 0)
             {
-                ParallelOptions options = new ParallelOptions
+                var options = new ParallelOptions
                 {
                     MaxDegreeOfParallelism = taskCount
                 };
@@ -200,7 +200,7 @@ namespace Mythosia
         {
             if (taskCount > 0)
             {
-                ParallelOptions options = new ParallelOptions
+                var options = new ParallelOptions
                 {
                     MaxDegreeOfParallelism = taskCount
                 };
@@ -439,7 +439,7 @@ namespace Mythosia
 
         public static string ToEncodedString(this IEnumerable<byte> data, Encoding encoding)
         {
-            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.ToArray(), 0, data.Count());
+            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.AsOrToByteArray(), 0, data.Count());
         }
 
         public static string ToASCIIString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.ASCII);
@@ -476,6 +476,14 @@ namespace Mythosia
 //        public static long[] ToLongArray(this IEnumerable<byte> data) => ConvertToNumericArray<long>(data.ToArray());
         public static ulong[] ToULongArray(this IEnumerable<byte> data) => ConvertToNumericArray<ulong>(data.ToArray());
 
+        /// <summary>
+        /// Converts the provided <see cref="IEnumerable{byte}"/> to a byte array. If the original type is already a byte array,
+        /// it is returned directly for performance. Otherwise, a new byte array is created and returned.
+        /// </summary>
+        /// <param name="data">The data to be converted or cast to a byte array.</param>
+        /// <returns>A byte array that represents the provided data.</returns>
+        public static byte[] AsOrToByteArray(this IEnumerable<byte> data) => (data is byte[] bytes) ? bytes : data.ToArray();
+
 
         public static IEnumerable<T> Copy<T>(this IEnumerable<T> data)
         {
@@ -484,7 +492,6 @@ namespace Mythosia
 
             return result;
         }
-
 
         public static T[] Copy<T>(this T[] data)
         {

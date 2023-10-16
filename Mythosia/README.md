@@ -3,16 +3,24 @@ This project supports custom functions that are not directly provided by .NET as
 The extensions supported by this project include the following. <br/>
 
 
-## To string
+## To string or To Byte array
 ```c#
 using Mythosia;
+
+var data = "=".Repeat(10); // data is "=========="
 
 var data = "12345".ToDefaultArray(); // Equal with Encoding.Default.GetBytes("12345");
 var data = "12345".ToASCIIArray(); // Equal with Encoding.ASCII.GetBytes("12345");
 var data = "12345".ToUTF8Array(); // Equal with Encoding.UTF8.GetBytes("12345");
 var data = "12345".ToUTF32Array(); // Equal with Encoding.UTF32.GetBytes("12345");
 
-var data = "=".Repeat(10); // data is "=========="
+IEnumerable<byte> data = new List<byte>() { 0x45, 0x46, 0x47, 0x48, 0x49 };
+var result = data.AsOrToByteArray(); // if data is byte[] then return data (O(1)) else return data.ToArray() (O(n));
+
+data.ToDefaultString(); // Equal with Encoding.Default.GetString(data.AsOrToByteArray(), 0, data.Count());
+data.ToASCIIString(); // Equal with Encoding.ASCII.GetString(data.AsOrToByteArray(), 0, data.Count());
+data.ToUTF8String(); // Equal with Encoding.UTF8.GetString(data.AsOrToByteArray(), 0, data.Count());
+data.ToUTF32String(); // Equal with Encoding.UTF32.GetString(data.AsOrToByteArray(), 0, data.Count());
 
 ```
 
@@ -156,6 +164,7 @@ var value = test.ToDescription();   // value is "Mercedes"
 var enum = value.GetEnumFromDescription<CarBrand>();   // enum is CarBrand.Benz
 
 int carBrand = 1;
-var enum = carBrand.ToEnum<CarBrand>();   // enum is CarBrand.BMW
+var result = carBrand.ToEnum<CarBrand>();   // result is CarBrand.BMW
+var result = "BMW".GetEnumFromName<CarBrand>();  // result is CarBrand.BMW
 
 ```
