@@ -168,3 +168,30 @@ var result = carBrand.ToEnum<CarBrand>();   // result is CarBrand.BMW
 var result = "BMW".GetEnumFromName<CarBrand>();  // result is CarBrand.BMW
 
 ```
+
+
+## Json Serialize, Deserialize
+```c#
+using Mythosia;
+
+
+public class TestClass
+{
+    public int A { get; set; } = 10;
+    public string B { get; set; } = string.Empty;
+}
+
+
+var testClass = new TestClass();
+
+// serialize, deserialize with System.Text.Json
+var jsonString = testClass.ToJsonStringS();
+var compareClass = jsonString.FromJsonStringS<TestClass>();
+
+
+// serialize, deserialize with Newtonsoft.Json
+var jsonString = testClass.ToJsonStringN();
+var compareClass = jsonString.FromJsonStringN<TestClass>();
+
+```
+

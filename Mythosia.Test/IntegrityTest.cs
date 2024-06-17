@@ -1,8 +1,6 @@
 ﻿using Mythosia.Integrity;
 using Mythosia.Integrity.Checksum;
 using Mythosia.Integrity.CRC;
-using Mythosia.Security.Cryptography;
-using System.Linq;
 using Xunit;
 using static Mythosia.Integrity.Checksum.ExtensionForChecksum;
 using static Mythosia.Integrity.CRC.ExtensionForCRC16;

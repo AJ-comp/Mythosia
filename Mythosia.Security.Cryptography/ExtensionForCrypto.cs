@@ -15,7 +15,7 @@ namespace Mythosia.Security.Cryptography
         {
             ICryptoTransform encryptor = symmertric.CreateEncryptor(symmertric.Key, symmertric.IV);
 
-            var inputBytes = toEncryptData.ToArray();
+            var inputBytes = toEncryptData.AsOrToArray();
             return encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
 
             /*
@@ -46,8 +46,8 @@ namespace Mythosia.Security.Cryptography
         /***************************************************************************/
         public static IEnumerable<byte> Encrypt(this SymmetricAlgorithm symmertric, IEnumerable<byte> toEncryptData, IEnumerable<byte> key, IEnumerable<byte> iv)
         {
-            symmertric.Key = key.ToArray();
-            symmertric.IV = iv.ToArray();
+            symmertric.Key = key.AsOrToArray();
+            symmertric.IV = iv.AsOrToArray();
 
             return symmertric.Encrypt(toEncryptData);
         }
@@ -59,7 +59,7 @@ namespace Mythosia.Security.Cryptography
         {
             ICryptoTransform decryptor = symmertric.CreateDecryptor(symmertric.Key, symmertric.IV);
 
-            var cipherText = encryptedData.ToArray();
+            var cipherText = encryptedData.AsOrToArray();
             var decrypted = decryptor.TransformFinalBlock(cipherText, 0, cipherText.Length);
             return decrypted;
 
@@ -126,14 +126,10 @@ namespace Mythosia.Security.Cryptography
             => symmertric.Decrypt(encryptedData, key, iv);
 
 
-        public static IEnumerable<byte> EncryptSEED(this IEnumerable<byte> data, 
-                                                                                IEnumerable<byte> seedKey, 
-                                                                                bool cbcPad = true)
-            => SEED.Encrypt(data.ToArray(), seedKey.ToArray(), cbcPad);
+        public static IEnumerable<byte> EncryptSEED(this IEnumerable<byte> data, IEnumerable<byte> seedKey, bool cbcPad = true)
+            => SEED.Encrypt(data.AsOrToArray(), seedKey.AsOrToArray(), cbcPad);
 
-        public static IEnumerable<byte> DecryptSEED(this IEnumerable<byte> data, 
-                                                                                IEnumerable<byte> seedKey,
-                                                                                bool cbcPad = true)
-            => SEED.Decrypt(data.ToArray(), seedKey.ToArray(), cbcPad);
+        public static IEnumerable<byte> DecryptSEED(this IEnumerable<byte> data, IEnumerable<byte> seedKey, bool cbcPad = true)
+            => SEED.Decrypt(data.AsOrToArray(), seedKey.AsOrToArray(), cbcPad);
     }
 }

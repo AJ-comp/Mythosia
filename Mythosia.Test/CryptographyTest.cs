@@ -1,10 +1,4 @@
 ﻿using Mythosia.Security.Cryptography;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Mythosia.Test
@@ -39,9 +33,18 @@ namespace Mythosia.Test
 
             var decryptedData = lea.Decrypt(key.ToArray(), encryptedData);
             Assert.True(decryptedData.SequenceEqual(data));
-
-
         }
+
+
+        [Fact]
+        public void SEEDTest()
+        {
+            string data = "feasfeasdf0123801241230fsfe";
+            var key = KeyGenerator.GenerateSEEDKey();
+
+            Assert.True(data.ToASCIIArray().EncryptSEED(key).DecryptSEED(key).ToASCIIString() == data);
+        }
+
 
         public void StartTest(string contentToTest)
         {

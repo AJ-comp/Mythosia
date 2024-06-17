@@ -395,6 +395,7 @@ namespace Mythosia.Security.Cryptography
             return Encoding.UTF8.GetString(SEED.Decrypt(sData, seedKey));
         }
 
+
         internal static byte[] Encrypt(byte[] data, byte[] seedKey)
         {
             return SEED.Encrypt(data, seedKey, true);
@@ -404,14 +405,9 @@ namespace Mythosia.Security.Cryptography
         {
             int nOutSize = (int)((data.Length) / 16) * 16;
 
-            if (cbcPad)
-            {
-                nOutSize = (int)((data.Length + 16) / 16) * 16;
-            }
-            else
-            {
-                nOutSize = (nOutSize == 0) ? 16 : nOutSize * 16;
-            }
+            if (cbcPad) nOutSize = (int)((data.Length + 16) / 16) * 16;
+            else nOutSize = (nOutSize == 0) ? 16 : nOutSize * 16;
+
             int nInSize = data.Length;
 
             byte[] OutData = new byte[nOutSize];

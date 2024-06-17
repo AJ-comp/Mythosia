@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Net.Sockets;
 using Xunit;
 
 namespace Mythosia.Test
@@ -12,6 +13,15 @@ namespace Mythosia.Test
         }
 
         private List<byte> testList = new List<byte>() { 10, 16, 15, 30, 45, 65 };
+
+
+        [Fact]
+        public void AddTest()
+        {
+            uint test = 0x12345678;
+            var test2 = "abcdef".ToASCIIArray();
+            test2.AddRangeExceptNull(test.ToByteArray()); // dead lock
+        }
 
 
         [Fact]
@@ -94,6 +104,14 @@ namespace Mythosia.Test
             Assert.True(enumValue == CarBrand.BMW);
             Assert.True(enumValue.ToString() == "BMW");
             Assert.True(1.ToEnum<CarBrand>() == CarBrand.BMW);
+            Assert.True("BMW".GetEnumFromName<CarBrand>() == CarBrand.BMW);
+        }
+
+
+        [Fact]
+        public void ConvertTest()
+        {
+
         }
     }
 }
