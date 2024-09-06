@@ -1,4 +1,5 @@
-# 🌌 Mythosia
+ # 🌌 Mythosia 
+ ![Nuget version](https://img.shields.io/nuget/v/Mythosia.svg?style=flat-square) ![Downloads](https://img.shields.io/nuget/dt/Mythosia.svg?style=flat-square) ![Stars](https://img.shields.io/github/stars/AJ-comp/Mythosia?style=flat-square) ![License](https://img.shields.io/github/license/AJ-comp/Mythosia?style=flat-square)
 
 `Mythosia` is a versatile .NET library offering custom functionality not natively provided by .NET. Whether you're looking to enhance your application's integrity, cryptography, or simply streamline your codebase with handy extensions, Mythosia has got you covered.
 

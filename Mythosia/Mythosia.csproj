@@ -15,39 +15,23 @@
 
 # New functions 
 
-1. WriteExAsync &amp; ReadExAsync
-Asynchronous read and write operations for streams with custom timeout support. Defaulting to the stream's ReadTimeout and WriteTimeout when -2 is passed.
+1. Json serialize, deserialize
+using Mythosia;
 
--- Example ---------------------------------------------------------
-using NetworkStream stream = new TcpClient("127.0.0.1", 8000).GetStream();
+public class TestClass
+{
+    public int A { get; set; } = 10;
+    public string B { get; set; } = string.Empty;
+}
 
-// 1 second timeout
-await stream.WriteExAsync(new ReadOnlyMemory&lt;byte&gt;(new byte[] { 1, 2, 3 }), 1000);
+var testClass = new TestClass();
 
-byte[] buffer = new byte[3];
-// 1 second timeout
-await stream.ReadExAsync(buffer.AsMemory(), 1000);
-----------------------------------------------------------------------
+var jsonString = testClass.ToJsonStringS();   // serialize with System.Text.Json
+var compareClass = jsonString.FromJsonStringS&lt;TestClass&gt;();  // deserialize with System.Text.Json
 
-2. GetEnumFromName
-Easily parse an enum value from its string representation.
+var jsonString = testClass.ToJsonStringN();  // serialize with Newtonsoft.Json
+var compareClass = jsonString.FromJsonStringN&lt;TestClass&gt;(); // deserialize with Newtonsoft.Json
 
--- Example ---------------------------------------------------------
-enum Color { Red }
-
-var color = "Red".GetEnumFromName&lt;Color&gt;(); // color is Color.Red
-----------------------------------------------------------------------
-
-3. AsOrToArray
-Efficiently convert an IEnumerable&lt;byte&gt; to a byte array. If the source is already a byte[], the conversion is performed in O(1) time complexity. Otherwise, the conversion is O(n).
-
--- Example ---------------------------------------------------------
-IEnumerable&lt;byte&gt; test1 = new List&lt;byte&gt; { 1, 2, 3, 4, 5 };
-IEnumerable&lt;byte&gt; test2 = new byte[5] { 1, 2, 3, 4, 5 };
-
-var bytes1 = test1.AsOrToArray(); // O(n)
-var bytes2 = test2.AsOrToArray(); // O(1)
-----------------------------------------------------------------------
 
 
 # Existing Functions 
@@ -89,15 +73,30 @@ test.AddExceptNull(item);  // add item if item is not null
 new List&lt;byte&gt; newItems = new List&lt;bye&gt;(){ 0x01, 0x02 };
 test.AddRangeParallel(newItems);    // add items as parallel
 ------------------------------------------------------------------------------
+
+
+// WriteExAsync &amp; ReadExAsync
+Asynchronous read and write operations for streams with custom timeout support. Defaulting to the stream's ReadTimeout and WriteTimeout when -2 is passed.
+
+-- Example ---------------------------------------------------------
+using NetworkStream stream = new TcpClient("127.0.0.1", 8000).GetStream();
+
+// 1 second timeout
+await stream.WriteExAsync(new ReadOnlyMemory&lt;byte&gt;(new byte[] { 1, 2, 3 }), 1000);
+
+byte[] buffer = new byte[3];
+// 1 second timeout
+await stream.ReadExAsync(buffer.AsMemory(), 1000);
+----------------------------------------------------------------------
 </Description>
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
