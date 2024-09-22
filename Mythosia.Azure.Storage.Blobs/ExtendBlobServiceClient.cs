@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
@@ -127,6 +128,46 @@ namespace Mythosia.Azure.Storage.Blobs
         {
             using var stream = file.OpenReadStream();
             await AppendAsync(containerName, blobName, stream);
+        }
+
+
+
+        public async Task<Stream> DownloadAsync(string containerName, string blobName)
+        {
+            BlobContainerClient containerClient = GetBlobContainerClient(containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            BlobDownloadInfo download = await blobClient.DownloadAsync();
+            MemoryStream memoryStream = new MemoryStream();
+            await download.Content.CopyToAsync(memoryStream);
+            memoryStream.Position = 0; // 스트림 포인터를 처음으로 돌립니다.
+
+            return memoryStream; // 스트림 반환
+        }
+
+
+        public async Task<string> DownloadAsStringAsync(string containerName, string blobName)
+        {
+            BlobContainerClient containerClient = GetBlobContainerClient(containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            BlobDownloadInfo download = await blobClient.DownloadAsync();
+            using (StreamReader reader = new StreamReader(download.Content, Encoding.UTF8))
+            {
+                return await reader.ReadToEndAsync(); // Blob 파일을 문자열로 변환 후 반환
+            }
+        }
+
+        public async Task DownloadToFileAsync(string containerName, string blobName, string filePath)
+        {
+            BlobContainerClient containerClient = GetBlobContainerClient(containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            BlobDownloadInfo download = await blobClient.DownloadAsync();
+            using (var fileStream = File.OpenWrite(filePath))
+            {
+                await download.Content.CopyToAsync(fileStream); // 로컬 파일로 저장
+            }
         }
     }
 }
