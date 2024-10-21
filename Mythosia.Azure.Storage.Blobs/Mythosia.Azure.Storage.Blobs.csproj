@@ -3,43 +3,49 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<Nullable>enable</Nullable>
-		<VersionPrefix>1.1.0</VersionPrefix>
+		<VersionPrefix>1.1.1</VersionPrefix>
 		<Authors>JJW</Authors>
 		<Company>Mythosia</Company>
 		<Title>Mythosia.Azure.Storage.Blobs</Title>
-		<Description>BlobServiceClient and Azure Key Vault Integration
-The BlobServiceClient is a part of the Azure SDK designed to interact with Azure Blob Storage. It provides methods for working with containers and blobs, such as uploading, downloading, deleting, and generating Shared Access Signatures (SAS). However, BlobServiceClient does not natively include integration with Azure Key Vault for secret management, such as storing or retrieving credentials or connection strings.
+		<Description>**New Features**:  
+This update introduces an extension method to automatically convert strings into valid Azure Blob Storage container names. Azure Blob Storage imposes strict naming rules requiring lowercase letters, numbers, and hyphens, with specific constraints on hyphen placement and name length. This new feature ensures that container names comply with these rules by transforming arbitrary input strings into valid container names seamlessly.
 
-Azure Key Vault, on the other hand, is a service that provides centralized secret management, enabling secure storage and access to sensitive information such as API keys, connection strings, and certificates. It allows secure access using Azure Managed Identity or Service Principal Authentication.
+**Key Benefits**:  
+- Converts camelCase or PascalCase strings to lowercase with hyphens automatically.
+- Replaces disallowed characters with hyphens, ensuring valid naming conventions.
+- Handles name length constraints (minimum 3 characters, maximum 63 characters).
+- Simplifies compliance with Azure Blob Storage naming standards, reducing errors and improving consistency.
 
-While BlobServiceClient itself does not handle secrets or authentication via Azure Key Vault, you can integrate the two services by retrieving secrets (such as Blob Storage connection strings or SAS tokens) from Azure Key Vault and using them to initialize BlobServiceClient.
+**Usage Example**:  
+```csharp
+using Mythosia.Azure.Storage.Blobs;
 
-Key Points:
-BlobServiceClient:
-
-Used to perform operations on Azure Blob Storage (upload, download, delete, etc.).
-Does not have native support for managing secrets or authentication via Azure Key Vault.
-Azure Key Vault:
-
-A service for managing and securing sensitive information like connection strings and credentials.
-Can store secrets required for securely accessing services like Azure Blob Storage.
-Integration:
-
-You can retrieve connection strings or SAS tokens from Azure Key Vault using Azure SDKs (e.g., SecretClient) and use them to instantiate BlobServiceClient.
-
-Example:
-// create BlobServiceClient with key vault information
-new ExtendBlobServiceClient("https://mythosia-key-vault.vault.azure.net/", "blob");</Description>
+// Convert a string to a valid container name
+string validName = "PhonoMaster@123".ToBlobContainerName();
+// Output: "phono-master-123"
+```
+</Description>
+		<PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Azure.Storage.Blobs</PackageProjectUrl>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="README.md" />
+	</ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.43.0" />
-    <PackageReference Include="Azure.Identity" Version="1.12.0" />
-    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.22.0" />
-    <PackageReference Include="Azure.Storage.Common" Version="12.21.0" />
+    <PackageReference Include="Azure.Core" Version="1.44.1" />
+    <PackageReference Include="Azure.Identity" Version="1.13.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
+    <PackageReference Include="Azure.Storage.Common" Version="12.21.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Mythosia" Version="1.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="README.md">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>

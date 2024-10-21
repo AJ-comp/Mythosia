@@ -109,7 +109,7 @@ namespace Mythosia.Azure.Storage.Blobs
             }
             catch (RequestFailedException ex) when (ex.ErrorCode == "BlobAlreadyExists")
             {
-                // Blob이 이미 존재하면 무시
+                // Blob가 이미 존재하면 무시
             }
 
             // 스트림 내용을 blob의 끝에 추가
