@@ -11,92 +11,38 @@
     <Authors>JJW</Authors>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>This project supports custom functions for user's clean code that are not directly provided by .NET.
+    <Description>
+		This project supports custom functions for user's clean code that are not directly provided by .NET.
 
-# New functions 
+# ByteExtensions
 
-1. Json serialize, deserialize
-using Mythosia;
+Optimized byte sequence handling for .NET applications. The ToEncodedString method has been improved to enhance performance by reducing multiple enumerations and efficiently handling empty collections. These optimizations also boost the performance of related encoding methods, ensuring faster and more efficient byte-to-string conversions across your application.
 
-public class TestClass
-{
-    public int A { get; set; } = 10;
-    public string B { get; set; } = string.Empty;
-}
+Enhanced Methods:
 
-var testClass = new TestClass();
+ToASCIIString
+ToUTF7String
+ToUTF8String
+ToUnicodeString
+ToUTF32String
 
-var jsonString = testClass.ToJsonStringS();   // serialize with System.Text.Json
-var compareClass = jsonString.FromJsonStringS&lt;TestClass&gt;();  // deserialize with System.Text.Json
+Key Improvements:
 
-var jsonString = testClass.ToJsonStringN();  // serialize with Newtonsoft.Json
-var compareClass = jsonString.FromJsonStringN&lt;TestClass&gt;(); // deserialize with Newtonsoft.Json
-
-
-
-# Existing Functions 
-
-using Mythosia;
-
-// Example for numeric (byte, short, int, etc...) extension
-var result = 56.IsInRange(0, 100);  // result is true 
-var result = 56.IsInRange(0, 30);   // result is false
-var data = 56000000.ToSIPrefix();   // data is "56 M"
-var data = 56000000.ToSIPrefix(SIPrefixUnit.Kilo);   // data is "56000 k"
-var data = 423.42031.HostToNetworkEndian(); // change to big endian
--------------------------------------------------------------------------------
-
-// Example for Notation
-private List&lt;byte&gt; test = new List&lt;byte&gt;() { 10, 16, 15, 30, 45, 65 };
-
-// binary
-test.ToBinaryString();  // result is "000010100001000000001111000111100010110101000001"
-test.ToBinaryString(BinaryPartitionSize.Bit2) // result is "00 00 10 10 00 01 00 00 00 00 11 11 00 01 11 10 00 10 11 01 01 00 00 01"
-test.ToBinaryString(BinaryPartitionSize.HalfByte) // result is "0000 1010 0001 0000 0000 1111 0001 1110 0010 1101 0100 0001"
-test.ToBinaryString(BinaryPartitionSize.Byte) // result is "00001010 00010000 00001111 00011110 00101101 01000001"
-test.ToBinaryString(BinaryPartitionSize.Byte, "0b") // result is "0b00001010 0b00010000 0b00001111 0b00011110 0b00101101 0b01000001"
-
-// hex
-var result = test.ToHexStringL();  // result is  "0a100f1e2d41"
-var result = test.ToHexStringL(HexPartitionSize.Byte);  // result is "0a 10 0f 1e 2d 41
-var result = test.ToHexStringL(HexPartitionSize.Byte2); // result is "0a10 0f1e 2d41"
-
-var result = test.ToHexStringU(HexPartitionSize.Byte2);  // result is "0A10 0F1E 2D41"
-var result = test.ToHexStringU(HexPartitionSize.Byte2, "0x");  // result is "0x0A10 0x0F1E 0x2D41"
-var result = test.ToHexStringU(HexPartitionSize.Byte2, "", "h");  // result is "0A10h 0F1Eh 2D41h"
-------------------------------------------------------------------------------
-
-// Example for Enumerable extension
-new List&lt;byte&gt; test = new List&lt;byte&gt;(){0xff, 0xab, 0x01, 0x00, 0xee};
-test.AddExceptNull(item);  // add item if item is not null
-
-new List&lt;byte&gt; newItems = new List&lt;bye&gt;(){ 0x01, 0x02 };
-test.AddRangeParallel(newItems);    // add items as parallel
-------------------------------------------------------------------------------
+Single Enumeration: Converts IEnumerable to a byte array once, avoiding multiple iterations.
+Efficient Empty Check: Uses Length property for quick empty collection verification.
+Enhanced Performance: Reduces overhead and memory usage, especially with large or lazy-evaluated byte sequences.
+Broader Impact: Improves performance of all related encoding methods internally leveraging ToEncodedString.
 
 
-// WriteExAsync &amp; ReadExAsync
-Asynchronous read and write operations for streams with custom timeout support. Defaulting to the stream's ReadTimeout and WriteTimeout when -2 is passed.
-
--- Example ---------------------------------------------------------
-using NetworkStream stream = new TcpClient("127.0.0.1", 8000).GetStream();
-
-// 1 second timeout
-await stream.WriteExAsync(new ReadOnlyMemory&lt;byte&gt;(new byte[] { 1, 2, 3 }), 1000);
-
-byte[] buffer = new byte[3];
-// 1 second timeout
-await stream.ReadExAsync(buffer.AsMemory(), 1000);
-----------------------------------------------------------------------
 </Description>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>

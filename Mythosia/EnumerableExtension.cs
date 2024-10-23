@@ -13,6 +13,117 @@ namespace Mythosia
 {
     public static class EnumerableExtension
     {
+
+        /// <summary>
+        /// Adds a specified number of random values to an IEnumerable<T> collection.
+        /// For arrays, the collection is converted to a List<T>, modified, and then converted back to an array.
+        /// For List<T>, the random values are added directly.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collection.</typeparam>
+        /// <param name="collection">The reference to the IEnumerable<T> collection, which can be an array or list.</param>
+        /// <param name="count">The number of random values to add to the collection.</param>
+        /// <param name="randomValueGenerator">
+        /// An optional custom random value generator. If not provided, a default generator is used based on the type of T.
+        /// </param>
+        /// <exception cref="InvalidOperationException">Thrown if the type T is not supported by the default random generator.</exception>
+        internal static void AddRandomValues<T>(ref IEnumerable<T> collection, int count, Func<T> randomValueGenerator = null)
+        {
+            Random random = new Random();
+
+            // Default random value generator based on the type of T
+            Func<T> defaultRandomValueGenerator = () =>
+            {
+                if (typeof(T) == typeof(byte)) return (T)(object)(byte)random.Next(byte.MinValue, byte.MaxValue);
+                else if (typeof(T) == typeof(sbyte)) return (T)(object)(byte)random.Next(sbyte.MinValue, sbyte.MaxValue);
+                else if (typeof(T) == typeof(short)) return (T)(object)(short)random.Next(short.MinValue, short.MaxValue);
+                else if (typeof(T) == typeof(ushort)) return (T)(object)(short)random.Next(ushort.MinValue, ushort.MaxValue);
+                else if (typeof(T) == typeof(int)) return (T)(object)random.Next(int.MinValue, int.MaxValue);
+                else if (typeof(T) == typeof(uint)) return (T)(object)random.Next(0, int.MaxValue);
+                else if (typeof(T) == typeof(float)) return (T)(object)((float)random.NextDouble()); // Random float between 0.0 and 1.0
+                else if (typeof(T) == typeof(double)) return (T)(object)random.NextDouble(); // Random double between 0.0 and 1.0
+                else if (typeof(T) == typeof(long))
+                {
+                    byte[] buffer = new byte[8];
+                    random.NextBytes(buffer);
+                    return (T)(object)BitConverter.ToInt64(buffer, 0); // Random long
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Unsupported type: {typeof(T).Name}");
+                }
+            };
+
+            // Use provided random value generator if available, otherwise use the default generator
+            Func<T> generatorToUse = randomValueGenerator ?? defaultRandomValueGenerator;
+
+            // Check if collection is an array
+            if (collection is T[] array)
+            {
+                // Convert array to list, modify it, and convert back to array
+                List<T> list = new List<T>(array);
+
+                // Add random values to the list
+                for (int i = 0; i < count; i++) list.Add(generatorToUse());
+
+                // Assign modified list back to the original array
+                collection = list.ToArray();
+            }
+            else if (collection is List<T> list)
+            {
+                // For non-array List<T>, add random values directly
+                for (int i = 0; i < count; i++) list.Add(generatorToUse());
+            }
+        }
+
+
+        /// <summary>
+        /// Selects a specified number of random elements from the given IList<T>.
+        /// This method is optimized for collections that implement IList<T> as it uses O(1) access to retrieve elements by index.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The source list from which to randomly pick elements.</param>
+        /// <param name="length">The number of random elements to select from the list.</param>
+        /// <returns>An IEnumerable<T> containing the randomly selected elements from the list.</returns>
+        internal static IEnumerable<T> GetRandomElements<T>(this IList<T> list, int length)
+        {
+            Random random = new Random();
+            T[] result = new T[length];
+            int count = list.Count; // O(1)
+
+            for (int i = 0; i < length; i++)
+            {
+                int randomIndex = random.Next(0, count);
+                result[i] = list[randomIndex]; // O(1)
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Selects a specified number of random elements from the given IEnumerable<T>.
+        /// This version is less efficient for large collections because it must calculate Count() (O(n)) 
+        /// and use ElementAt() (O(n)) for random access.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the enumerable.</typeparam>
+        /// <param name="input">The source enumerable from which to randomly pick elements.</param>
+        /// <param name="length">The number of random elements to select from the enumerable.</param>
+        /// <returns>An IEnumerable<T> containing the randomly selected elements from the enumerable.</returns>
+        internal static IEnumerable<T> GetRandomElements<T>(this IEnumerable<T> input, int length)
+        {
+            Random random = new Random();
+            T[] result = new T[length];
+            int count = input.Count();
+
+            for (int i = 0; i < length; i++)
+            {
+                int randomIndex = random.Next(0, count);
+                result[i] = input.ElementAt(randomIndex);
+            }
+
+            return result;
+        }
+
+
         /*******************************************************************************/
         /// <summary>
         /// Joins the elements of an enumerable collection into a single string using the specified connector.
@@ -155,7 +266,7 @@ namespace Mythosia
         /*******************************************************************************/
         public static void AddRangeExceptNull<T>(this ICollection<T> collection, IEnumerable<T> toAddList)
         {
-            foreach(var item in toAddList) collection.AddExceptNull(item);
+            foreach (var item in toAddList) collection.AddExceptNull(item);
         }
 
 
@@ -229,7 +340,7 @@ namespace Mythosia
         /// </param>
         /// <returns>The unprefixed hexadecimal string representation of the signed byte array.</returns>
         /*******************************************************************************/
-        [Obsolete ("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
+        [Obsolete("This function will be removed on 1.3.0 ver. use the ToHexStringL or ToHexStringU.")]
         public static string ToUnPrefixedHexString(this IEnumerable<byte> data, string connector = " ")
         {
             string result = string.Empty;
@@ -439,7 +550,10 @@ namespace Mythosia
 
         public static string ToEncodedString(this IEnumerable<byte> data, Encoding encoding)
         {
-            return (data.Count() == 0) ? string.Empty : encoding.GetString(data.AsOrToArray(), 0, data.Count());
+            var byteArray = data.AsOrToArray();
+            if (byteArray.Length == 0) return string.Empty;
+
+            return encoding.GetString(byteArray, 0, byteArray.Length);
         }
 
         public static string ToASCIIString(this IEnumerable<byte> data) => data.ToEncodedString(Encoding.ASCII);
@@ -469,11 +583,11 @@ namespace Mythosia
         }
 
 
-//        public static short[] ToShortArray(this IEnumerable<byte> data) => ConvertToNumericArray<short>(data.ToArray());
+        //        public static short[] ToShortArray(this IEnumerable<byte> data) => ConvertToNumericArray<short>(data.ToArray());
         public static ushort[] ToUShortArray(this IEnumerable<byte> data) => ConvertToNumericArray<ushort>(data.ToArray());
-//        public static int[] ToIntArray(this IEnumerable<byte> data) => ConvertToNumericArray<int>(data.ToArray());
+        //        public static int[] ToIntArray(this IEnumerable<byte> data) => ConvertToNumericArray<int>(data.ToArray());
         public static uint[] ToUIntArray(this IEnumerable<byte> data) => ConvertToNumericArray<uint>(data.ToArray());
-//        public static long[] ToLongArray(this IEnumerable<byte> data) => ConvertToNumericArray<long>(data.ToArray());
+        //        public static long[] ToLongArray(this IEnumerable<byte> data) => ConvertToNumericArray<long>(data.ToArray());
         public static ulong[] ToULongArray(this IEnumerable<byte> data) => ConvertToNumericArray<ulong>(data.ToArray());
 
         /// <summary>

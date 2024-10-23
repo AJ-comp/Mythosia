@@ -20,6 +20,27 @@ namespace Mythosia
         public static uint ToUInt32(this string value) => Convert.ToUInt32(value);
 
 
+        /// <summary>
+        /// Selects a specified number of random characters from the input string and returns them as a new string.
+        /// </summary>
+        /// <param name="input">The source string from which to randomly pick characters.</param>
+        /// <param name="length">The number of random characters to pick from the input string.</param>
+        /// <returns>A new string consisting of randomly selected characters from the input string.</returns>
+        internal static string GetRandomString(this string input, int length)
+        {
+            Random random = new Random();
+            char[] result = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                int randomIndex = random.Next(0, input.Length);
+                result[i] = input[randomIndex];
+            }
+
+            return new string(result);
+        }
+
+
 
         /// <summary>
         /// Deserializes the JSON string to the specified type using System.Text.Json.
