@@ -14,28 +14,22 @@
     <Description>
 		This project supports custom functions for user's clean code that are not directly provided by .NET.
 
-# ByteExtensions
+		New Features:
+		Command Execution (Mythosia.Diagnostics)
+		NEW: Asynchronously execute system commands (via cmd.exe on Windows or bash on Unix-based systems) and receive detailed results.
+		Example: var result = await "echo Hello World".ExecuteCommandAsync();
+		
+		File Path Validation (Mythosia.IO)
+		NEW: Validate file paths and names to check for invalid characters and ensure they are fully qualified.
+		Example: bool isValid = "C:\\path\\file.txt".IsValidFilePathAndName();
+		
+		Async File Operations (Mythosia.IO)
+		NEW: Write text or byte data to a file asynchronously, automatically creating directories if needed.
+		Example (Text): await "C:\\path\\file.txt".WriteTextAsync("Hello World");
+		Example (Bytes): await "C:\\path\\file.bin".WriteBytesAsync(new byte[] { 0x01, 0x02 });
 
-Optimized byte sequence handling for .NET applications. The ToEncodedString method has been improved to enhance performance by reducing multiple enumerations and efficiently handling empty collections. These optimizations also boost the performance of related encoding methods, ensuring faster and more efficient byte-to-string conversions across your application.
-
-Enhanced Methods:
-
-ToASCIIString
-ToUTF7String
-ToUTF8String
-ToUnicodeString
-ToUTF32String
-
-Key Improvements:
-
-Single Enumeration: Converts IEnumerable to a byte array once, avoiding multiple iterations.
-Efficient Empty Check: Uses Length property for quick empty collection verification.
-Enhanced Performance: Reduces overhead and memory usage, especially with large or lazy-evaluated byte sequences.
-Broader Impact: Improves performance of all related encoding methods internally leveraging ToEncodedString.
-
-
-</Description>
-    <Version>1.2.4</Version>
+	</Description>
+    <Version>1.3.0</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
@@ -47,6 +41,10 @@ Broader Impact: Improves performance of all related encoding methods internally 
 
   <ItemGroup>
     <None Update="Collections\README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="Diagnostics\README.md">
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
     </None>
