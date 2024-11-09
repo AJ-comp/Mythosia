@@ -1,84 +1,66 @@
-# Stream Extensions in Mythosia
-`Mythosia` provides additional extensions to enhance the capabilities of the Stream class in .NET. These extensions allow developers to implement read and write operations with timeout capabilities more conveniently.
+# Mythosia IO Extensions
 
-## Using WriteExAsync and ReadExAsync with NetworkStream
-To use these extensions, you should first ensure you have the appropriate using directive:
+## Required Namespaces
 ```csharp
 using Mythosia;
 using Mythosia.IO;
 ```
 
 ### WriteExAsync
-This method allows you to write data to a stream asynchronously with a specified timeout.
-Example using `NetworkStream`:
+Applies a timeout to stream writing operations. Prevents infinite waiting and ensures reliable timeout handling, especially in network streams.
 ```csharp
 using var networkStream = new TcpClient("127.0.0.1", 8000).GetStream();
-// The operation will timeout if it takes longer than 5 seconds.
-await networkStream.WriteExAsync("Hello, World!".ToUTF8Array(), timeout: 5000);  
+await networkStream.WriteExAsync("Hello, World!".ToUTF8Array(), timeout: 5000);
 ```
 
 ### ReadExAsync
-This method provides a mechanism to read data from a stream asynchronously with a specified timeout.
-Example using `NetworkStream`:
+Applies a timeout to stream reading operations. Allows control to be regained even in situations with unstable network conditions or no response.
 ```csharp
 using var stream = new TcpClient("127.0.0.1", 8000).GetStream();
 byte[] buffer = new byte[1024];
-// The operation will timeout if it takes longer than 5 seconds.
 int bytesRead = await stream.ReadExAsync(buffer, timeout: 5000);
 ```
 
-Using these extension methods, you can easily add timeout capabilities to your read and write operations, making your network communications more resilient to unexpected delays. Moreover, they integrate seamlessly with the existing timeout properties of streams, allowing for a consistent programming experience.
-
-## String Extension Methods in Mythosia
-`Mythosia` also provides convenient string extension methods for file operations. Here's how to use them:
-
-### File Path Validation
-The `IsValidFilePathAndName` extension method helps you validate file paths before operations:
-
+### IsValidFilePathAndName
+Validates the complete file path. Enables path validation before performing file system operations.
 ```csharp
 string filePath = @"C:\MyFolder\MyFile.txt";
-if (filePath.IsValidFilePathAndName())
-{
-    // The path is valid, proceed with operations
-}
-else
-{
-    // Handle invalid path
-}
+bool isValid = filePath.IsValidFilePathAndName();
 ```
 
-### Writing Text Files
-Use `WriteTextAsync` to easily write text content to a file:
-
+### WriteBytesAsync
+Performs binary data writing operations to a file. Automatically creates necessary directories and supports cancellation tokens.
 ```csharp
-string filePath = @"C:\MyFolder\MyFile.txt";
-string content = "Hello World";
-
-// This will create the directory if it doesn't exist
-await filePath.WriteTextAsync(content);
+await "C:\MyFolder\MyData.bin".WriteBytesAsync(new byte[] { 0x1, 0x2, 0x3 });
 ```
 
-### Writing Binary Files
-Use `WriteBytesAsync` to write byte arrays or other byte collections to a file:
-
+### WriteTextAsync
+Performs text writing operations to a file. Automatically creates necessary directories and supports cancellation tokens.
 ```csharp
-string filePath = @"C:\MyFolder\MyData.bin";
-byte[] data = new byte[] { 0x1, 0x2, 0x3 };
-
-// This will create the directory if it doesn't exist
-await filePath.WriteBytesAsync(data);
+await "C:\MyFolder\MyFile.txt".WriteTextAsync("Hello World");
 ```
 
-## Key Features of String Extensions
-- Automatically creates directories if they don't exist
-- Validates file paths before operations
-- Provides async operations for better performance
-- Handles both text and binary file writing
-
-## Required Namespaces
-Add these using directives to your code:
-
+### ReadAllBytesAsync
+Safely reads binary data from a file. Returns an empty array if the file doesn't exist or is inaccessible.
 ```csharp
-using Mythosia;
-using Mythosia.IO;
+byte[] data = await "C:\MyFolder\MyData.bin".ReadAllBytesAsync();
+```
+
+### ReadAllTextAsync
+Safely reads text from a file. Returns an empty string if the file doesn't exist or is inaccessible.
+```csharp
+string text = await "C:\MyFolder\MyFile.txt".ReadAllTextAsync();
+```
+
+### GetAllFiles
+Safely retrieves a list of files from a directory. Returns an empty array if the directory doesn't exist or is inaccessible.
+```csharp
+// Get all files
+string[] files = "C:\MyFolder".GetAllFiles();
+
+// Get specific files
+string[] textFiles = "C:\MyFolder".GetAllFiles("*.txt");
+
+// Get files recursively
+string[] allFiles = "C:\MyFolder".GetAllFiles("*", SearchOption.AllDirectories);
 ```

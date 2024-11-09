@@ -82,5 +82,95 @@ namespace Mythosia.IO
             // Asynchronously write the text to the file with cancellation support
             await File.WriteAllTextAsync(fullPath, content, cancellationToken);
         }
+
+
+        /// <summary>
+        /// Safely reads all bytes from a file asynchronously.
+        /// Returns an empty array if the file does not exist.
+        /// </summary>
+        /// <param name="filePath">The file path to read from</param>
+        /// <returns>Byte array containing the contents of the file, or empty array if the file does not exist</returns>
+        public static async Task<byte[]> ReadAllBytesAsync(this string filePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                {
+                    return Array.Empty<byte>();
+                }
+
+                return await File.ReadAllBytesAsync(filePath);
+            }
+            catch (Exception ex) when (
+                ex is FileNotFoundException ||
+                ex is DirectoryNotFoundException ||
+                ex is PathTooLongException ||
+                ex is UnauthorizedAccessException)
+            {
+                // Add logging here if needed
+                return Array.Empty<byte>();
+            }
+        }
+
+        /// <summary>
+        /// Safely reads all text from a file asynchronously.
+        /// Returns an empty string if the file does not exist.
+        /// </summary>
+        /// <param name="filePath">The file path to read from</param>
+        /// <param name="encoding">The encoding to use (default: UTF8)</param>
+        /// <returns>String containing the contents of the file, or empty string if the file does not exist</returns>
+        public static async Task<string> ReadAllTextAsync(this string filePath, Encoding? encoding = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                {
+                    return string.Empty;
+                }
+
+                return await File.ReadAllTextAsync(filePath, encoding ?? Encoding.UTF8);
+            }
+            catch (Exception ex) when (
+                ex is FileNotFoundException ||
+                ex is DirectoryNotFoundException ||
+                ex is PathTooLongException ||
+                ex is UnauthorizedAccessException)
+            {
+                // Add logging here if needed
+                return string.Empty;
+            }
+        }
+
+
+        /// <summary>
+        /// Safely retrieves a list of files from a directory path.
+        /// Returns an empty array if the directory does not exist.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to search</param>
+        /// <param name="searchPattern">The search pattern (default: "*")</param>
+        /// <param name="searchOption">The search option (default: TopDirectoryOnly)</param>
+        /// <returns>An array of file paths</returns>
+        public static string[] GetAllFiles(this string directoryPath,
+            string searchPattern = "*",
+            SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
+                {
+                    return Array.Empty<string>();
+                }
+
+                return Directory.GetFiles(directoryPath, searchPattern, searchOption);
+            }
+            catch (Exception ex) when (
+                ex is UnauthorizedAccessException ||
+                ex is PathTooLongException ||
+                ex is DirectoryNotFoundException)
+            {
+                // Add logging here if needed
+                return Array.Empty<string>();
+            }
+        }
     }
 }

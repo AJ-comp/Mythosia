@@ -11,25 +11,21 @@
     <Authors>JJW</Authors>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>
-		This project supports custom functions for user's clean code that are not directly provided by .NET.
+	  <Description>
+This project supports custom functions for user's clean code that are not directly provided by .NET.
 
-		New Features:
-		Command Execution (Mythosia.Diagnostics)
-		NEW: Asynchronously execute system commands (via cmd.exe on Windows or bash on Unix-based systems) and receive detailed results.
-		Example: var result = await "echo Hello World".ExecuteCommandAsync();
-		
-		File Path Validation (Mythosia.IO)
-		NEW: Validate file paths and names to check for invalid characters and ensure they are fully qualified.
-		Example: bool isValid = "C:\\path\\file.txt".IsValidFilePathAndName();
-		
-		Async File Operations (Mythosia.IO)
-		NEW: Write text or byte data to a file asynchronously, automatically creating directories if needed.
-		Example (Text): await "C:\\path\\file.txt".WriteTextAsync("Hello World");
-		Example (Bytes): await "C:\\path\\file.bin".WriteBytesAsync(new byte[] { 0x01, 0x02 });
+New Features:
+Safe File Operations (Mythosia.IO)
+NEW: Safely read text or binary files with graceful error handling, returning empty results instead of throwing exceptions.
+Example (Text): string content = await "C:\\path\\file.txt".ReadAllTextAsync();
+Example (Binary): byte[] data = await "C:\\path\\file.bin".ReadAllBytesAsync();
 
-	</Description>
-    <Version>1.3.0</Version>
+Directory Operations (Mythosia.IO)
+NEW: Safely retrieve file listings with flexible search patterns and recursive options.
+Example (Basic): string[] files = "C:\\folder".GetAllFiles();
+Example (Pattern): string[] textFiles = "C:\\folder".GetAllFiles("*.txt", SearchOption.AllDirectories);
+	  </Description>
+    <Version>1.4.0</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
