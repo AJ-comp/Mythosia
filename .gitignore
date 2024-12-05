@@ -361,3 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Mythosia.Azure.AI/Mythosia.Azure.AI.csproj
