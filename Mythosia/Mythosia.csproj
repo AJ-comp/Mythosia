@@ -28,6 +28,7 @@ Example (Pattern): string[] textFiles = "C:\\folder".GetAllFiles("*.txt", Search
     <Version>1.4.0</Version>
     <UserSecretsId>5132670b-07c2-4079-9555-10308adb224f</UserSecretsId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Company>Mythosia</Company>
   </PropertyGroup>
 
   <ItemGroup>
