@@ -10,6 +10,9 @@
     <Company>Mythosia</Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>wpf; converter; </PackageTags>
+    <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Wpf/Mythosia.Wpf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Wpf/Mythosia.Wpf</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
