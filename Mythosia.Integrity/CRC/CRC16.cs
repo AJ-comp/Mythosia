@@ -23,40 +23,33 @@ namespace Mythosia.Integrity.CRC
         public CRC16(CRC16Type type = CRC16Type.Classic)
         {
             Type = type;
-
-            if (type == CRC16Type.Basic)
-            {
-                if (crc_tab16 == null) GenerateCRC16Table();
-            }
-            else if (type == CRC16Type.Classic)
-            {
-                if (crc_tab16 == null) GenerateCRC16Table();
-            }
-            else if (type == CRC16Type.Modbus)
-            {
-                if (crc16ModbusTable == null) GenerateCRC16ModbusTable();
-            }
-            else if (type == CRC16Type.CCITTxModem)
-            {
-                if (crc_tabccitt == null) GenerateCCITTTable();
-            }
-            else if (type == CRC16Type.DNP)
-            {
-                if (crc_tabdnp == null) GenerateDNPTable();
-            }
         }
 
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
             List<byte> result = new List<byte>();
 
-            if (Type == CRC16Type.Basic) result.AddRange(ComputeCRC16(source).ToByteArray());
-            else if (Type == CRC16Type.Classic) result.AddRange(ComputeCRC16(source).ToByteArray());
-            else if (Type == CRC16Type.Modbus) result.AddRange(ComputeCRC16Modbus(source).ToByteArray());
-            else if (Type == CRC16Type.CCITTxModem) result.AddRange(ComputeCCITTxModem(source).ToByteArray());
-            else if (Type == CRC16Type.DNP) result.AddRange(ComputeDNP(source).ToByteArray());
+            if (Type == CRC16Type.Basic) AppendNativeBytes(result, ComputeCRC16(source));
+            else if (Type == CRC16Type.Classic) AppendNativeBytes(result, ComputeCRC16(source));
+            else if (Type == CRC16Type.Modbus) AppendNativeBytes(result, ComputeCRC16Modbus(source));
+            else if (Type == CRC16Type.CCITTxModem) AppendNativeBytes(result, ComputeCCITTxModem(source));
+            else if (Type == CRC16Type.DNP) AppendNativeBytes(result, ComputeDNP(source));
 
             return result;
+        }
+
+        private static void AppendNativeBytes(List<byte> result, ushort value)
+        {
+            // Preserve the native byte order previously produced by Marshal.
+            if (BitConverter.IsLittleEndian)
+            {
+                result.Add(unchecked((byte)value));
+                result.Add(unchecked((byte)(value >> 8)));
+                return;
+            }
+
+            result.Add(unchecked((byte)(value >> 8)));
+            result.Add(unchecked((byte)value));
         }
 
         public override IEnumerable<byte> Decode(IEnumerable<byte> sourceWithCRC)
@@ -78,10 +71,11 @@ namespace Mythosia.Integrity.CRC
 
         public override bool IsError(IEnumerable<byte> sourceWithCRC)
         {
-            if (sourceWithCRC.Count() <= 2) return true;
+            int frameLength = sourceWithCRC.Count();
+            if (frameLength <= 2) return true;
             var toCheckCRC = sourceWithCRC.TakeLast(2);
 
-            var calculatedCRC = Compute(sourceWithCRC.Take(sourceWithCRC.Count() - 2));
+            var calculatedCRC = Compute(sourceWithCRC.Take(frameLength - 2));
             return !toCheckCRC.SequenceEqual(calculatedCRC);
         }
 
@@ -89,26 +83,15 @@ namespace Mythosia.Integrity.CRC
 
 
 
-        /*******************************************************************\
-        *                                                                   *
-        *   The algorithms use tables with precalculated  values.  This     *
-        *   speeds  up  the calculation dramaticaly. The first time the     *
-        *   CRC function is called, the table for that specific  calcu-     *
-        *   lation  is set up. The ...init variables are used to deter-     *
-        *   mine if the initialization has taken place. The  calculated     *
-        *   values are stored in the crc_tab... arrays.                     *
-        *                                                                   *
-        *   The variables are declared static. This makes them  invisi-     *
-        *   ble for other modules of the program.                           *
-        *                                                                   *
-        \*******************************************************************/
-        private static ushort[] crc_tab16;
-        private static ushort[] crc16ModbusTable;
-        private static ushort[] crc_tabccitt;
-        private static ushort[] crc_tabdnp;
+        // Build each table locally before publishing it. CLR type initialization
+        // runs once and prevents concurrent readers from seeing partial tables.
+        private static readonly ushort[] crc_tab16 = GenerateCRC16Table();
+        private static readonly ushort[] crc16ModbusTable = GenerateCRC16ModbusTable();
+        private static readonly ushort[] crc_tabccitt = GenerateCCITTTable();
+        private static readonly ushort[] crc_tabdnp = GenerateDNPTable();
 
 
-        private readonly ushort P_16 = 0xA001;
+        private const ushort P_16 = 0xA001;
 
         /*******************************************************************/
         /// <summary>
@@ -122,8 +105,17 @@ namespace Mythosia.Integrity.CRC
             ushort result = 0;
             if (data.Count() <= 0) return result;
 
-            foreach (var d in data)
-                result = UpdateCRC16(result, d);
+            // Keep other sources on their existing enumeration path.
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes)
+                    result = UpdateCRC16(result, value);
+            }
+            else
+            {
+                foreach (var d in data)
+                    result = UpdateCRC16(result, d);
+            }
 
             return result;
         }
@@ -152,9 +144,9 @@ namespace Mythosia.Integrity.CRC
         /// *   for calculation of the CRC-16 with values.                      *
         /// </summary>
         /*******************************************************************/
-        private void GenerateCRC16Table()
+        private static ushort[] GenerateCRC16Table()
         {
-            crc_tab16 = new ushort[256];
+            ushort[] table = new ushort[256];
 
             for (int i = 0; i < 256; i++)
             {
@@ -169,8 +161,10 @@ namespace Mythosia.Integrity.CRC
                     c = (ushort)(c >> 1);
                 }
 
-                crc_tab16[i] = crc;
+                table[i] = crc;
             }
+
+            return table;
         }
 
 
@@ -186,19 +180,30 @@ namespace Mythosia.Integrity.CRC
         {
             ushort crc = 0xFFFF;
 
-            foreach (var b in data)
+            if (data is byte[] bytes)
             {
-                byte index = (byte)(crc ^ b);
-                crc = (ushort)((crc >> 8) ^ crc16ModbusTable[index]);
+                foreach (byte value in bytes)
+                {
+                    byte index = (byte)(crc ^ value);
+                    crc = (ushort)((crc >> 8) ^ crc16ModbusTable[index]);
+                }
+            }
+            else
+            {
+                foreach (var b in data)
+                {
+                    byte index = (byte)(crc ^ b);
+                    crc = (ushort)((crc >> 8) ^ crc16ModbusTable[index]);
+                }
             }
 
             return crc;
         }
 
 
-        private void GenerateCRC16ModbusTable()
+        private static ushort[] GenerateCRC16ModbusTable()
         {
-            crc16ModbusTable = new ushort[256];
+            ushort[] table = new ushort[256];
             const ushort polynomial = 0xA001;
 
             for (ushort i = 0; i < 256; i++)
@@ -217,8 +222,10 @@ namespace Mythosia.Integrity.CRC
                     }
                 }
 
-                crc16ModbusTable[i] = value;
+                table[i] = value;
             }
+
+            return table;
         }
 
 
@@ -234,8 +241,16 @@ namespace Mythosia.Integrity.CRC
             ushort result = 0;
             if (data.Count() <= 0) return result;
 
-            foreach (var d in data)
-                result = UpdateCCITTxModem(result, d);
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes)
+                    result = UpdateCCITTxModem(result, value);
+            }
+            else
+            {
+                foreach (var d in data)
+                    result = UpdateCCITTxModem(result, d);
+            }
 
             return result;
         }
@@ -247,9 +262,9 @@ namespace Mythosia.Integrity.CRC
         /// *   for calculation of the CRC-CCITT with values.                   *
         /// </summary>
         /*******************************************************************/
-        private void GenerateCCITTTable()
+        private static ushort[] GenerateCCITTTable()
         {
-            crc_tabccitt = new ushort[256];
+            ushort[] table = new ushort[256];
 
             for (int i = 0; i < 256; i++)
             {
@@ -263,8 +278,10 @@ namespace Mythosia.Integrity.CRC
 
                     c = (ushort)(c << 1);
                 }
-                crc_tabccitt[i] = crc;
+                table[i] = crc;
             }
+
+            return table;
         }
 
 
@@ -299,10 +316,31 @@ namespace Mythosia.Integrity.CRC
             ushort result = 0;
             if (data.Count() <= 0) return result;
 
-            for (int i = 0; i < data.Count(); i++)
+            // Preserve allocation-free traversal for arrays and indexable inputs.
+            if (data is byte[] bytes)
             {
-                byte index = (byte)(result ^ data.ElementAt(i));
-                result = (ushort)((result >> 8) ^ crc_tabdnp[index]);
+                foreach (byte value in bytes)
+                {
+                    byte index = (byte)(result ^ value);
+                    result = (ushort)((result >> 8) ^ crc_tabdnp[index]);
+                }
+            }
+            else if (data is IList<byte> list)
+            {
+                int count = list.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    byte index = (byte)(result ^ list[i]);
+                    result = (ushort)((result >> 8) ^ crc_tabdnp[index]);
+                }
+            }
+            else
+            {
+                foreach (byte value in data)
+                {
+                    byte index = (byte)(result ^ value);
+                    result = (ushort)((result >> 8) ^ crc_tabdnp[index]);
+                }
             }
 
             result = (ushort)(result ^ 0xffff);
@@ -316,9 +354,9 @@ namespace Mythosia.Integrity.CRC
         /// *   for calculation of the CRC-DNP with values.                     *
         /// </summary>
         /*******************************************************************/
-        private void GenerateDNPTable()
+        private static ushort[] GenerateDNPTable()
         {
-            crc_tabdnp = new ushort[256];
+            ushort[] table = new ushort[256];
             const ushort p_dnp = 0xA6BC;
 
             for (int i = 0; i < 256; i++)
@@ -334,8 +372,10 @@ namespace Mythosia.Integrity.CRC
 
                     c = (ushort)(c >> 1);
                 }
-                crc_tabdnp[i] = crc;
+                table[i] = crc;
             }
+
+            return table;
         }
     }
 }

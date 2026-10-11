@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Mythosia\Mythosia.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Integrity/PublicApi.approved.txt" LogicalName="Mythosia.Test.Integrity.PublicApi.approved.txt" />
+  </ItemGroup>
+
 </Project>

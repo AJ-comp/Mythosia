@@ -19,25 +19,34 @@ namespace Mythosia.Integrity.CRC
         public CRC32(CRC32Type type = CRC32Type.Classic)
         {
             Type = type;
-
-            if (type == CRC32Type.Basic)
-            {
-                if (crc_tab32 == null) GenerateCRC32Table();
-            }
-            else if (type == CRC32Type.Classic)
-            {
-                if (crc_tab32 == null) GenerateCRC32Table();
-            }
         }
 
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
             List<byte> result = new List<byte>();
 
-            if (Type == CRC32Type.Basic) result.AddRange(ComputeCRC32(source).ToByteArray());
-            else if (Type == CRC32Type.Classic) result.AddRange(ComputeCRC32(source).ToByteArray());
+            if (Type == CRC32Type.Basic) AppendNativeBytes(result, ComputeCRC32(source));
+            else if (Type == CRC32Type.Classic) AppendNativeBytes(result, ComputeCRC32(source));
 
             return result;
+        }
+
+        private static void AppendNativeBytes(List<byte> result, uint value)
+        {
+            // Preserve the native byte order previously produced by Marshal.
+            if (BitConverter.IsLittleEndian)
+            {
+                result.Add(unchecked((byte)value));
+                result.Add(unchecked((byte)(value >> 8)));
+                result.Add(unchecked((byte)(value >> 16)));
+                result.Add(unchecked((byte)(value >> 24)));
+                return;
+            }
+
+            result.Add(unchecked((byte)(value >> 24)));
+            result.Add(unchecked((byte)(value >> 16)));
+            result.Add(unchecked((byte)(value >> 8)));
+            result.Add(unchecked((byte)value));
         }
 
         public override IEnumerable<byte> Decode(IEnumerable<byte> sourceWithCRC)
@@ -59,10 +68,11 @@ namespace Mythosia.Integrity.CRC
 
         public override bool IsError(IEnumerable<byte> sourceWithCRC)
         {
-            if (sourceWithCRC.Count() <= 4) return true;
+            int frameLength = sourceWithCRC.Count();
+            if (frameLength <= 4) return true;
             var toCheckCRC = sourceWithCRC.TakeLast(4);
 
-            var calculatedCRC = Compute(sourceWithCRC.Take(sourceWithCRC.Count() - 4));
+            var calculatedCRC = Compute(sourceWithCRC.Take(frameLength - 4));
             return !toCheckCRC.SequenceEqual(calculatedCRC);
         }
 
@@ -70,7 +80,8 @@ namespace Mythosia.Integrity.CRC
         public override string GetDetectionType() => Type.ToString();
 
 
-        private static uint[] crc_tab32;
+        // Publish only the completed table through thread-safe CLR initialization.
+        private static readonly uint[] crc_tab32 = GenerateCRC32Table();
 
 
         /*******************************************************************/
@@ -86,10 +97,22 @@ namespace Mythosia.Integrity.CRC
             if (data.Count() <= 0) return (uint)result;
 
             uint crc = 0xffffffff;
-            for (int i = 0; i < data.Count(); i++)
+            // Preserve allocation-free traversal for arrays and indexable inputs.
+            if (data is byte[] bytes)
             {
-                var c = data.ElementAt(i);
-                crc = (crc >> 8) ^ crc_tab32[(crc ^ c) & 0xFF];
+                foreach (byte value in bytes)
+                    crc = (crc >> 8) ^ crc_tab32[(crc ^ value) & 0xFF];
+            }
+            else if (data is IList<byte> list)
+            {
+                int count = list.Count;
+                for (int i = 0; i < count; i++)
+                    crc = (crc >> 8) ^ crc_tab32[(crc ^ list[i]) & 0xFF];
+            }
+            else
+            {
+                foreach (byte value in data)
+                    crc = (crc >> 8) ^ crc_tab32[(crc ^ value) & 0xFF];
             }
 
             return ~crc; //(crc ^ (-1)) >> 0;
@@ -122,9 +145,9 @@ namespace Mythosia.Integrity.CRC
         /// *   for calculation of the CRC-32 with values.                      *
         /// </summary>
         /*******************************************************************/
-        private static void GenerateCRC32Table()
+        private static uint[] GenerateCRC32Table()
         {
-            crc_tab32 = new uint[256];  // ulong?
+            uint[] table = new uint[256];
             const uint P_32 = 0xEDB88320;
 
             for (uint n = 0; n < 256; n++)
@@ -135,8 +158,10 @@ namespace Mythosia.Integrity.CRC
                     var res = c & 1;
                     c = (res == 1) ? (P_32 ^ (c >> 1)) : (c >> 1);
                 }
-                crc_tab32[n] = c;
+                table[n] = c;
             }
+
+            return table;
         }
     }
 }

@@ -77,6 +77,7 @@ namespace Mythosia.Test
         }
     }
 
+    [Collection(Mythosia.Test.Integrity.IntegrityTestCollection.Name)]
     public class IntegrityTest
     {
         IEnumerable<byte> testValue1 { get; } = "123456789".ToASCIIArray();

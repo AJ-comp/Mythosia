@@ -48,9 +48,10 @@ namespace Mythosia.Integrity.CRC
 
         public override bool IsError(IEnumerable<byte> sourceWithCRC)
         {
-            if (sourceWithCRC.Count() <= 1) return true;
+            int frameLength = sourceWithCRC.Count();
+            if (frameLength <= 1) return true;
 
-            return sourceWithCRC.Last() != sourceWithCRC.Take(sourceWithCRC.Count() - 1).CRC8(Type);
+            return sourceWithCRC.Last() != sourceWithCRC.Take(frameLength - 1).CRC8(Type);
         }
 
 
@@ -108,8 +109,17 @@ namespace Mythosia.Integrity.CRC
             if (data.Count() == 0) return 0;
 
             byte crc = 0;
-            foreach (var dt in data)
-                crc = _crc8ClassicTable[(crc ^ dt) & 0xff];
+            // Typed array traversal avoids allocating an IEnumerable enumerator.
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes)
+                    crc = _crc8ClassicTable[(crc ^ value) & 0xff];
+            }
+            else
+            {
+                foreach (var dt in data)
+                    crc = _crc8ClassicTable[(crc ^ dt) & 0xff];
+            }
 
             return crc;
         }
@@ -119,8 +129,16 @@ namespace Mythosia.Integrity.CRC
             if (data.Count() == 0) return 0;
 
             byte crc = 0;
-            foreach (var dt in data)
-                crc = _crc8MaximTable[(crc ^ dt) & 0xff];
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes)
+                    crc = _crc8MaximTable[(crc ^ value) & 0xff];
+            }
+            else
+            {
+                foreach (var dt in data)
+                    crc = _crc8MaximTable[(crc ^ dt) & 0xff];
+            }
 
             return crc;
         }

@@ -13,6 +13,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mythosia\Mythosia.csproj" />
+    <ProjectReference Include="..\Mythosia.Integrity\Mythosia.Integrity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Share the independent oracle without referencing xUnit or the test project. -->
+    <Compile Include="..\Mythosia.Test\Integrity\CrcReference.cs" Link="Integrity\CrcReference.cs" />
   </ItemGroup>
 
 </Project>

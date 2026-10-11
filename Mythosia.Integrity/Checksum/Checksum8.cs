@@ -59,9 +59,10 @@ namespace Mythosia.Integrity.Checksum
 
         public override bool IsError(IEnumerable<byte> sourceWithCRC)
         {
-            if (sourceWithCRC.Count() < 2) return true;
+            int frameLength = sourceWithCRC.Count();
+            if (frameLength < 2) return true;
 
-            return sourceWithCRC.Last() != sourceWithCRC.Take(sourceWithCRC.Count() - 1).Checksum8(Type);
+            return sourceWithCRC.Last() != sourceWithCRC.Take(frameLength - 1).Checksum8(Type);
         }
 
         public override string GetDetectionType() => Type.ToString();
@@ -79,7 +80,20 @@ namespace Mythosia.Integrity.Checksum
         {
             byte result = 0;
 
-            for (int i = 0; i < data.Count(); i++) result ^= data.ElementAt(i);
+            // Preserve allocation-free traversal for arrays and indexable inputs.
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes) result ^= value;
+            }
+            else if (data is IList<byte> list)
+            {
+                int count = list.Count;
+                for (int i = 0; i < count; i++) result ^= list[i];
+            }
+            else
+            {
+                foreach (byte value in data) result ^= value;
+            }
 
             return result;
         }
@@ -95,7 +109,19 @@ namespace Mythosia.Integrity.Checksum
         private static byte Checksum8Modulo256(IEnumerable<byte> data)
         {
             ulong sum = 0;
-            for (int i = 0; i < data.Count(); i++) sum += data.ElementAt(i);
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes) sum += value;
+            }
+            else if (data is IList<byte> list)
+            {
+                int count = list.Count;
+                for (int i = 0; i < count; i++) sum += list[i];
+            }
+            else
+            {
+                foreach (byte value in data) sum += value;
+            }
             byte result = (byte)(sum % 256);
 
             return result;
@@ -112,7 +138,19 @@ namespace Mythosia.Integrity.Checksum
         private static byte Checksum8TwosComplement(IEnumerable<byte> data)
         {
             ulong sum = 0;
-            for (int i = 0; i < data.Count(); i++) sum += data.ElementAt(i);
+            if (data is byte[] bytes)
+            {
+                foreach (byte value in bytes) sum += value;
+            }
+            else if (data is IList<byte> list)
+            {
+                int count = list.Count;
+                for (int i = 0; i < count; i++) sum += list[i];
+            }
+            else
+            {
+                foreach (byte value in data) sum += value;
+            }
             byte result = (byte)(0x100 - sum);
 
             return result;

@@ -1,0 +1,101 @@
+name: Integrity CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integrity-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    name: Integrity (${{ matrix.os }}, ${{ matrix.configuration }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        configuration: [Debug, Release]
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      BUILD_CONFIGURATION: ${{ matrix.configuration }}
+      INTEGRITY_RESULTS: ${{ github.workspace }}/TestResults/Integrity
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install .NET 8 SDK
+        id: dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Select the installed SDK
+        env:
+          INSTALLED_SDK: ${{ steps.dotnet.outputs.dotnet-version }}
+        run: |
+          # Hosted runners also have newer SDKs. Pin this job to the SDK just installed.
+          if ($env:INSTALLED_SDK -notmatch '^8\.0\.\d+$') {
+            throw "Expected a .NET 8 SDK, got '$env:INSTALLED_SDK'."
+          }
+          @{ sdk = @{ version = $env:INSTALLED_SDK; rollForward = 'disable' } } |
+            ConvertTo-Json | Set-Content -LiteralPath global.json -Encoding utf8
+          dotnet --info
+
+      - name: Restore functional tests
+        run: dotnet restore Mythosia.Test/Mythosia.Test.Function.csproj
+
+      - name: Build functional tests
+        run: dotnet build Mythosia.Test/Mythosia.Test.Function.csproj --configuration $env:BUILD_CONFIGURATION --no-restore
+
+      - name: Run Integrity tests and API snapshot
+        run: >-
+          dotnet test Mythosia.Test/Mythosia.Test.Function.csproj
+          --configuration $env:BUILD_CONFIGURATION --no-build --no-restore
+          --filter 'FullyQualifiedName~Mythosia.Test.Integrity.|FullyQualifiedName~Mythosia.Test.IntegrityTest.'
+          --logger 'trx;LogFileName=integrity.trx'
+          --results-directory $env:INTEGRITY_RESULTS
+          --blame-hang --blame-hang-timeout 3m
+
+      - name: Require complete test results
+        run: ./eng/Verify-IntegrityTestResults.ps1 -Path (Join-Path $env:INTEGRITY_RESULTS 'integrity.trx')
+
+      - name: Restore benchmark validation
+        run: dotnet restore Mythosia.Test.Performance/Mythosia.Test.Performance.csproj
+
+      - name: Build benchmark validation
+        run: dotnet build Mythosia.Test.Performance/Mythosia.Test.Performance.csproj --configuration $env:BUILD_CONFIGURATION --no-restore
+
+      - name: Validate all benchmark cases
+        run: |
+          $validationOutput = dotnet run --project Mythosia.Test.Performance/Mythosia.Test.Performance.csproj --configuration $env:BUILD_CONFIGURATION --no-build --no-restore -- --validate-integrity
+          $validationExitCode = $LASTEXITCODE
+          $validationOutput | Write-Output
+          if ($validationExitCode -ne 0) {
+            throw "Integrity benchmark validation exited with code $validationExitCode."
+          }
+          if ($validationOutput -notcontains 'Integrity validation passed: 132 parameter combinations, 396 benchmark cases; each checked twice.') {
+            throw 'The complete Integrity benchmark validation summary was not produced.'
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integrity-${{ matrix.os }}-${{ matrix.configuration }}
+          path: ${{ env.INTEGRITY_RESULTS }}
+          if-no-files-found: warn
+          retention-days: 14
