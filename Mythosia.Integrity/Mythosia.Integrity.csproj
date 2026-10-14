@@ -3,38 +3,30 @@
   <PropertyGroup>
     <LangVersion>11.0</LangVersion>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageId></PackageId>
+    <PackageId>Mythosia.Integrity</PackageId>
+    <Title>Mythosia.Integrity</Title>
     <Authors>JJW</Authors>
     <Company>JJW</Company>
-    <Product>CRC</Product>
+    <Product>Mythosia.Integrity</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>From this version, you can use the polymorphism. 
-Please see the GitHub readme file.
-
-support checksum8: 
-1. xor (using in NMEA format)
-2. modulo-256
-3. 2's complement
-
-support CRC8:
-1. CRC8
-2. CRC8 Maxim
-
-support CRC16:
-1. CRC16
-2. CRC16 (modbus)
-3. CRC16 CCITT (xModem)
-4. CRC16 DNP
-
-support CRC32
-1. CRC32</Description>
-    <PackageTags>CRC8 CRC8-MAXIM CRC16 CRC16(modbus) CRC16-CCITT(xModem) CRC16-DNP CRC32 checksum8-xor modulo-256 2's-complement</PackageTags>
+    <Description>CRC and 8-bit checksum calculation, frame encoding, error detection and payload decoding for byte sequences through a common ErrorDetection API.
+Supports CRC8 Classic/Maxim, CRC16 Classic/Modbus/CCITT XModem/DNP, CRC32 Classic, and XOR/NMEA, modulo-256 and two's-complement checksums.
+Targets .NET Standard 2.1. See the package README for examples and byte-order behavior.</Description>
+    <PackageReleaseNotes>1.2.1
+- Make CRC16 and CRC32 lookup-table initialization safe during concurrent first use.
+- Reduce repeated enumeration, redundant frame-length checks and CRC8/CRC16 byte-array traversal overhead.
+- Remove boxing, marshaling and temporary serialization buffers from CRC16/CRC32 digest packing.
+- Preserve the public API, existing calculation results, native byte order and legacy DNP representation.
+- Add independent correctness, compatibility and initialization tests, Windows/Linux Debug/Release CI, and corrected executable README examples.
+Full release notes: https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md</PackageReleaseNotes>
+    <PackageTags>CRC CRC8 CRC8-MAXIM CRC16 Modbus XModem DNP CRC32 checksum XOR NMEA modulo-256 two's-complement</PackageTags>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</RepositoryUrl>
-    <Version>1.2.0</Version>
+    <RepositoryUrl>https://github.com/AJ-comp/Mythosia</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.2.1</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <FileVersion>1.2.1.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -44,6 +36,10 @@ support CRC32
 
   <ItemGroup>
     <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="RELEASE_NOTES.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
