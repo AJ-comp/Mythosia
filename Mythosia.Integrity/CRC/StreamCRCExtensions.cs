@@ -70,6 +70,21 @@ namespace Mythosia.Integrity.CRC
             return ReadStream(source, accumulator.Append, accumulator.GetCurrentValue);
         }
 
+        /// <summary>Reads from the current position to the end of the stream and calculates CRC64.</summary>
+        /// <remarks>Reuses one 64 KiB buffer and leaves the stream open, including on failure.</remarks>
+        /// <param name="source">The readable stream to consume.</param>
+        /// <param name="type">The CRC64 algorithm. Only NVME is supported.</param>
+        /// <returns>The numeric CRC64 value for all bytes read, or zero for an empty stream.</returns>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
+        public static ulong ComputeCRC64(this Stream source, CRC64Type type = CRC64Type.NVME)
+        {
+            ValidateSource(source);
+            var accumulator = new CRC64Accumulator(type);
+            return ReadStream(source, accumulator.Append, accumulator.GetCurrentValue);
+        }
+
         /// <summary>Asynchronously reads to the end of the stream and calculates CRC8.</summary>
         /// <remarks>Starts at the current position, reuses one 64 KiB buffer and leaves the stream open, including on cancellation or failure.</remarks>
         /// <param name="source">The readable stream to consume.</param>
@@ -138,6 +153,24 @@ namespace Mythosia.Integrity.CRC
         {
             ValidateSource(source);
             var accumulator = new CRC32CAccumulator();
+            return ReadStreamAsync(source, accumulator.Append, accumulator.GetCurrentValue, cancellationToken);
+        }
+
+        /// <summary>Asynchronously reads to the end of the stream and calculates CRC64.</summary>
+        /// <remarks>Starts at the current position, reuses one 64 KiB buffer and leaves the stream open, including on cancellation or failure.</remarks>
+        /// <param name="source">The readable stream to consume.</param>
+        /// <param name="type">The CRC64 algorithm. Only NVME is supported.</param>
+        /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
+        /// <returns>The numeric CRC64 value for all bytes read, or zero for an empty stream.</returns>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
+        /// <exception cref="OperationCanceledException">Cancellation was requested.</exception>
+        public static Task<ulong> ComputeCRC64Async(this Stream source, CRC64Type type = CRC64Type.NVME,
+            CancellationToken cancellationToken = default)
+        {
+            ValidateSource(source);
+            var accumulator = new CRC64Accumulator(type);
             return ReadStreamAsync(source, accumulator.Append, accumulator.GetCurrentValue, cancellationToken);
         }
 

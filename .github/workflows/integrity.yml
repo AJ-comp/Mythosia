@@ -77,7 +77,7 @@ jobs:
       - name: Build functional tests
         run: dotnet build Mythosia.Test/Mythosia.Test.Function.csproj --configuration $env:BUILD_CONFIGURATION --no-restore
 
-      - name: Run Integrity tests including CRC32C vectors, accumulators, streams and API snapshot
+      - name: Run Integrity tests including CRC32C, CRC64, accumulators, streams and API snapshot
         run: >-
           dotnet test Mythosia.Test/Mythosia.Test.Function.csproj
           --configuration $env:BUILD_CONFIGURATION --no-build --no-restore
@@ -86,7 +86,7 @@ jobs:
           --results-directory $env:INTEGRITY_RESULTS
           --blame-hang --blame-hang-timeout 3m
 
-      - name: Require complete test results including both CRC32C suites
+      - name: Require complete test results including CRC32C and CRC64 suites
         run: ./eng/Verify-IntegrityTestResults.ps1 -Path (Join-Path $env:INTEGRITY_RESULTS 'integrity.trx')
 
       - name: Restore benchmark validation

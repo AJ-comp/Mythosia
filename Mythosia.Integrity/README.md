@@ -7,8 +7,8 @@ Version `1.2.1` improves initialization safety and calculation efficiency while
 preserving the public API and existing results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The CRC32C and streaming CRC sections describe unreleased source changes. Use a
-source build until a package containing these APIs is published.
+The CRC32C, CRC64 and streaming CRC sections describe unreleased source changes.
+Use a source build until a package containing these APIs is published.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
@@ -197,6 +197,64 @@ the numerical CRC. `Encode` appends these digest bytes. As with CRC32, frames
 containing only a digest are invalid: `IsError` returns `true` and `Decode`
 returns an empty sequence for frames of four bytes or fewer.
 
+## CRC64 / NVME (unreleased)
+
+Select the CRC64 algorithm using `CRC64Type.NVME`, following the existing
+`CRC16(type)` and `CRC32(type)` pattern. NVME is the only supported CRC64 type
+and the default for every CRC64 constructor and extension. Numeric results use
+`ulong`; the ASCII input `123456789` produces `AE8B14860A799888`.
+
+This check value and the test fixtures come from Amazon's
+[aws-checksums tests](https://github.com/awslabs/aws-checksums/blob/12cd22e81543b8547132762023076ab6afa25559/tests/crc64_test.c).
+The algorithm uses polynomial `0xAD93D23594C93659`, reflected input/output,
+and initial state and final XOR `0xFFFFFFFFFFFFFFFF`.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+const CRC64Type algorithm = CRC64Type.NVME;
+var detector = new CRC64(algorithm);
+
+Console.WriteLine($"CRC64 NVME: {data.CRC64(algorithm):X16}");
+byte[] frame = data.WithCRC64(algorithm).ToArray();
+Console.WriteLine($"CRC64 frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"CRC64 decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new CRC64Accumulator(algorithm);
+accumulator.Append(data.AsSpan(0, 4));
+accumulator.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked CRC64 NVME: {accumulator.GetCurrentValue():X16}");
+accumulator.Reset();
+Console.WriteLine($"Reset CRC64 NVME: {accumulator.GetCurrentValue():X16}");
+
+using var syncStream = new MemoryStream(data, writable: false);
+using var asyncStream = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream CRC64 NVME: {syncStream.ComputeCRC64(algorithm):X16}");
+Console.WriteLine($"Async stream CRC64 NVME: {await asyncStream.ComputeCRC64Async(algorithm):X16}");
+// All CRC64 values are AE8B14860A799888 except Reset, which returns zero.
+// The frame validity and decoded-payload checks both print True.
+```
+
+CRC64 has the same accumulator and stream lifetime rules described below.
+Empty input returns zero; `GetCurrentValue` does not reset the accumulator.
+Both `CRC64` and `CRC64Accumulator` expose the selected algorithm in `Type`.
+Unsupported CRC64 enum values throw `ArgumentOutOfRangeException`.
+
+CRC64 byte-sequence methods consume their input once. `Compute` returns eight
+digest bytes in native machine byte order, and `Encode` appends those bytes.
+For the check input, the bytes are `88 98 79 0A 86 14 8B AE` on a little-endian
+machine and `AE 8B 14 86 0A 79 98 88` on a big-endian machine. Serialize the
+numeric value explicitly when a protocol specifies a fixed byte order.
+Frames require a non-empty payload: `IsError` rejects frames of eight bytes or
+fewer, and `Decode` returns an empty sequence for an invalid frame. Frame methods
+buffer the payload or frame; use the accumulator or stream methods for bounded
+input-buffer memory. Null inputs throw `ArgumentNullException`.
+
 ## Streaming CRC (unreleased)
 
 The following APIs are additions for the next release. Existing CRC methods and
@@ -212,16 +270,18 @@ representation.
 | CRC16 | `ComputeCRC16` / `ComputeCRC16Async` | `CRC16Accumulator` | `ushort` |
 | CRC32 | `ComputeCRC32` / `ComputeCRC32Async` | `CRC32Accumulator` | `uint` |
 | CRC32C | `ComputeCRC32C` / `ComputeCRC32CAsync` | `CRC32CAccumulator` | `uint` |
+| CRC64 | `ComputeCRC64` / `ComputeCRC64Async` | `CRC64Accumulator` | `ulong` |
 
 CRC8, CRC16 and CRC32 methods and constructors default to `Classic`. They support
 the existing algorithm enums and `Basic` aliases. CRC32C has one fixed algorithm
-and takes no algorithm argument. Async methods return `Task<byte>`,
-`Task<ushort>` or `Task<uint>`. All APIs are in `Mythosia.Integrity.CRC`.
+and takes no algorithm argument. CRC64 defaults to `CRC64Type.NVME`.
+Async methods return `Task<byte>`, `Task<ushort>`, `Task<uint>` or `Task<ulong>`.
+All APIs are in `Mythosia.Integrity.CRC`.
 
 ### Read a stream
 
-`ComputeCRC8`, `ComputeCRC16`, `ComputeCRC32` and `ComputeCRC32C` read from the stream's current
-position to its end. Their `Async` counterparts support a named
+`ComputeCRC8`, `ComputeCRC16`, `ComputeCRC32`, `ComputeCRC32C` and `ComputeCRC64`
+read from the stream's current position to its end. Their `Async` counterparts support a named
 `cancellationToken` argument. Each calculation reuses one 64 KiB input buffer,
 requires no seeking or known length, and leaves the stream open on success,
 cancellation or failure. Pass a `FileStream` from `File.OpenRead` to process a
@@ -298,7 +358,7 @@ throws `InvalidOperationException` from `GetCurrentValue`. CRC8 stream methods
 throw the same exception when there are no remaining bytes. The existing CRC8
 API has no numeric result for empty input. Empty CRC16 returns
 `FFFF` for Modbus and `0000` for the other variants, including legacy DNP; empty
-CRC32 and CRC32C return `00000000`. Unsupported CRC8/CRC16/CRC32 algorithm values throw
+CRC32 and CRC32C return `00000000`; CRC64 returns zero. Unsupported algorithm values throw
 `ArgumentOutOfRangeException`.
 
 Stream methods reject a null source with `ArgumentNullException` and an unreadable

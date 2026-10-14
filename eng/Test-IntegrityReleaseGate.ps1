@@ -30,10 +30,11 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 1812
+$minimumTestCount = 1846
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
+$crc64TestPrefix = 'Mythosia.Test.Integrity.Crc64Tests.'
 $githubSentinel = "existing-output=preserved`n"
 $utf8 = [Text.UTF8Encoding]::new($false)
 
@@ -112,6 +113,7 @@ function New-PassingTrx([string] $Path) {
             0 { $apiTestName }
             1 { "${crc32CTestPrefix}SyntheticGateFixture" }
             2 { "${crc32CStreamTestPrefix}SyntheticGateFixture" }
+            3 { "${crc64TestPrefix}SyntheticGateFixture" }
             default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
         }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
@@ -395,6 +397,16 @@ $cases = @(
             foreach ($result in $d.TestRun.Results.UnitTestResult) {
                 if ($result.GetAttribute('testName').StartsWith($crc32CStreamTestPrefix, [StringComparison]::Ordinal)) {
                     $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedStream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-crc64-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc64TestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc64')
                 }
             }
         }

@@ -59,18 +59,18 @@ the package version on their first line; the README's `Version` line and the fir
 updating those descriptions, not changing fixed CRC/checksum results or the
 approved public API snapshot.
 
-## Streaming CRC and CRC32C coverage
+## Streaming CRC, CRC32C and CRC64 coverage
 
-The README has six independent consumers: CRC, checksum, common API, CRC32C,
-streaming CRC and chunked CRC. The five examples that preceded CRC32C keep their
-code hashes and expected outputs unchanged. The new CRC32C example freezes the
-published `123456789` check value `E3069283`, validates and decodes a frame, checks
-incremental state/reset, and executes both stream methods. Its numerical output
-is identical on either byte order.
+The README has seven independent consumers: CRC, checksum, common API, CRC32C,
+CRC64, streaming CRC and chunked CRC. All six examples that preceded CRC64 keep
+their code hashes and expected outputs unchanged. The CRC32C and CRC64 examples
+freeze the `123456789` check values `E3069283` and `AE8B14860A799888`, respectively,
+validate and decode a frame, check incremental state/reset, and execute both
+stream methods. Their numerical output is identical on either byte order.
 
 The reviewed API snapshot retains all 85 released declarations, the 28 streaming
-additions and their exact attributes/defaults, and adds 17 CRC32C declarations.
-The complete snapshot has 130 entries and 21 public types. Keep
+additions, the 17 CRC32C additions and their exact attributes/defaults, and adds
+24 CRC64 declarations. The complete snapshot has 154 entries and 25 public types. Keep
 existing declarations unchanged when reviewing future additions; the snapshot
 test and package consumer still require an exact match with the complete reviewed
 surface.
@@ -78,8 +78,9 @@ surface.
 `CrcAccumulatorTests` contributes 164 cases and `CrcStreamTests` contributes 220.
 Their 384 cases run alongside the earlier 1,232 cases. `Crc32CTests` adds 122
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
-The TRX completeness check requires at least 1,812 passing tests, including the
-public API guard and both CRC32C suites. Coverage includes all supported algorithms and aliases,
+`Crc64Tests` adds 34 focused cases for calculation, frames, accumulators and streams.
+The TRX completeness check requires at least 1,846 passing tests, including the
+public API guard, both CRC32C suites and the CRC64 suite. Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
 boundaries, generated large input without whole-input allocation, buffer lifetime,
 single-pass non-seekable streams, cancellation and read failures.
@@ -91,7 +92,15 @@ oracle and every product path. Every one- and two-byte input, all partitions of
 small inputs, prefix snapshots, native digest packing, residue, frame errors,
 single-pass enumerables and generated 8 MiB streams are covered. Tests retain
 source links alongside the fixed vectors. The release gate regression also
-rejects reports that omit either CRC32C suite even if totals still pass.
+rejects reports that omit a required CRC32C or CRC64 suite even if totals still pass.
+
+CRC64 correctness uses three fixed numeric answers from a pinned revision of
+Amazon's `aws-checksums` tests. A separate MSB-first bitwise oracle uses normal
+polynomial `AD93D23594C93659`, independently of the product's reflected lookup
+table. The focused CRC64 suite checks those answers, exhaustive short inputs,
+representative lengths and chunk boundaries, incremental state, eight-byte frame
+packing, single-pass inputs, and the sync/async stream wrappers. It reuses the
+existing CI and package validation without adding a separate test harness.
 
 Until these additions are released, the README and release notes identify them as
 unreleased source changes. Candidate packages are validation outputs only; this

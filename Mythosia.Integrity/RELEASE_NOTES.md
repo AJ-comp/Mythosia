@@ -42,6 +42,24 @@ preserving the public API and existing algorithm results.
 These changes are available in the source tree and have not been published to
 NuGet. No package version or release date is assigned yet.
 
+### CRC64 / NVME
+
+- Add `CRC64(CRC64Type.NVME)`, `CRC64` / `WithCRC64` byte-sequence extensions,
+  and `CRC64Accumulator` using the existing algorithm-selection pattern.
+  NVME is the only defined CRC64 type and the default; numeric results are `ulong`.
+- Add `ComputeCRC64` / `ComputeCRC64Async` stream methods using the existing
+  reusable 64 KiB read loops, cancellation support and caller-owned stream lifetime.
+- Preserve all existing APIs and behavior. CRC64 input is consumed once; empty
+  input returns zero, digests use eight native-endian bytes, and digest-only
+  frames are invalid. Unsupported algorithm values are rejected.
+- Verify fixed CRC64/NVME answers from a pinned AWS test revision using a
+  separately written bitwise reference, with essential incremental, framing,
+  boundary and stream tests.
+- Add an executable CRC64 README example and extend the existing package/API
+  validation and CI result guard. No package version change or publication.
+- Add 34 focused CRC64 test cases, bringing the complete Integrity suite to
+  1,846. Preserve all 130 prior API declarations and review 24 CRC64 additions.
+
 ### CRC32C / Castagnoli
 
 - Add a separate `CRC32C` detector and `CRC32C` / `WithCRC32C` byte-sequence
@@ -58,7 +76,7 @@ NuGet. No package version or release date is assigned yet.
   bitwise reference, exhaustive two-byte inputs, partition and stream tests.
   Include the new tests and an executable package-backed README example in CI.
 - Add 196 CRC32C test cases (122 calculation/frame/accumulator and 74 stream
-  cases), bringing the Integrity suite to 1,812. Require both CRC32C suites in
+  cases). Require both CRC32C suites in
   the CI result guard and test that missing suites block release selection.
 - Retain the existing five README examples and their fixed output; add a sixth
   CRC32C example. Preserve all 113 prior API declarations and review 17 new ones.
@@ -91,8 +109,8 @@ NuGet. No package version or release date is assigned yet.
 - Verify buffer reuse and lifetime, generated large streams, non-seekable and
   partial reads, current position, stream ownership, cancellation, read failures
   and asynchronous continuation behavior.
-- Verify all 1,812 Integrity tests in local Debug and Release builds, plus the
+- Run all 1,846 Integrity tests in Windows/Linux Debug/Release CI, plus the
   existing benchmark correctness validation.
-- Add executable streaming and CRC32C README examples with fixed expected output.
-  Validate all six examples, public API and metadata against actual candidate NuGet packages
-  in local Debug and Release builds.
+- Add executable streaming, CRC32C and CRC64 README examples with fixed expected
+  output. Validate all seven examples, public API and metadata against actual
+  candidate NuGet packages in each CI configuration.

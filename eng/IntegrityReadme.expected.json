@@ -98,6 +98,28 @@
       ]
     },
     {
+      "id": "crc64",
+      "codeSha256": "18476D00F1556A8399450865A98DFF87E5A2E1428EF1CF377E42AE2B628C2D49",
+      "stdoutLittleEndian": [
+        "CRC64 NVME: AE8B14860A799888",
+        "CRC64 frame valid: True",
+        "CRC64 decoded: True",
+        "Chunked CRC64 NVME: AE8B14860A799888",
+        "Reset CRC64 NVME: 0000000000000000",
+        "Stream CRC64 NVME: AE8B14860A799888",
+        "Async stream CRC64 NVME: AE8B14860A799888"
+      ],
+      "stdoutBigEndian": [
+        "CRC64 NVME: AE8B14860A799888",
+        "CRC64 frame valid: True",
+        "CRC64 decoded: True",
+        "Chunked CRC64 NVME: AE8B14860A799888",
+        "Reset CRC64 NVME: 0000000000000000",
+        "Stream CRC64 NVME: AE8B14860A799888",
+        "Async stream CRC64 NVME: AE8B14860A799888"
+      ]
+    },
+    {
       "id": "streaming-crc",
       "codeSha256": "52AD119E3F64F2C8A8A562FCB474BC5BC2B7A18C8D0F00C18C23A6BD92180261",
       "stdoutLittleEndian": [

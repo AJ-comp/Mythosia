@@ -9,10 +9,11 @@ Each job builds the functional test project and runs the
 `Mythosia.Test.Integrity` tests, including the approved public API snapshot,
 and the four existing `Mythosia.Test.IntegrityTest` smoke tests.
 `Verify-IntegrityTestResults.ps1` rejects missing or incomplete TRX reports,
-failed or skipped tests, fewer than 1,812 cases, unexpected test namespaces,
-a missing API snapshot test, and either missing CRC32C test suite. The CRC32C
-coverage includes fixed standard vectors, an independent bitwise oracle,
-exhaustive two-byte inputs, incremental partitions and sync/async streams.
+failed or skipped tests, fewer than 1,846 cases, unexpected test namespaces,
+a missing API snapshot test, either missing CRC32C test suite, and a missing
+CRC64 suite. CRC32C and CRC64 coverage includes fixed external answers,
+independent bitwise oracles, exhaustive two-byte inputs, incremental partitions
+and sync/async streams. CRC64 expected answers come from a pinned AWS test revision.
 New tests can increase the count without
 changing the floor. Intentional removals require reviewing the floor too.
 
