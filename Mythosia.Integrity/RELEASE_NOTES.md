@@ -60,8 +60,8 @@ NuGet. No package version or release date is assigned yet.
 - Add a package-backed README example and two reviewed enum declarations.
   Require the new vector suite in CI and release selection. No package version
   change or NuGet publication.
-- Add 246 test cases through the focused vector suite and existing algorithm,
-  accumulator and stream suites, bringing the complete Integrity suite to 2,092.
+- Add 246 CRC16 test cases through the focused vector suite and existing
+  algorithm, accumulator and stream suites.
   Require at least 30 distinct non-empty published inputs for each new CRC16 type.
 
 ### CRC64 / NVME
@@ -74,13 +74,16 @@ NuGet. No package version or release date is assigned yet.
 - Preserve all existing APIs and behavior. CRC64 input is consumed once; empty
   input returns zero, digests use eight native-endian bytes, and digest-only
   frames are invalid. Unsupported algorithm values are rejected.
-- Verify fixed CRC64/NVME answers from a pinned AWS test revision using a
-  separately written bitwise reference, with essential incremental, framing,
-  boundary and stream tests.
+- Verify 58 published fixed CRC64/NVME answers from pinned AWS, Rust, SPDK and
+  StorScale test sources using a separately written bitwise reference. Cover
+  short binary values, ASCII and UTF-8 messages, repeated bytes, ascending/descending
+  data and selected length boundaries through 10,000 bytes. Require at least
+  30 distinct non-empty published inputs; keep empty-input contracts separate.
 - Add an executable CRC64 README example and extend the existing package/API
   validation and CI result guard. No package version change or publication.
-- Add 34 focused CRC64 test cases, bringing the complete Integrity suite to
-  1,846. Preserve all 130 prior API declarations and review 24 CRC64 additions.
+- Add 90 focused CRC64 test cases, preserving the original cases and extending
+  independent numeric/digest, incremental and sync/async stream verification.
+  Preserve all 130 prior API declarations and review 24 CRC64 additions.
 
 ### CRC32C / Castagnoli
 
@@ -94,10 +97,13 @@ NuGet. No package version or release date is assigned yet.
 - Follow the existing CRC32 native-endian digest and frame convention. CRC32C
   byte-sequence methods also support single-pass enumerables; use streams or
   accumulators for bounded input-buffer memory.
-- Add fixed RFC 7143 and CRC RevEng/Google vectors, an independent normal-form
-  bitwise reference, exhaustive two-byte inputs, partition and stream tests.
+- Add 37 distinct non-empty published fixed answers from RFC 7143, CRC RevEng,
+  Google and Go's Castagnoli golden table. Check all two-chunk splits and both
+  stream APIs against fixed answers, and require at least 30 distinct inputs.
+  Keep an independent normal-form bitwise reference, exhaustive two-byte inputs,
+  partition and stream tests.
   Include the new tests and an executable package-backed README example in CI.
-- Add 196 CRC32C test cases (122 calculation/frame/accumulator and 74 stream
+- Add 227 CRC32C test cases (153 calculation/frame/accumulator and 74 stream
   cases). Require both CRC32C suites in
   the CI result guard and test that missing suites block release selection.
 - Retain the existing five README examples and their fixed output; add a sixth
@@ -131,7 +137,7 @@ NuGet. No package version or release date is assigned yet.
 - Verify buffer reuse and lifetime, generated large streams, non-seekable and
   partial reads, current position, stream ownership, cancellation, read failures
   and asynchronous continuation behavior.
-- Run all 2,092 Integrity tests in Windows/Linux Debug/Release CI, plus the
+- Run all 2,179 Integrity tests in Windows/Linux Debug/Release CI, plus the
   existing benchmark correctness validation.
 - Add executable streaming, CRC16 variants, CRC32C and CRC64 README examples with fixed expected
   output. Validate all eight examples, public API and metadata against actual

@@ -79,12 +79,12 @@ test and package consumer still require an exact match with the complete reviewe
 surface.
 
 `CrcAccumulatorTests` contributes 192 cases and `CrcStreamTests` contributes 262.
-`Crc32CTests` adds 122
+`Crc32CTests` adds 153
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
-`Crc64Tests` adds 34 focused cases for calculation, frames, accumulators and streams.
-`Crc16VariantTests` adds 166 focused cases. The complete suite gained 246 cases
-through these and the extended algorithm, accumulator and stream suites.
-The TRX completeness check requires at least 2,092 passing tests, including the
+`Crc64Tests` adds 90 focused cases for calculation, frames, accumulators and streams.
+`Crc16VariantTests` adds 166 focused cases. Its original feature added 246 CRC16
+cases through these and the extended algorithm, accumulator and stream suites.
+The TRX completeness check requires at least 2,179 passing tests, including the
 public API guard, both CRC32C suites, the CRC64 suite and the CRC16 variant suite.
 Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
@@ -93,8 +93,11 @@ single-pass non-seekable streams, cancellation and read failures.
 
 CRC32C's oracle uses normal polynomial `1EDC6F41`, a left-shifting register and
 explicit reflection, independently of the product's reflected lookup table.
-RFC 7143 Appendix A.4 octets and fixed CRC RevEng/Google answers calibrate that
-oracle and every product path. Every one- and two-byte input, all partitions of
+Its 37 distinct non-empty published answers include RFC 7143 Appendix A.4,
+CRC RevEng, Google's binary pattern and 30 Go Castagnoli golden answers.
+These calibrate the oracle and numeric/digest paths, every two-chunk split and
+both stream methods. A corpus guard requires at least 30 distinct inputs.
+Every one- and two-byte input, all partitions of
 small inputs, prefix snapshots, native digest packing, residue, frame errors,
 single-pass enumerables and generated 8 MiB streams are covered. Tests retain
 source links alongside the fixed vectors. The release gate regression also
@@ -115,10 +118,17 @@ residue uses explicit low-byte-first FCS independently of native-endian library
 frames. Existing exhaustive short-input, partition, buffer and stream lifecycle
 tests also run for both added variants, without a separate test harness.
 
-CRC64 correctness uses three fixed numeric answers from a pinned revision of
-Amazon's `aws-checksums` tests. A separate MSB-first bitwise oracle uses normal
+CRC64 correctness uses 58 distinct non-empty published numeric answers. The
+original three AWS `aws-checksums` vectors are preserved, with additional fixed
+AWS SDK, Rust, SPDK and StorScale fixtures from pinned revisions. The StorScale
+records use its documented input pattern and frozen fourth-column NVME values,
+originally produced by the independent Go `hash/crc64` implementation. No
+external generator or network lookup is used in CI. A corpus guard requires at
+least 30 distinct inputs. A separate MSB-first bitwise oracle uses normal
 polynomial `AD93D23594C93659`, independently of the product's reflected lookup
-table. The focused CRC64 suite checks those answers, exhaustive short inputs,
+table. The fixed answers check numeric/native-digest results, chunk splits and
+both stream methods. Larger vectors use selected boundary splits and bounded
+short reads rather than enumerating every partition. The suite also checks exhaustive short inputs,
 representative lengths and chunk boundaries, incremental state, eight-byte frame
 packing, single-pass inputs, and the sync/async stream wrappers. It reuses the
 existing CI and package validation without adding a separate test harness.

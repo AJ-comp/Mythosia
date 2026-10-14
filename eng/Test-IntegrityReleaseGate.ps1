@@ -30,7 +30,7 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 2092
+$minimumTestCount = 2179
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'

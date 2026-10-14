@@ -22,6 +22,135 @@ public sealed class Crc64Tests
         yield return new object[] { Enumerable.Range(0, 32).Select(i => (byte)i).ToArray(), 0xB9D9D4A8492CBD7FUL };
     }
 
+    public static IEnumerable<object[]> AdditionalPublishedVectors()
+    {
+        // Published numeric input/output records only; no expected value is
+        // calculated here. AWS base64 answers below encode big-endian uint64s,
+        // independently of this library's native-endian Compute() digest bytes.
+        // https://github.com/aws/aws-sdk-js-v3/blob/d6adfcb7baa396dd42060a74382b6aa2a1cbf0b5/packages-internal/checksums/src/checksum.fixture.ts#L67-L80
+        yield return new object[] { Encoding.ASCII.GetBytes("a"), 0x8C2F8445B4CBFC3CUL }; // jC+ERbTL/Dw=
+        yield return new object[] { Encoding.ASCII.GetBytes("abc"), 0x05E5CABB3FC1FAEBUL }; // BeXKuz/B+us=
+        yield return new object[] { Encoding.ASCII.GetBytes("The quick brown fox jumps over the lazy dog"), 0xD76C54054954C143UL }; // 12xUBUlUwUM=
+        yield return new object[] { new byte[] { 0 }, 0xD5DA5047EFEC8728UL }; // 1dpQR+/shyg=
+        yield return new object[] { new byte[4], 0x6DB811E5A1DA5024UL }; // bbgR5aHaUCQ=
+        // The original JS test encodes four U+00FF characters with TextEncoder:
+        // eight UTF-8 bytes C3 BF C3 BF C3 BF C3 BF, not four raw FF bytes.
+        // https://github.com/aws/aws-sdk-js-v3/blob/d6adfcb7baa396dd42060a74382b6aa2a1cbf0b5/packages-internal/checksums/src/submodules/crc/crc64-nvme/Crc64Nvme.spec.ts#L48-L62
+        yield return new object[] { Convert.FromHexString("C3BFC3BFC3BFC3BF"), 0x76A032C076E8105DUL }; // dqAywHboEF0=
+        // These are explicit Uint8Array single-byte cases, not UTF-8 strings.
+        // https://github.com/aws/aws-sdk-js-v3/blob/d6adfcb7baa396dd42060a74382b6aa2a1cbf0b5/packages-internal/checksums/src/submodules/crc/crc64-nvme/Crc64Nvme.spec.ts#L74-L87
+        yield return new object[] { new byte[] { 1 }, 0xAAB4A08FDFD90E51UL }; // qrSgj9/ZDlE=
+        yield return new object[] { new byte[] { 0xFF }, 0xFF00000000000000UL }; // /wAAAAAAAAA=
+        yield return new object[] { new byte[] { 0x41 }, 0x7DEE7A32A5B7233EUL }; // fe56MqW3Iz4=
+
+        // https://github.com/aws/aws-sdk-go-v2/blob/6b78958e867baa77281399bf984144de7936b86e/service/internal/checksum/algorithms_test.go#L72-L77
+        yield return new object[] { Encoding.ASCII.GetBytes("hello world"), 0x8D29D5C3F6EA8EBEUL }; // jSnVw/bqjr4=
+        // https://github.com/awslabs/aws-sdk-rust/blob/cd5a9e2cd924915feef5dd510d7ebd7d82872192/sdk/aws-smithy-checksums/src/lib.rs#L384-L438
+        yield return new object[] { Encoding.ASCII.GetBytes("test data"), 0xAECAF3AF9C98A855UL };
+
+        // Independent project fixtures; AWS's three existing inputs and the
+        // empty input are deliberately omitted from this additional set.
+        // https://github.com/awesomized/crc64fast-nvme/blob/45116ba606e32c521e887e107e7353e019a576f9/src/lib.rs#L181-L207
+        yield return new object[] { new byte[] { 0x40 }, 0x02808AFA9582AA47UL };
+        yield return new object[] { new byte[] { 0x31, 0x97 }, 0xB4AF0AE0FEB08E0FUL };
+        yield return new object[] { new byte[] { 0x4D, 0x22, 0xDF }, 0x85D7CD041A2A8A5DUL };
+        yield return new object[] { new byte[] { 0x6C, 0xCD, 0x13, 0xD7 }, 0x1860820EA79B0FA3UL };
+        yield return new object[] { Enumerable.Repeat((byte)0xFF, 32).ToArray(), 0xA0A06974C34D63C4UL };
+        yield return new object[] { new byte[1024], 0x691BB2B09BE5498AUL };
+        yield return new object[] { new byte[4096], 0x6482D367EB22B64EUL };
+        yield return new object[] { Enumerable.Repeat((byte)0xFF, 4096).ToArray(), 0xC0DDBA7302ECA3ACUL };
+        yield return new object[] { Encoding.ASCII.GetBytes("hello world!"), 0xD9160D1FA8E418E3UL };
+        // SPDK repeats 00..FF or FF..00 sixteen times, with no trailing byte.
+        // https://github.com/spdk/spdk/blob/ae5c062b91ae23ba466cd22c42a3fbc56a0b9885/test/unit/lib/util/crc64.c/crc64_ut.c#L32-L58
+        yield return new object[] { Enumerable.Range(0, 4096).Select(i => (byte)i).ToArray(), 0x3E729F5F6750449CUL };
+        yield return new object[] { Enumerable.Range(0, 4096).Select(i => (byte)(255 - i % 256)).ToArray(), 0x9A2DF64B8E9E517EUL };
+
+        // Frozen facts from the committed golden_cks table, fourth column.
+        // Its input is byte(i * 7 + 3), truncated modulo 256, for the given
+        // length. The external Go generator uses hash/crc64.Checksum with
+        // bits.Reverse64(0xAD93D23594C93659), i.e. CRC-64/NVME.
+        // No external implementation or generator source is copied or run.
+        // https://github.com/StorScale/buckets/blob/5833b187b0adb89505c22b65ca01e7a26ac0197d/tests/unit/golden_vectors.inc#L1-L274
+        // https://github.com/StorScale/buckets/blob/5833b187b0adb89505c22b65ca01e7a26ac0197d/tools/golden/main.go#L24-L66
+        foreach ((int length, ulong expected) in new (int, ulong)[]
+        {
+            (1, 0x5469411FBFB21CA3UL),
+            (2, 0x675148241545548FUL),
+            (3, 0xA692854A7F323E40UL),
+            (4, 0xDCDA0BF03F57098DUL),
+            (7, 0x66D6B3FD4565D6A7UL),
+            (8, 0xB683FBBE6602DF41UL),
+            (9, 0xD3D60569BA59F49CUL),
+            (15, 0x4A2BB37E9038558DUL),
+            (16, 0x16093CDF66100DDCUL),
+            (17, 0x50AC2CBA2DB652E3UL),
+            (31, 0x70B378C6DD6A3F5AUL),
+            (32, 0x787974F57D5080DFUL),
+            (33, 0x33FD21B873062FD1UL),
+            (63, 0xF7E1E9AE36D4C5D4UL),
+            (64, 0x55AA79D042DC5FF5UL),
+            (65, 0x6B11FF915E464F89UL),
+            (127, 0x80C9ADA9E471041FUL),
+            (128, 0x7272AC787D449FCAUL),
+            (129, 0xDB80E42AB5DE99D4UL),
+            (255, 0x05360CD111C5F881UL),
+            (256, 0x9BB444B51D311EBFUL),
+            (257, 0xA9727FA19F2D87FAUL),
+            (259, 0x21ED77E500AB050AUL),
+            (260, 0x53C6A39BE239515EUL),
+            (511, 0x607EBCE3F10A702CUL),
+            (512, 0xE06C985452860603UL),
+            (513, 0xD53A3CDFBBBE012EUL),
+            (1023, 0xED7C463A5D27BEA3UL),
+            (1024, 0x94401118876A3109UL),
+            (1025, 0x8D8F1D72FF14019EUL),
+            (2047, 0x26AD3A84DFCE0631UL),
+            (4096, 0xEED96EC791F140CBUL),
+            (10000, 0xA8749307C9AA7E6EUL),
+        })
+        {
+            byte[] input = Enumerable.Range(0, length).Select(i => (byte)(i * 7 + 3)).ToArray();
+            yield return new object[] { input, expected };
+        }
+    }
+
+    [Fact]
+    public void PublishedAnswersCoverAtLeastThirtyDistinctNonemptyInputs()
+    {
+        object[][] vectors = AwsVectors().Concat(AdditionalPublishedVectors()).ToArray();
+        Assert.True(vectors.Length >= 30);
+        Assert.All(vectors, vector => Assert.NotEmpty((byte[])vector[0]));
+        Assert.Equal(vectors.Length, vectors.Select(vector => Convert.ToHexString((byte[])vector[0])).Distinct().Count());
+    }
+
+    [Theory]
+    [MemberData(nameof(AdditionalPublishedVectors))]
+    public async Task AdditionalPublishedAnswersCalibrateOracleWholeSplitAndStreamCalculations(byte[] input, ulong expected)
+    {
+        Assert.Equal(expected, Crc64Reference.Compute(input));
+        Assert.Equal(expected, input.CRC64(CRC64Type.NVME));
+        Assert.Equal(NativeBytes(expected), new CRC64(CRC64Type.NVME).Compute(input));
+
+        IEnumerable<int> splits = input.Length <= 64
+            ? Enumerable.Range(0, input.Length + 1)
+            : new[] { 0, 1, 7, 8, 9, 63, 64, 65, 127, 128, 129, 255, 256, 257, 1023, 1024, 1025,
+                input.Length / 2, input.Length - 1, input.Length }.Where(split => split <= input.Length).Distinct();
+        var accumulator = new CRC64Accumulator(CRC64Type.NVME);
+        foreach (int split in splits)
+        {
+            accumulator.Reset();
+            accumulator.Append(input.AsSpan(0, split));
+            accumulator.Append(input.AsSpan(split));
+            Assert.Equal(expected, accumulator.GetCurrentValue());
+        }
+
+        int chunkSize = input.Length <= 256 ? 3 : 257;
+        using var sync = new ObservedStream(input, asynchronous: false, chunkSize: chunkSize);
+        using var asyncSource = new ObservedStream(input, asynchronous: true, chunkSize: chunkSize);
+        Assert.Equal(expected, sync.ComputeCRC64(CRC64Type.NVME));
+        Assert.Equal(expected, await asyncSource.ComputeCRC64Async(CRC64Type.NVME));
+    }
+
     [Theory]
     [MemberData(nameof(AwsVectors))]
     public async Task AwsFixedAnswersCalibrateOracleAndAllCalculationPaths(byte[] input, ulong expected)

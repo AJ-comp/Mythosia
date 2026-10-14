@@ -38,6 +38,82 @@ public sealed class Crc32CTests
         byte[] googleInput = Enumerable.Range(0, 2048)
             .Select(i => unchecked((byte)(3 * i * i + 7 * i + 11))).ToArray();
         yield return new object[] { "Google 2048-byte pattern", googleInput, 0x36DCC753u };
+
+        foreach (object[] vector in GoPublishedVectors())
+            yield return vector;
+    }
+
+    // Adapted from the castagnoli column of Go's fixed golden answers. Inputs
+    // are ASCII without a terminator; punctuation and double spaces are exact.
+    // The IEEE column and marshaled hash states are deliberately not imported.
+    // https://github.com/golang/go/blob/go1.25.0/src/hash/crc32/crc32_test.go#L38-L69
+    // Castagnoli = reflected polynomial 82F63B78; initial/final XOR FFFFFFFF.
+    // https://github.com/golang/go/blob/go1.25.0/src/hash/crc32/crc32.go
+    /*
+     * Copyright 2009 The Go Authors.
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are
+     * met:
+     *    * Redistributions of source code must retain the above copyright
+     * notice, this list of conditions and the following disclaimer.
+     *    * Redistributions in binary form must reproduce the above
+     * copyright notice, this list of conditions and the following disclaimer
+     * in the documentation and/or other materials provided with the
+     * distribution.
+     *    * Neither the name of Google LLC nor the names of its
+     * contributors may be used to endorse or promote products derived from
+     * this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+     * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+     * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+     * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+     * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+     * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+     * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+     * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+     * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+     * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+    private static IEnumerable<object[]> GoPublishedVectors()
+    {
+        var vectors = new (string Input, uint Expected)[]
+        {
+            ("a", 0xC1D04330u),
+            ("ab", 0xE2A22936u),
+            ("abc", 0x364B3FB7u),
+            ("abcd", 0x92C80A31u),
+            ("abcde", 0xC450D697u),
+            ("abcdef", 0x53BCEFF1u),
+            ("abcdefg", 0xE627F441u),
+            ("abcdefgh", 0x0A9421B7u),
+            ("abcdefghi", 0x2DDC99FCu),
+            ("abcdefghij", 0xE6599437u),
+            ("Discard medicine more than two years old.", 0xB2CC01FEu),
+            ("He who has a shady past knows that nice guys finish last.", 0x0E28207Fu),
+            ("I wouldn't marry him with a ten foot pole.", 0xBE93F964u),
+            ("Free! Free!/A trip/to Mars/for 900/empty jars/Burma Shave", 0x9E3BE0C3u),
+            ("The days of the digital watch are numbered.  -Tom Stoppard", 0xF505EF04u),
+            ("Nepal premier won't resign.", 0x85D3DC82u),
+            ("For every action there is an equal and opposite government program.", 0xC5142380u),
+            ("His money is twice tainted: 'taint yours and 'taint mine.", 0x75EB77DDu),
+            ("There is no reason for any individual to have a computer in their home. -Ken Olsen, 1977", 0x91EBE9F7u),
+            ("It's a tiny change to the code and not completely disgusting. - Bob Manchek", 0xF0B1168Eu),
+            ("size:  a.out:  bad magic", 0x572B74E2u),
+            ("The major problem is with sendmail.  -Mark Horton", 0x8A58A6D5u),
+            ("Give me a rock, paper and scissors and I will move the world.  CCFestoon", 0x9C426C50u),
+            ("If the enemy is within range, then so are you.", 0x735400A4u),
+            ("It's well we cannot hear the screams/That we create in others' dreams.", 0xBEC49C95u),
+            ("You remind me of a TV show, but that's all right: I watch it anyway.", 0xA95A2079u),
+            ("C is as portable as Stonehedge!!", 0xDE2E65C5u),
+            ("Even if I could be Shakespeare, I think I should still choose to be Faraday. - A. Huxley", 0x297A88EDu),
+            ("The fugacity of a constituent in a mixture of gases at a given temperature is proportional to its mole fraction.  Lewis-Randall Rule", 0x66ED1D8Bu),
+            ("How can you write a big system without C++?  -Paul Glick", 0xDCDED527u)
+        };
+        foreach ((string input, uint expected) in vectors)
+            yield return new object[] { "Go " + input, Encoding.ASCII.GetBytes(input), expected };
     }
 
     public static IEnumerable<object[]> RfcVectors()
@@ -70,7 +146,7 @@ public sealed class Crc32CTests
 
     [Theory]
     [MemberData(nameof(PublishedVectors))]
-    public void PublishedAnswersCalibrateIndependentOracleAndAllNumericPaths(string name, byte[] input, uint expected)
+    public async Task PublishedAnswersCalibrateIndependentOracleAndAllNumericPaths(string name, byte[] input, uint expected)
     {
         Assert.Equal(expected, Crc32CReference.Compute(input));
         Assert.Equal(expected, input.CRC32C());
@@ -79,6 +155,29 @@ public sealed class Crc32CTests
         var accumulator = new CRC32CAccumulator();
         AppendInChunks(accumulator, input, 3);
         AssertValue(expected, accumulator.GetCurrentValue(), name);
+
+        for (int split = 0; split <= input.Length; split++)
+        {
+            accumulator.Reset();
+            accumulator.Append(input.AsSpan(0, split));
+            accumulator.Append(ReadOnlySpan<byte>.Empty);
+            accumulator.Append(input.AsSpan(split));
+            AssertValue(expected, accumulator.GetCurrentValue(), $"{name}, split {split}");
+        }
+
+        using var synchronous = new MemoryStream(input, writable: false);
+        using var asynchronous = new MemoryStream(input, writable: false);
+        Assert.Equal(expected, synchronous.ComputeCRC32C());
+        Assert.Equal(expected, await asynchronous.ComputeCRC32CAsync());
+    }
+
+    [Fact]
+    public void PublishedCorpusHasAtLeastThirtyDistinctNonemptyInputs()
+    {
+        string[] inputs = PublishedVectors().Select(vector => (byte[])vector[1])
+            .Where(input => input.Length > 0).Select(Convert.ToHexString).ToArray();
+        Assert.True(inputs.Length >= 30, "CRC32C requires at least 30 published nonempty inputs.");
+        Assert.Equal(inputs.Length, inputs.Distinct(StringComparer.Ordinal).Count());
     }
 
     [Theory]
