@@ -91,7 +91,15 @@ jobs:
             throw 'The complete Integrity benchmark validation summary was not produced.'
           }
 
-      - name: Upload test results
+      - name: Validate the NuGet package and README consumers
+        timeout-minutes: 8
+        run: >-
+          ./eng/Verify-IntegrityPackage.ps1
+          -Configuration $env:BUILD_CONFIGURATION
+          -OutputDirectory (Join-Path $env:INTEGRITY_RESULTS 'package-validation')
+          -ExpectedRepositoryCommit $env:GITHUB_SHA
+
+      - name: Upload test and package results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

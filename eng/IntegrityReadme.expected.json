@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "crc",
+      "codeSha256": "89708C2153084CE2F47C6CC1AFC9E184960EB1AA1AD8209D34D58D26A1B51BF0",
+      "stdoutLittleEndian": [
+        "CRC8 Classic: F4",
+        "CRC8 Maxim: A1",
+        "CRC16 Classic: BB3D",
+        "CRC16 Modbus: 4B37",
+        "CRC16 XModem: 31C3",
+        "CRC16 DNP: 82EA",
+        "CRC32 Classic: CBF43926",
+        "CRC8 frame valid: True",
+        "CRC16 frame valid: True",
+        "CRC32 frame valid: True"
+      ],
+      "stdoutBigEndian": [
+        "CRC8 Classic: F4",
+        "CRC8 Maxim: A1",
+        "CRC16 Classic: BB3D",
+        "CRC16 Modbus: 4B37",
+        "CRC16 XModem: 31C3",
+        "CRC16 DNP: 82EA",
+        "CRC32 Classic: CBF43926",
+        "CRC8 frame valid: True",
+        "CRC16 frame valid: True",
+        "CRC32 frame valid: True"
+      ]
+    },
+    {
+      "id": "checksum",
+      "codeSha256": "CFE8081EAFD93A5E5A2203E3689B53176EC64EA57F5620D61AEF9A400CCE5BC2",
+      "stdoutLittleEndian": [
+        "XOR: 31",
+        "NMEA: 31",
+        "Modulo 256: DD",
+        "Two's complement: 23",
+        "Checksum frame valid: True"
+      ],
+      "stdoutBigEndian": [
+        "XOR: 31",
+        "NMEA: 31",
+        "Modulo 256: DD",
+        "Two's complement: 23",
+        "Checksum frame valid: True"
+      ]
+    },
+    {
+      "id": "common-api",
+      "codeSha256": "267B2A94977AD7E4AC27FE37C3C8ECE8835C8C058E320D73E6FC54FB2B95148A",
+      "stdoutLittleEndian": [
+        "Checksum8/Xor: digest=31, valid=True, decoded=True",
+        "Damaged frame: True",
+        "Checksum8/Modulo256: digest=DD, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC8/Classic: digest=F4, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC16/Classic: digest=3DBB, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC32/Classic: digest=2639F4CB, valid=True, decoded=True",
+        "Damaged frame: True"
+      ],
+      "stdoutBigEndian": [
+        "Checksum8/Xor: digest=31, valid=True, decoded=True",
+        "Damaged frame: True",
+        "Checksum8/Modulo256: digest=DD, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC8/Classic: digest=F4, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC16/Classic: digest=BB3D, valid=True, decoded=True",
+        "Damaged frame: True",
+        "CRC32/Classic: digest=CBF43926, valid=True, decoded=True",
+        "Damaged frame: True"
+      ]
+    }
+  ]
+}

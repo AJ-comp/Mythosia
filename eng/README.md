@@ -20,6 +20,14 @@ summary as well. CI does not run timed benchmarks or enforce machine-dependent
 performance thresholds. Test reports and hang diagnostics are uploaded for
 14 days, including on failed jobs.
 
+Each job then packs the current project and validates the actual NuGet candidate,
+README examples, installed public API and package metadata with
+`Verify-IntegrityPackage.ps1`. Consumers use an isolated local feed and fresh
+caches, so an already published package cannot substitute for the candidate.
+Package reports, logs and the candidate are included in the same result artifact.
+See [package validation](IntegrityPackageValidation.md) for the checks and the
+review procedure for expected example output. This step does not publish packages.
+
 The public API baseline is
 `Mythosia.Test/Integrity/PublicApi.approved.txt`. It is an embedded test resource
 and never regenerates automatically. The snapshot includes public and protected
@@ -31,8 +39,8 @@ Product code, target frameworks, package versions and existing CRC/checksum
 representations are not changed by this CI setup. Only Integrity tests are
 selected; unrelated functional tests are outside this workflow.
 
-To run the same checks locally from the repository root with PowerShell 7
-and a .NET SDK / .NET 8 runtime installed:
+To run the same checks locally from the repository root with PowerShell 7.2
+or newer and a .NET 8 SDK installed:
 
 ```powershell
 dotnet restore Mythosia.Test/Mythosia.Test.Function.csproj
@@ -42,6 +50,7 @@ dotnet test Mythosia.Test/Mythosia.Test.Function.csproj -c Release --no-build --
 dotnet restore Mythosia.Test.Performance/Mythosia.Test.Performance.csproj
 dotnet build Mythosia.Test.Performance/Mythosia.Test.Performance.csproj -c Release --no-restore
 dotnet run --project Mythosia.Test.Performance/Mythosia.Test.Performance.csproj -c Release --no-build --no-restore -- --validate-integrity
+./eng/Verify-IntegrityPackage.ps1 -Configuration Release -OutputDirectory ./TestResults/Integrity/package-validation
 ```
 
 Repeat with `Debug` to cover both configurations. If a local results directory
