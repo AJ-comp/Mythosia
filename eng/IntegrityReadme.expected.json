@@ -74,6 +74,36 @@
         "CRC32/Classic: digest=CBF43926, valid=True, decoded=True",
         "Damaged frame: True"
       ]
+    },
+    {
+      "id": "streaming-crc",
+      "codeSha256": "52AD119E3F64F2C8A8A562FCB474BC5BC2B7A18C8D0F00C18C23A6BD92180261",
+      "stdoutLittleEndian": [
+        "Stream CRC8 Classic: F4",
+        "Stream CRC16 Modbus: 4B37",
+        "Stream CRC32 Classic: CBF43926"
+      ],
+      "stdoutBigEndian": [
+        "Stream CRC8 Classic: F4",
+        "Stream CRC16 Modbus: 4B37",
+        "Stream CRC32 Classic: CBF43926"
+      ]
+    },
+    {
+      "id": "chunked-crc",
+      "codeSha256": "F60821B15088AFE14D0DEDFF7396D3F19B95F0C1739F36780219B9D397CF6366",
+      "stdoutLittleEndian": [
+        "Chunked CRC8 Classic: F4",
+        "Chunked CRC16 Modbus: 4B37",
+        "Chunked CRC32 Classic: CBF43926",
+        "Reused CRC32 Classic: CBF43926"
+      ],
+      "stdoutBigEndian": [
+        "Chunked CRC8 Classic: F4",
+        "Chunked CRC16 Modbus: 4B37",
+        "Chunked CRC32 Classic: CBF43926",
+        "Reused CRC32 Classic: CBF43926"
+      ]
     }
   ]
 }

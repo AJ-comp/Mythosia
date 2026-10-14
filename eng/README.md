@@ -9,7 +9,7 @@ Each job builds the functional test project and runs the
 `Mythosia.Test.Integrity` tests, including the approved public API snapshot,
 and the four existing `Mythosia.Test.IntegrityTest` smoke tests.
 `Verify-IntegrityTestResults.ps1` rejects missing or incomplete TRX reports,
-failed or skipped tests, fewer than 1,232 cases, unexpected test namespaces,
+failed or skipped tests, fewer than 1,616 cases, unexpected test namespaces,
 and a missing API snapshot test. New tests can increase the count without
 changing the floor. Intentional removals require reviewing the floor too.
 
@@ -27,6 +27,14 @@ caches, so an already published package cannot substitute for the candidate.
 Package reports, logs and the candidate are included in the same result artifact.
 See [package validation](IntegrityPackageValidation.md) for the checks and the
 review procedure for expected example output. This step does not publish packages.
+
+The optional publish job depends on all four successful matrix jobs. Its manual
+`publish_package` input defaults to `false`; ordinary CI never publishes.
+The job checks all four artifacts, verifies their commit/version and package
+hashes, then publishes the exact validated Ubuntu Release candidate. A failed,
+cancelled, skipped or incomplete check blocks publication. See
+[Integrity releases](IntegrityRelease.md) for authentication setup, release inputs
+and offline regression tests for the gates.
 
 The public API baseline is
 `Mythosia.Test/Integrity/PublicApi.approved.txt`. It is an embedded test resource
@@ -56,7 +64,9 @@ dotnet run --project Mythosia.Test.Performance/Mythosia.Test.Performance.csproj 
 Repeat with `Debug` to cover both configurations. If a local results directory
 already exists, use a fresh directory to keep prior reports separate.
 
-Actions are pinned to verified release commit hashes and use read-only repository
-permissions. The workflow uses no repository secrets and runs ordinary
-`pull_request` events. It becomes active when these files are pushed to GitHub;
-repository branch-protection settings are managed separately.
+Actions are pinned to verified release commit hashes. Validation jobs use
+read-only repository permissions, no publication credentials and ordinary
+`pull_request` events. Only the explicitly requested publish job can request an
+OIDC token, after its CI dependency and evidence gates pass. It becomes active
+when these files are pushed to GitHub; repository branch-protection settings are
+managed separately.

@@ -7,6 +7,9 @@ Version `1.2.1` improves initialization safety and calculation efficiency while
 preserving the public API and existing results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
+The streaming CRC section describes unreleased source changes. Use a source
+build until a package containing these APIs is published.
+
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
 All examples use the ASCII bytes of `123456789`.
@@ -128,15 +131,130 @@ foreach (ErrorDetection detector in detectors)
 // Every detector prints valid=True, decoded=True and Damaged frame: True.
 ```
 
+## Streaming CRC (unreleased)
+
+The following APIs are additions for the next release. Existing CRC methods and
+their results remain unchanged. Both streaming forms return the same numerical
+value as the corresponding existing numeric extension for non-empty input,
+when the same algorithm processes the same bytes in the same order. Chunk sizes
+and split positions do not affect the final value. CRC16 DNP keeps its legacy
+representation.
+
+| CRC | Stream methods | Incremental object | Numeric result |
+| --- | --- | --- | --- |
+| CRC8 | `ComputeCRC8` / `ComputeCRC8Async` | `CRC8Accumulator` | `byte` |
+| CRC16 | `ComputeCRC16` / `ComputeCRC16Async` | `CRC16Accumulator` | `ushort` |
+| CRC32 | `ComputeCRC32` / `ComputeCRC32Async` | `CRC32Accumulator` | `uint` |
+
+All new methods and constructors default to `Classic`. They support the existing
+algorithm enums and `Basic` aliases. Async methods return `Task<byte>`,
+`Task<ushort>` or `Task<uint>`. All APIs are in `Mythosia.Integrity.CRC`.
+
+### Read a stream
+
+`ComputeCRC8`, `ComputeCRC16` and `ComputeCRC32` read from the stream's current
+position to its end. Their `Async` counterparts support a named
+`cancellationToken` argument. Each calculation reuses one 64 KiB input buffer,
+requires no seeking or known length, and leaves the stream open on success,
+cancellation or failure. Pass a `FileStream` from `File.OpenRead` to process a
+file; this complete example uses memory streams for the published check input.
+
+For example, a 1 GiB file can be processed with a 64 KiB input buffer; input
+buffer memory does not grow with file size. The buffer size is fixed by the
+helper. With an accumulator, the caller controls the chunk sizes.
+
+```csharp
+using System;
+using System.IO;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+using var crc8Stream = new MemoryStream(data, writable: false);
+using var crc16Stream = new MemoryStream(data, writable: false);
+using var crc32Stream = new MemoryStream(data, writable: false);
+
+Console.WriteLine($"Stream CRC8 Classic: {crc8Stream.ComputeCRC8(CRC8Type.Classic):X2}");
+Console.WriteLine($"Stream CRC16 Modbus: {await crc16Stream.ComputeCRC16Async(CRC16Type.Modbus):X4}");
+Console.WriteLine($"Stream CRC32 Classic: {await crc32Stream.ComputeCRC32Async(CRC32Type.Classic):X8}");
+// F4, 4B37 and CBF43926, respectively.
+```
+
+### Append arriving chunks
+
+`CRC8Accumulator`, `CRC16Accumulator` and `CRC32Accumulator` consume a
+`ReadOnlySpan<byte>` in each `Append` call and retain only the calculation state.
+Input buffers may be overwritten or reused after `Append` returns. Empty chunks
+are ignored. `GetCurrentValue` reads the current result without resetting or
+changing the state; more chunks can be appended afterwards. `Reset` starts a new
+calculation with the same algorithm. The objects require no disposal; use a
+separate instance for each calculation and do not share one instance concurrently.
+
+For a persistent network connection, append only the bytes belonging to one
+message. Read the result at the message boundary, then reset for the next
+message. Stream helpers finish at end-of-stream, so they treat all remaining
+bytes as one payload.
+
+```csharp
+using System;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+var crc8 = new CRC8Accumulator(CRC8Type.Classic);
+var crc16 = new CRC16Accumulator(CRC16Type.Modbus);
+var crc32 = new CRC32Accumulator(CRC32Type.Classic);
+
+for (int offset = 0; offset < data.Length; offset += 3)
+{
+    ReadOnlySpan<byte> chunk = data.AsSpan(offset, Math.Min(3, data.Length - offset));
+    crc8.Append(chunk);
+    crc16.Append(chunk);
+    crc32.Append(chunk);
+}
+
+Console.WriteLine($"Chunked CRC8 Classic: {crc8.GetCurrentValue():X2}");
+Console.WriteLine($"Chunked CRC16 Modbus: {crc16.GetCurrentValue():X4}");
+Console.WriteLine($"Chunked CRC32 Classic: {crc32.GetCurrentValue():X8}");
+
+crc32.Reset();
+crc32.Append(data);
+Console.WriteLine($"Reused CRC32 Classic: {crc32.GetCurrentValue():X8}");
+// F4, 4B37, CBF43926 and CBF43926, respectively.
+```
+
+### Empty input, errors and validation
+
+Before any non-empty append after construction or `Reset`, `CRC8Accumulator`
+throws `InvalidOperationException` from `GetCurrentValue`. CRC8 stream methods
+throw the same exception when there are no remaining bytes. The existing CRC8
+API has no numeric result for empty input. Empty CRC16 returns
+`FFFF` for Modbus and `0000` for the other variants, including legacy DNP; empty
+CRC32 returns `00000000`. Unsupported algorithm values throw
+`ArgumentOutOfRangeException`.
+
+Stream methods reject a null source with `ArgumentNullException` and an unreadable
+source with `ArgumentException`. Read failures are propagated. Async methods
+observe cancellation between reads and propagate `OperationCanceledException`;
+they return no partial CRC. Bytes already read remain consumed after cancellation
+or failure, and the stream stays open.
+
+Streaming calculates a value. To validate a complete file or message, compare its
+final value with the sender's expected CRC using the same algorithm and settings.
+`GetCurrentValue` can also report a prefix CRC, but chunk-by-chunk validation
+requires a separate expected CRC for each chunk.
+
 ## Input and byte order
 
-Use a non-empty payload. Empty-input behavior differs by algorithm: CRC8 and
-Checksum8 return an empty digest, and their numeric extensions and `Encode`
+For the existing frame APIs, use a non-empty payload. Existing empty-input
+behavior differs by algorithm: CRC8 and Checksum8 return an empty digest, and
+their numeric extensions and `Encode`
 throw for empty inputs. CRC16 and CRC32 can produce digest-only frames, but
 `IsError` rejects those frames and `Decode` returns an empty sequence.
 
-Inputs must support repeated enumeration. Materialize a stream or one-shot
-iterator into a byte array before calling these APIs.
+The existing `IEnumerable<byte>` APIs require inputs that support repeated
+enumeration. Materialize a one-shot iterator before calling those APIs, or use
+the new streaming methods and accumulators for single-pass input.
 
 CRC16 and CRC32 digest bytes use the current machine's native byte order.
 For example, `new CRC16(CRC16Type.Classic).Compute(data)` produces `3D BB` on a

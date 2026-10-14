@@ -58,3 +58,34 @@ the package version on their first line; the README's `Version` line and the fir
 `## version - yyyy-MM-dd` release heading must match it. Version bumps require
 updating those descriptions, not changing fixed CRC/checksum results or the
 approved public API snapshot.
+
+## Streaming CRC coverage
+
+The README now has five independent consumers: the existing CRC, checksum and
+common-API examples, followed by streaming and chunked CRC examples. The original
+three code hashes and expected outputs are unchanged. Both new examples use the
+published `123456789` check values, including `F4`, `4B37` and `CBF43926`, with
+identical numerical output on either byte order.
+
+The reviewed API snapshot retains all 85 released declarations and adds 28
+declarations for the three accumulator types and `StreamCRCExtensions`. Keep
+existing declarations unchanged when reviewing future additions; the snapshot
+test and package consumer still require an exact match with the complete reviewed
+surface.
+
+`CrcAccumulatorTests` contributes 164 cases and `CrcStreamTests` contributes 220.
+Their 384 cases run alongside the existing 1,232 cases in the Integrity CI filter.
+The TRX completeness check now requires at least 1,616 passing tests, including
+the public API guard. Coverage includes all supported algorithms and aliases,
+independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
+boundaries, generated large input without whole-input allocation, buffer lifetime,
+single-pass non-seekable streams, cancellation and read failures.
+
+Until these additions are released, the README and release notes identify them as
+unreleased source changes. Candidate packages are validation outputs only; this
+workflow does not publish them.
+
+The optional publish job selects the exact validated Ubuntu Release candidate
+only after all four CI jobs and their artifact evidence pass. Ordinary CI keeps
+publication disabled. See [Integrity releases](IntegrityRelease.md) for the
+publication gates, authentication setup and non-publishing regression tests.

@@ -4,13 +4,24 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      publish_package:
+        description: 'Publish the validated package only after all four CI jobs pass'
+        type: boolean
+        required: false
+        default: false
+      release_version:
+        description: 'Exact project/package version to publish (required when publishing)'
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: integrity-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: integrity-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.publish_package && 'publish' || 'ci' }}
+  cancel-in-progress: ${{ !(github.event_name == 'workflow_dispatch' && inputs.publish_package) }}
 
 jobs:
   integrity:
@@ -54,6 +65,11 @@ jobs:
           @{ sdk = @{ version = $env:INSTALLED_SDK; rollForward = 'disable' } } |
             ConvertTo-Json | Set-Content -LiteralPath global.json -Encoding utf8
           dotnet --info
+
+      - name: Test release gates without publishing
+        run: >-
+          ./eng/Test-IntegrityReleaseGate.ps1
+          -OutputDirectory (Join-Path $env:INTEGRITY_RESULTS 'release-gate-tests')
 
       - name: Restore functional tests
         run: dotnet restore Mythosia.Test/Mythosia.Test.Function.csproj
@@ -107,3 +123,96 @@ jobs:
           path: ${{ env.INTEGRITY_RESULTS }}
           if-no-files-found: warn
           retention-days: 14
+          overwrite: true
+
+  publish:
+    name: Publish validated Integrity package
+    needs: integrity
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_package == true && github.ref == 'refs/heads/master' && needs.integrity.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: nuget
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    concurrency:
+      group: mythosia-integrity-nuget-publish
+      cancel-in-progress: false
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      RELEASE_VERSION: ${{ inputs.release_version }}
+
+    steps:
+      - name: Check out the tested commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Install .NET 8 SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Download validation artifacts from this workflow run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: integrity-*
+          path: ${{ runner.temp }}/integrity-release-artifacts
+          merge-multiple: false
+
+      - name: Require all four passing reports and select the tested package
+        id: package
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:RELEASE_VERSION)) {
+            throw 'An explicit release_version is required when publishing.'
+          }
+          ./eng/Select-IntegrityReleasePackage.ps1 `
+            -ArtifactsDirectory (Join-Path $env:RUNNER_TEMP 'integrity-release-artifacts') `
+            -ExpectedRepositoryCommit $env:GITHUB_SHA `
+            -ExpectedVersion $env:RELEASE_VERSION `
+            -OutputPath (Join-Path $env:RUNNER_TEMP 'integrity-release-gate.json') `
+            -GitHubOutputPath $env:GITHUB_OUTPUT
+
+      - name: Require the tested commit to still be current master
+        run: |
+          $remote = @(git ls-remote origin refs/heads/master)
+          if ($LASTEXITCODE -ne 0 -or $remote.Count -ne 1 -or ($remote[0] -split '\s+')[0] -cne $env:GITHUB_SHA) {
+            throw 'The tested commit is no longer the current master commit; run CI again before publishing.'
+          }
+
+      - name: Require configured NuGet identity
+        env:
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_USER)) {
+            throw 'Configure NUGET_USER and the scoped NuGet Trusted Publishing policy before publishing.'
+          }
+
+      - name: Obtain a short-lived NuGet key after all release gates pass
+        id: nuget-login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Publish exactly the validated Ubuntu Release package
+        env:
+          PACKAGE_PATH: ${{ steps.package.outputs.package-path }}
+          PACKAGE_SHA256: ${{ steps.package.outputs.package-sha256 }}
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) { throw 'NuGet authentication did not return a key.' }
+          $remote = @(git ls-remote origin refs/heads/master)
+          if ($LASTEXITCODE -ne 0 -or $remote.Count -ne 1 -or ($remote[0] -split '\s+')[0] -cne $env:GITHUB_SHA) {
+            throw 'Master changed after validation; publishing is blocked.'
+          }
+          if ((Get-FileHash -LiteralPath $env:PACKAGE_PATH -Algorithm SHA256).Hash -cne $env:PACKAGE_SHA256) {
+            throw 'The validated package changed; publishing is blocked.'
+          }
+          dotnet nuget push $env:PACKAGE_PATH --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --no-symbols
+          if ($LASTEXITCODE -ne 0) { throw "NuGet push failed with exit code $LASTEXITCODE." }
