@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 # A floor catches an accidentally narrowed filter without blocking new tests.
-$minimumTestCount = 2179
+$minimumTestCount = 2315
 $testNamePrefix = 'Mythosia.Test.Integrity.'
 $legacyTestNamePrefix = 'Mythosia.Test.IntegrityTest.'
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
@@ -16,7 +16,9 @@ $requiredSuitePrefixes = @(
     'Mythosia.Test.Integrity.Crc32CTests.',
     'Mythosia.Test.Integrity.Crc32CStreamTests.',
     'Mythosia.Test.Integrity.Crc64Tests.',
-    'Mythosia.Test.Integrity.Crc16VariantTests.'
+    'Mythosia.Test.Integrity.Crc16VariantTests.',
+    'Mythosia.Test.Integrity.Adler32Tests.',
+    'Mythosia.Test.Integrity.Adler32StreamTests.'
 )
 
 if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
@@ -96,4 +98,4 @@ foreach ($prefix in $requiredSuitePrefixes) {
     }
 }
 
-Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot, CRC32C suites, CRC64 suite and CRC16 variants suite executed."
+Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot, CRC32C suites, CRC64 suite, CRC16 variants suite and Adler32 suites executed."

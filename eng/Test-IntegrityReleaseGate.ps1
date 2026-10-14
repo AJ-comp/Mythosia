@@ -30,12 +30,14 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 2179
+$minimumTestCount = 2315
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
 $crc64TestPrefix = 'Mythosia.Test.Integrity.Crc64Tests.'
 $crc16VariantTestPrefix = 'Mythosia.Test.Integrity.Crc16VariantTests.'
+$adler32TestPrefix = 'Mythosia.Test.Integrity.Adler32Tests.'
+$adler32StreamTestPrefix = 'Mythosia.Test.Integrity.Adler32StreamTests.'
 $githubSentinel = "existing-output=preserved`n"
 $utf8 = [Text.UTF8Encoding]::new($false)
 
@@ -116,6 +118,8 @@ function New-PassingTrx([string] $Path) {
             2 { "${crc32CStreamTestPrefix}SyntheticGateFixture" }
             3 { "${crc64TestPrefix}SyntheticGateFixture" }
             4 { "${crc16VariantTestPrefix}SyntheticGateFixture" }
+            5 { "${adler32TestPrefix}SyntheticGateFixture" }
+            6 { "${adler32StreamTestPrefix}SyntheticGateFixture" }
             default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
         }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
@@ -419,6 +423,26 @@ $cases = @(
             foreach ($result in $d.TestRun.Results.UnitTestResult) {
                 if ($result.GetAttribute('testName').StartsWith($crc16VariantTestPrefix, [StringComparison]::Ordinal)) {
                     $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc16Variants')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-adler32-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($adler32TestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedAdler32Calculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-adler32-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($adler32StreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedAdler32Stream')
                 }
             }
         }

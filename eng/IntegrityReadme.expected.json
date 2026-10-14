@@ -180,6 +180,28 @@
         "Chunked CRC32 Classic: CBF43926",
         "Reused CRC32 Classic: CBF43926"
       ]
+    },
+    {
+      "id": "adler32",
+      "codeSha256": "8B755AF6EF462E93FA6BDF5F7428FC6FF4E314CEC41878639E5A28E6348778EA",
+      "stdoutLittleEndian": [
+        "Adler-32: 091E01DE",
+        "Adler-32 frame valid: True",
+        "Adler-32 decoded: True",
+        "Chunked Adler-32: 091E01DE",
+        "Reset Adler-32: 00000001",
+        "Stream Adler-32: 091E01DE",
+        "Async Adler-32: 091E01DE"
+      ],
+      "stdoutBigEndian": [
+        "Adler-32: 091E01DE",
+        "Adler-32 frame valid: True",
+        "Adler-32 decoded: True",
+        "Chunked Adler-32: 091E01DE",
+        "Reset Adler-32: 00000001",
+        "Stream Adler-32: 091E01DE",
+        "Async Adler-32: 091E01DE"
+      ]
     }
   ]
 }

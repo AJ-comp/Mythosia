@@ -8,6 +8,9 @@ and streaming CRC calculation while preserving the existing public API and
 results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
+The Adler-32 section describes unreleased source additions. Use a source build
+for those APIs until a package containing them is released.
+
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
 All examples use the ASCII bytes of `123456789`.
@@ -478,3 +481,60 @@ CRC16 and CRC32 digest bytes use the current machine's native byte order.
 For example, `new CRC16(CRC16Type.Classic).Compute(data)` produces `3D BB` on a
 little-endian machine and `BB 3D` on a big-endian machine. A protocol that specifies
 a fixed byte order needs explicit serialization for that protocol.
+
+## Adler-32 (unreleased)
+
+Adler-32 is the checksum defined in [RFC 1950](https://www.rfc-editor.org/rfc/rfc1950.html)
+for zlib. These APIs are additions for the next release; existing algorithms and
+their results remain unchanged. Import `Mythosia.Integrity.Checksum` for the
+numeric and frame extensions, `Adler32`, `Adler32Accumulator` and stream methods.
+
+All calculations produce the same numeric value for the same ordered bytes,
+regardless of chunk sizes or split positions. Empty input and a reset
+accumulator return `00000001`. `GetCurrentValue()` leaves the state unchanged,
+so more bytes can be appended afterward. An accumulator retains no input bytes;
+use separate instances for independent calculations.
+
+Byte-sequence APIs consume their input once. `Compute` returns four digest bytes
+and `WithAdler32` appends those bytes to a copied payload. The library's frame
+helpers use native byte order, matching its existing CRC32 frame convention.
+For zlib's specified big-endian checksum field, serialize the numeric value
+explicitly, for example with `BinaryPrimitives.WriteUInt32BigEndian`.
+Frame validation requires a non-empty payload and rejects digest-only frames.
+
+Stream methods read from the current position to EOF using one reusable 64 KiB
+buffer, support non-seekable streams and partial reads, and leave the stream
+open on success, cancellation and read failure. The asynchronous method accepts
+an optional `CancellationToken` and returns no partial value when cancelled.
+Null sources throw `ArgumentNullException`; unreadable streams throw
+`ArgumentException`. Read failures propagate to the caller.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Mythosia.Integrity.Checksum;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+var detector = new Adler32();
+Console.WriteLine($"Adler-32: {data.Adler32():X8}");
+
+byte[] frame = data.WithAdler32().ToArray();
+Console.WriteLine($"Adler-32 frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"Adler-32 decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new Adler32Accumulator();
+accumulator.Append(data.AsSpan(0, 4));
+accumulator.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked Adler-32: {accumulator.GetCurrentValue():X8}");
+accumulator.Reset();
+Console.WriteLine($"Reset Adler-32: {accumulator.GetCurrentValue():X8}");
+
+using var stream = new MemoryStream(data);
+Console.WriteLine($"Stream Adler-32: {stream.ComputeAdler32():X8}");
+using var asyncStream = new MemoryStream(data);
+Console.WriteLine($"Async Adler-32: {await asyncStream.ComputeAdler32Async():X8}");
+// Numeric, chunked and stream values: 091E01DE. Reset: 00000001.
+```

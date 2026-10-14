@@ -116,3 +116,34 @@ preserving the public API and existing algorithm results.
 - Correct README namespaces, required arguments and variable declarations;
   provide independent executable examples with expected results and document
   input and byte-order behavior.
+
+## Unreleased
+
+These additions are available in source builds and are not included in the
+published 1.3.0 package. No new package version is assigned yet.
+
+### Adler-32
+
+- Add `Adler32`, `Adler32` / `WithAdler32` byte-sequence extensions and
+  `Adler32Accumulator` in `Mythosia.Integrity.Checksum`. Use the RFC 1950
+  parameters; ASCII `123456789` produces `091E01DE`, and empty input produces
+  `00000001`.
+- Add `ComputeAdler32` / `ComputeAdler32Async` stream extensions with one reusable
+  64 KiB buffer, current-position reads, non-seekable stream support and
+  asynchronous cancellation. Leave the caller's stream open after success,
+  cancellation or a read failure.
+- Consume byte sequences once. Accumulators retain only calculation state,
+  support non-destructive current values and reset, and give the same final
+  value across arbitrary chunk boundaries.
+- Follow the library's native-endian four-byte frame convention. Document
+  explicit big-endian serialization for the zlib format. Reject digest-only
+  frames; keep all existing APIs, defaults and algorithm behavior unchanged.
+- Verify 42 distinct non-empty published fixed answers, plus the separate
+  empty-input answer, from pinned Go 1.25.0 tests. Compare with an independent
+  weighted-sum reference and cover 5,552-byte reduction boundaries, 64 KiB
+  buffers, overflow, partitions, frames and stream lifecycle behavior.
+- Add an executable README example and review 18 additive declarations,
+  preserving all 156 declarations from 1.3.0. Require both Adler-32 suites in CI
+  and release selection; test that missing suites block publication.
+- Keep the package version and released metadata unchanged. This source change
+  does not publish a NuGet package.
