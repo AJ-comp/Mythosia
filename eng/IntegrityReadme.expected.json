@@ -76,6 +76,28 @@
       ]
     },
     {
+      "id": "crc32c",
+      "codeSha256": "F5F57AAD9723709DD318FC72911DD22FAE14753737D6CA0B1E2113176C2975AE",
+      "stdoutLittleEndian": [
+        "CRC32C: E3069283",
+        "CRC32C frame valid: True",
+        "CRC32C decoded: True",
+        "Chunked CRC32C: E3069283",
+        "Reset CRC32C: 00000000",
+        "Stream CRC32C: E3069283",
+        "Async stream CRC32C: E3069283"
+      ],
+      "stdoutBigEndian": [
+        "CRC32C: E3069283",
+        "CRC32C frame valid: True",
+        "CRC32C decoded: True",
+        "Chunked CRC32C: E3069283",
+        "Reset CRC32C: 00000000",
+        "Stream CRC32C: E3069283",
+        "Async stream CRC32C: E3069283"
+      ]
+    },
+    {
       "id": "streaming-crc",
       "codeSha256": "52AD119E3F64F2C8A8A562FCB474BC5BC2B7A18C8D0F00C18C23A6BD92180261",
       "stdoutLittleEndian": [

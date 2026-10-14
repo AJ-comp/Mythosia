@@ -59,31 +59,43 @@ the package version on their first line; the README's `Version` line and the fir
 updating those descriptions, not changing fixed CRC/checksum results or the
 approved public API snapshot.
 
-## Streaming CRC coverage
+## Streaming CRC and CRC32C coverage
 
-The README now has five independent consumers: the existing CRC, checksum and
-common-API examples, followed by streaming and chunked CRC examples. The original
-three code hashes and expected outputs are unchanged. Both new examples use the
-published `123456789` check values, including `F4`, `4B37` and `CBF43926`, with
-identical numerical output on either byte order.
+The README has six independent consumers: CRC, checksum, common API, CRC32C,
+streaming CRC and chunked CRC. The five examples that preceded CRC32C keep their
+code hashes and expected outputs unchanged. The new CRC32C example freezes the
+published `123456789` check value `E3069283`, validates and decodes a frame, checks
+incremental state/reset, and executes both stream methods. Its numerical output
+is identical on either byte order.
 
-The reviewed API snapshot retains all 85 released declarations and adds 28
-declarations for the three accumulator types and `StreamCRCExtensions`. Keep
+The reviewed API snapshot retains all 85 released declarations, the 28 streaming
+additions and their exact attributes/defaults, and adds 17 CRC32C declarations.
+The complete snapshot has 130 entries and 21 public types. Keep
 existing declarations unchanged when reviewing future additions; the snapshot
 test and package consumer still require an exact match with the complete reviewed
 surface.
 
 `CrcAccumulatorTests` contributes 164 cases and `CrcStreamTests` contributes 220.
-Their 384 cases run alongside the existing 1,232 cases in the Integrity CI filter.
-The TRX completeness check now requires at least 1,616 passing tests, including
-the public API guard. Coverage includes all supported algorithms and aliases,
+Their 384 cases run alongside the earlier 1,232 cases. `Crc32CTests` adds 122
+calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
+The TRX completeness check requires at least 1,812 passing tests, including the
+public API guard and both CRC32C suites. Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
 boundaries, generated large input without whole-input allocation, buffer lifetime,
 single-pass non-seekable streams, cancellation and read failures.
 
+CRC32C's oracle uses normal polynomial `1EDC6F41`, a left-shifting register and
+explicit reflection, independently of the product's reflected lookup table.
+RFC 7143 Appendix A.4 octets and fixed CRC RevEng/Google answers calibrate that
+oracle and every product path. Every one- and two-byte input, all partitions of
+small inputs, prefix snapshots, native digest packing, residue, frame errors,
+single-pass enumerables and generated 8 MiB streams are covered. Tests retain
+source links alongside the fixed vectors. The release gate regression also
+rejects reports that omit either CRC32C suite even if totals still pass.
+
 Until these additions are released, the README and release notes identify them as
 unreleased source changes. Candidate packages are validation outputs only; this
-workflow does not publish them.
+validation step does not publish them. Ordinary CI leaves publication disabled.
 
 The optional publish job selects the exact validated Ubuntu Release candidate
 only after all four CI jobs and their artifact evidence pass. Ordinary CI keeps

@@ -8,10 +8,14 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 # A floor catches an accidentally narrowed filter without blocking new tests.
-$minimumTestCount = 1616
+$minimumTestCount = 1812
 $testNamePrefix = 'Mythosia.Test.Integrity.'
 $legacyTestNamePrefix = 'Mythosia.Test.IntegrityTest.'
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
+$requiredSuitePrefixes = @(
+    'Mythosia.Test.Integrity.Crc32CTests.',
+    'Mythosia.Test.Integrity.Crc32CStreamTests.'
+)
 
 if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
     throw "Integrity test results are missing: $Path"
@@ -63,6 +67,7 @@ if ($results.Count -ne $total) {
 }
 
 $apiTestExecuted = $false
+$executedSuites = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($result in $results) {
     $testName = $result.GetAttribute('testName')
     $isIntegrityTest = $testName.StartsWith($testNamePrefix, [StringComparison]::Ordinal) -or
@@ -74,9 +79,19 @@ foreach ($result in $results) {
     if ([string]::Equals($testName, $apiTestName, [StringComparison]::Ordinal)) {
         $apiTestExecuted = $true
     }
+    foreach ($prefix in $requiredSuitePrefixes) {
+        if ($testName.StartsWith($prefix, [StringComparison]::Ordinal)) {
+            [void] $executedSuites.Add($prefix)
+        }
+    }
 }
 if (-not $apiTestExecuted) {
     throw 'The Integrity public API snapshot test did not execute.'
 }
+foreach ($prefix in $requiredSuitePrefixes) {
+    if (-not $executedSuites.Contains($prefix)) {
+        throw "A required CRC32C test suite did not execute: $prefix"
+    }
+}
 
-Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot executed."
+Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot and CRC32C calculation/stream suites executed."

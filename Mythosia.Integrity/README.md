@@ -7,8 +7,8 @@ Version `1.2.1` improves initialization safety and calculation efficiency while
 preserving the public API and existing results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The streaming CRC section describes unreleased source changes. Use a source
-build until a package containing these APIs is published.
+The CRC32C and streaming CRC sections describe unreleased source changes. Use a
+source build until a package containing these APIs is published.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
@@ -131,11 +131,77 @@ foreach (ErrorDetection detector in detectors)
 // Every detector prints valid=True, decoded=True and Damaged frame: True.
 ```
 
+## CRC32C / Castagnoli (unreleased)
+
+CRC32C is available through separate APIs in `Mythosia.Integrity.CRC`:
+`data.CRC32C()`, `data.WithCRC32C()` and the `CRC32C` detector. The existing
+`CRC32` APIs and `CRC32Type` values keep their existing behavior. For the ASCII
+input `123456789`, CRC32C returns `E3069283` and CRC32 Classic returns `CBF43926`.
+
+The algorithm is CRC-32/ISCSI (Castagnoli): polynomial `0x1EDC6F41`, initial
+register and final XOR `0xFFFFFFFF`, with reflected input and output. Published
+reference vectors are in [RFC 7143, Appendix A.4](https://www.rfc-editor.org/rfc/rfc7143.html#appendix-A.4)
+and the [CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/17plus.htm#crc.cat.crc-32-iscsi).
+
+`CRC32CAccumulator` provides the same `Append`, `GetCurrentValue` and `Reset`
+pattern as the other accumulators. `ComputeCRC32C` and `ComputeCRC32CAsync` read
+from the current stream position to EOF using one reusable 64 KiB input buffer.
+They leave the stream open; the async method accepts `cancellationToken`.
+Chunk sizes and split positions do not change the CRC for the same ordered data.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+var detector = new CRC32C();
+
+Console.WriteLine($"CRC32C: {data.CRC32C():X8}");
+byte[] frame = data.WithCRC32C().ToArray();
+Console.WriteLine($"CRC32C frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"CRC32C decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new CRC32CAccumulator();
+accumulator.Append(data.AsSpan(0, 4));
+accumulator.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked CRC32C: {accumulator.GetCurrentValue():X8}");
+accumulator.Reset();
+Console.WriteLine($"Reset CRC32C: {accumulator.GetCurrentValue():X8}");
+
+using var syncStream = new MemoryStream(data, writable: false);
+using var asyncStream = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream CRC32C: {syncStream.ComputeCRC32C():X8}");
+Console.WriteLine($"Async stream CRC32C: {await asyncStream.ComputeCRC32CAsync():X8}");
+// All CRC32C values are E3069283 except Reset, which returns 00000000.
+// The frame validity and decoded-payload checks both print True.
+```
+
+Empty CRC32C input returns zero, including an empty accumulator or stream.
+Empty appends have no effect, and reading the accumulator's current value does
+not reset it. Appended buffers can be reused immediately. Accumulators require
+no disposal; use a separate instance for each concurrent calculation.
+
+`Compute`, `Encode`, `Decode`, `IsError` and the CRC32C byte-sequence extensions
+accept single-pass enumerables. The frame methods buffer the payload or frame.
+Use the accumulator or stream methods for input whose size should not determine
+buffer memory. Null inputs throw `ArgumentNullException`.
+
+`CRC32C.Compute` returns four digest bytes in the machine's native byte order,
+matching the existing CRC32 framing convention. On a little-endian machine the
+check input produces `83 92 06 E3`; on a big-endian machine it produces
+`E3 06 92 83`. Protocols with a fixed byte order need explicit serialization of
+the numerical CRC. `Encode` appends these digest bytes. As with CRC32, frames
+containing only a digest are invalid: `IsError` returns `true` and `Decode`
+returns an empty sequence for frames of four bytes or fewer.
+
 ## Streaming CRC (unreleased)
 
 The following APIs are additions for the next release. Existing CRC methods and
 their results remain unchanged. Both streaming forms return the same numerical
-value as the corresponding existing numeric extension for non-empty input,
+value as the corresponding numeric extension for non-empty input,
 when the same algorithm processes the same bytes in the same order. Chunk sizes
 and split positions do not affect the final value. CRC16 DNP keeps its legacy
 representation.
@@ -145,14 +211,16 @@ representation.
 | CRC8 | `ComputeCRC8` / `ComputeCRC8Async` | `CRC8Accumulator` | `byte` |
 | CRC16 | `ComputeCRC16` / `ComputeCRC16Async` | `CRC16Accumulator` | `ushort` |
 | CRC32 | `ComputeCRC32` / `ComputeCRC32Async` | `CRC32Accumulator` | `uint` |
+| CRC32C | `ComputeCRC32C` / `ComputeCRC32CAsync` | `CRC32CAccumulator` | `uint` |
 
-All new methods and constructors default to `Classic`. They support the existing
-algorithm enums and `Basic` aliases. Async methods return `Task<byte>`,
+CRC8, CRC16 and CRC32 methods and constructors default to `Classic`. They support
+the existing algorithm enums and `Basic` aliases. CRC32C has one fixed algorithm
+and takes no algorithm argument. Async methods return `Task<byte>`,
 `Task<ushort>` or `Task<uint>`. All APIs are in `Mythosia.Integrity.CRC`.
 
 ### Read a stream
 
-`ComputeCRC8`, `ComputeCRC16` and `ComputeCRC32` read from the stream's current
+`ComputeCRC8`, `ComputeCRC16`, `ComputeCRC32` and `ComputeCRC32C` read from the stream's current
 position to its end. Their `Async` counterparts support a named
 `cancellationToken` argument. Each calculation reuses one 64 KiB input buffer,
 requires no seeking or known length, and leaves the stream open on success,
@@ -230,7 +298,7 @@ throws `InvalidOperationException` from `GetCurrentValue`. CRC8 stream methods
 throw the same exception when there are no remaining bytes. The existing CRC8
 API has no numeric result for empty input. Empty CRC16 returns
 `FFFF` for Modbus and `0000` for the other variants, including legacy DNP; empty
-CRC32 returns `00000000`. Unsupported algorithm values throw
+CRC32 and CRC32C return `00000000`. Unsupported CRC8/CRC16/CRC32 algorithm values throw
 `ArgumentOutOfRangeException`.
 
 Stream methods reject a null source with `ArgumentNullException` and an unreadable

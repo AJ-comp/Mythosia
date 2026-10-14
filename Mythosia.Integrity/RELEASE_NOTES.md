@@ -42,6 +42,27 @@ preserving the public API and existing algorithm results.
 These changes are available in the source tree and have not been published to
 NuGet. No package version or release date is assigned yet.
 
+### CRC32C / Castagnoli
+
+- Add a separate `CRC32C` detector and `CRC32C` / `WithCRC32C` byte-sequence
+  extensions, preserving all existing APIs, enum values and CRC results.
+- Add `CRC32CAccumulator` with `Append(ReadOnlySpan<byte>)`, non-destructive
+  `GetCurrentValue()` and `Reset()`, plus `ComputeCRC32C` / `ComputeCRC32CAsync`
+  stream extensions with cancellation and one reusable 64 KiB input buffer.
+- Use the CRC-32/ISCSI parameters: polynomial `0x1EDC6F41`, reflected input and
+  output, initial state and final XOR `0xFFFFFFFF`. Empty input returns zero.
+- Follow the existing CRC32 native-endian digest and frame convention. CRC32C
+  byte-sequence methods also support single-pass enumerables; use streams or
+  accumulators for bounded input-buffer memory.
+- Add fixed RFC 7143 and CRC RevEng/Google vectors, an independent normal-form
+  bitwise reference, exhaustive two-byte inputs, partition and stream tests.
+  Include the new tests and an executable package-backed README example in CI.
+- Add 196 CRC32C test cases (122 calculation/frame/accumulator and 74 stream
+  cases), bringing the Integrity suite to 1,812. Require both CRC32C suites in
+  the CI result guard and test that missing suites block release selection.
+- Retain the existing five README examples and their fixed output; add a sixth
+  CRC32C example. Preserve all 113 prior API declarations and review 17 new ones.
+
 ### Streaming CRC
 
 - Add `CRC8Accumulator`, `CRC16Accumulator` and `CRC32Accumulator` with
@@ -70,8 +91,8 @@ NuGet. No package version or release date is assigned yet.
 - Verify buffer reuse and lifetime, generated large streams, non-seekable and
   partial reads, current position, stream ownership, cancellation, read failures
   and asynchronous continuation behavior.
-- Verify all 1,616 Integrity tests in local Debug and Release builds, plus the
+- Verify all 1,812 Integrity tests in local Debug and Release builds, plus the
   existing benchmark correctness validation.
-- Add two executable README examples with fixed expected output. Validate all
-  five examples, public API and metadata against actual candidate NuGet packages
+- Add executable streaming and CRC32C README examples with fixed expected output.
+  Validate all six examples, public API and metadata against actual candidate NuGet packages
   in local Debug and Release builds.

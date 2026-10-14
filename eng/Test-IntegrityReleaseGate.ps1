@@ -30,8 +30,10 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 1616
+$minimumTestCount = 1812
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
+$crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
+$crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
 $githubSentinel = "existing-output=preserved`n"
 $utf8 = [Text.UTF8Encoding]::new($false)
 
@@ -106,7 +108,12 @@ function New-PassingTrx([string] $Path) {
     $document = [Text.StringBuilder]::new()
     [void] $document.Append('<TestRun xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010"><Results>')
     for ($index = 0; $index -lt $minimumTestCount; $index++) {
-        $name = if ($index -eq 0) { $apiTestName } else { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
+        $name = switch ($index) {
+            0 { $apiTestName }
+            1 { "${crc32CTestPrefix}SyntheticGateFixture" }
+            2 { "${crc32CStreamTestPrefix}SyntheticGateFixture" }
+            default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
+        }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
     }
     [void] $document.Append('</Results><ResultSummary outcome="Completed"><Counters ')
@@ -347,7 +354,7 @@ $cases = @(
         param($c) Edit-Trx $c { param($d) $d.TestRun.ResultSummary.Counters.SetAttribute('failed', '1'); $d.TestRun.Results.UnitTestResult[1].SetAttribute('outcome', 'Failed') }
     } },
     @{ Name = 'contradictory-trx-counter'; ExpectSuccess = $false; Change = {
-        param($c) Edit-Trx $c { param($d) $d.TestRun.ResultSummary.Counters.SetAttribute('passed', '1615') }
+        param($c) Edit-Trx $c { param($d) $d.TestRun.ResultSummary.Counters.SetAttribute('passed', [string]($minimumTestCount - 1)) }
     } },
     @{ Name = 'narrowed-test-suite'; ExpectSuccess = $false; Change = {
         param($c) Edit-Trx $c {
@@ -370,6 +377,26 @@ $cases = @(
             $api = @($d.TestRun.Results.UnitTestResult | Where-Object { $_.GetAttribute('testName') -ceq $apiTestName })
             if ($api.Count -ne 1) { throw 'Fixture needs exactly one public API snapshot test.' }
             $api[0].SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OtherCase')
+        }
+    } },
+    @{ Name = 'missing-crc32c-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc32CTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCalculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-crc32c-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc32CStreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedStream')
+                }
+            }
         }
     } },
     @{ Name = 'foreign-test-namespace'; ExpectSuccess = $false; Change = {
