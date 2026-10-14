@@ -82,9 +82,9 @@ surface.
 `Crc32CTests` adds 122
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
 `Crc64Tests` adds 34 focused cases for calculation, frames, accumulators and streams.
-`Crc16VariantTests` adds 37 focused cases. The complete suite gained 117 cases
+`Crc16VariantTests` adds 166 focused cases. The complete suite gained 246 cases
 through these and the extended algorithm, accumulator and stream suites.
-The TRX completeness check requires at least 1,963 passing tests, including the
+The TRX completeness check requires at least 2,092 passing tests, including the
 public API guard, both CRC32C suites, the CRC64 suite and the CRC16 variant suite.
 Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
@@ -101,9 +101,14 @@ source links alongside the fixed vectors. The release gate regression also
 rejects reports that omit a required CRC16 variant, CRC32C or CRC64 suite even if
 totals still pass.
 
-CRC16 CCITT-FALSE and X25 correctness uses 16 published fixed answers: seven
-AUTOSAR CRC Routines vectors, four ITU-T X.25 frames, three ITSO TS 1000-2 CRC_B
-examples and two catalogue check values. The existing normal-polynomial bitwise
+CRC16 CCITT-FALSE and X25 correctness uses 80 published fixed answers: 38
+CCITT-FALSE and 42 X25 distinct non-empty inputs. They retain the seven AUTOSAR
+CRC Routines vectors, four ITU-T X.25 frames, three ITSO TS 1000-2 CRC_B examples
+and two catalogue checks, and add 64 fixed answers from pinned upstream tests.
+These include library, RTOS, networking and EMV QR fixtures, 1-to-554-byte inputs,
+ASCII, binary, repeated data, UTF-8 and CRC values with leading zeros. A corpus
+guard rejects duplicates and requires at least 30 distinct inputs per algorithm.
+The existing normal-polynomial bitwise
 oracle is calibrated against those answers. Each vector is checked through the
 numeric/digest, frame, every split and sync/async stream paths. Protocol X25
 residue uses explicit low-byte-first FCS independently of native-endian library

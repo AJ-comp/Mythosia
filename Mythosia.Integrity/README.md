@@ -144,7 +144,9 @@ from the existing `CCITTxModem` algorithm:
 | `CCITTFalse` | CRC-16/IBM-3740 (CCITT-FALSE) | `FFFF` | No | `0000` | `29B1` | `FFFF` |
 | `X25` | CRC-16/IBM-SDLC (X-25) | `FFFF` | Yes | `FFFF` | `906E` | `0000` |
 
-Tests use seven published CCITT-FALSE vectors from
+Tests use 80 published, fixed answers: 38 for CCITT-FALSE and 42 for X25,
+with distinct non-empty inputs for each algorithm. They include seven
+CCITT-FALSE vectors from
 [AUTOSAR CRC Routines, R24-11, SWS_Crc_00078](https://www.autosar.org/fileadmin/standards/R24-11/CP/AUTOSAR_CP_SWS_CRCLibrary.pdf),
 four X25 frames from
 [ITU-T X.25 (10/96), Appendix I](https://www.itu.int/rec/dologin_pub.asp?id=T-REC-X.25-199610-I!!PDF-E&lang=e&type=items),
@@ -152,6 +154,12 @@ and three CRC_B examples from the
 [ITSO TS 1000-2:2025-03, Annex A.1.1](https://www.itso.org.uk/download/42151.2/part-2-customer-media-data-and-customer-media-architecture/).
 The two standard check values are also listed in the
 [CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/16.htm).
+Additional fixed answers come from pinned upstream tests in libcrc, howeyc/crc16,
+Archipel, P4, RIOT, cppcrc, Tcllib, snksoft/crc, npat-efault/crc16 and two EMV QR
+implementations. Cases cover 1-to-554-byte inputs, ASCII, binary bytes, repeated
+data, UTF-8 packets and leading-zero CRC values. Exact inputs, expected values
+and source commits are recorded in `Crc16VariantTests.cs`. Tests use these frozen
+answers without network access or generating expected values from the library.
 
 ```csharp
 using System;

@@ -50,16 +50,19 @@ NuGet. No package version or release date is assigned yet.
 - Preserve all existing enum values, optional defaults, algorithms and native
   digest byte order. The new types return `FFFF` and `0000`, respectively, for
   empty input; their single-shot calculations accept single-pass enumerables.
-- Add 16 published fixed vectors: seven AUTOSAR CCITT-FALSE examples, four ITU-T
-  X.25 frames, three ITSO TS 1000-2 CRC_B examples and two
-  catalogue check values. Check these independently of production calculations.
+- Add 80 published fixed vectors: 38 CCITT-FALSE and 42 X25 distinct non-empty
+  inputs. Retain the AUTOSAR, ITU-T, ITSO and catalogue vectors and add fixed
+  answers from pinned upstream library, RTOS, networking and EMV QR tests.
+  Include short and long ASCII, binary, repeated and UTF-8 inputs and CRC values
+  with leading zeros. Check these independently of production calculations.
 - Extend the existing bitwise oracle, exhaustive short-input, partition and
   stream tests, including 64 KiB boundaries, cancellation and read failures.
 - Add a package-backed README example and two reviewed enum declarations.
   Require the new vector suite in CI and release selection. No package version
   change or NuGet publication.
-- Add 117 test cases through the focused vector suite and existing algorithm,
-  accumulator and stream suites, bringing the complete Integrity suite to 1,963.
+- Add 246 test cases through the focused vector suite and existing algorithm,
+  accumulator and stream suites, bringing the complete Integrity suite to 2,092.
+  Require at least 30 distinct non-empty published inputs for each new CRC16 type.
 
 ### CRC64 / NVME
 
@@ -128,7 +131,7 @@ NuGet. No package version or release date is assigned yet.
 - Verify buffer reuse and lifetime, generated large streams, non-seekable and
   partial reads, current position, stream ownership, cancellation, read failures
   and asynchronous continuation behavior.
-- Run all 1,963 Integrity tests in Windows/Linux Debug/Release CI, plus the
+- Run all 2,092 Integrity tests in Windows/Linux Debug/Release CI, plus the
   existing benchmark correctness validation.
 - Add executable streaming, CRC16 variants, CRC32C and CRC64 README examples with fixed expected
   output. Validate all eight examples, public API and metadata against actual
