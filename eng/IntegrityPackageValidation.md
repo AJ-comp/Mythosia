@@ -62,19 +62,19 @@ approved public API snapshot.
 ## CRC16 variants, streaming CRC, CRC32C and CRC64 coverage
 
 The README has eight independent consumers: CRC, checksum, common API, CRC16
-variants, CRC32C, CRC64, streaming CRC and chunked CRC. The seven examples that
-preceded the CRC16 variants keep their code hashes and expected outputs unchanged.
+variants, CRC32C, CRC64, streaming CRC and chunked CRC. Their code hashes and
+expected outputs are fixed in the reviewed manifest.
 The CRC16 example checks `CCITTFalse` (`29B1`) and `X25` (`906E`) using numeric,
 frame, accumulator and synchronous/asynchronous stream APIs. The CRC32C and CRC64 examples
 freeze the `123456789` check values `E3069283` and `AE8B14860A799888`, respectively,
 validate and decode a frame, check incremental state/reset, and execute both
 stream methods. Their numerical output is identical on either byte order.
 
-The reviewed API snapshot retains all 85 released declarations, the 28 streaming
-additions, the 17 CRC32C additions and their exact attributes/defaults, and adds
-24 CRC64 declarations and two CRC16 enum members. The complete snapshot has 156
-entries and 25 public types. Keep
-existing declarations unchanged when reviewing future additions; the snapshot
+The reviewed API snapshot retains all 85 declarations from version 1.2.1,
+including their exact attributes and defaults. Version 1.3.0 adds 71 declarations
+for streaming CRC, CRC32C, CRC64 and the two CRC16 variants. The complete snapshot
+has 156 entries and 25 public types. Keep existing declarations unchanged when
+reviewing future additions; the snapshot
 test and package consumer still require an exact match with the complete reviewed
 surface.
 
@@ -82,8 +82,8 @@ surface.
 `Crc32CTests` adds 153
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
 `Crc64Tests` adds 90 focused cases for calculation, frames, accumulators and streams.
-`Crc16VariantTests` adds 166 focused cases. Its original feature added 246 CRC16
-cases through these and the extended algorithm, accumulator and stream suites.
+`Crc16VariantTests` adds 166 focused cases. The shared algorithm, accumulator and
+stream suites also cover both added CRC16 variants.
 The TRX completeness check requires at least 2,179 passing tests, including the
 public API guard, both CRC32C suites, the CRC64 suite and the CRC16 variant suite.
 Coverage includes all supported algorithms and aliases,
@@ -133,9 +133,8 @@ representative lengths and chunk boundaries, incremental state, eight-byte frame
 packing, single-pass inputs, and the sync/async stream wrappers. It reuses the
 existing CI and package validation without adding a separate test harness.
 
-Until these additions are released, the README and release notes identify them as
-unreleased source changes. Candidate packages are validation outputs only; this
-validation step does not publish them. Ordinary CI leaves publication disabled.
+Version 1.3.0 includes these algorithms and streaming APIs. Candidate packages
+remain validation outputs; this validation step does not publish them.
 
 The optional publish job selects the exact validated Ubuntu Release candidate
 only after all four CI jobs and their artifact evidence pass. Ordinary CI keeps

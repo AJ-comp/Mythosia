@@ -10,23 +10,23 @@
     <Product>Mythosia.Integrity</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>CRC and 8-bit checksum calculation, frame encoding, error detection and payload decoding for byte sequences through a common ErrorDetection API.
-Supports CRC8 Classic/Maxim, CRC16 Classic/Modbus/CCITT XModem/DNP, CRC32 Classic, and XOR/NMEA, modulo-256 and two's-complement checksums.
-Targets .NET Standard 2.1. See the package README for examples and byte-order behavior.</Description>
-    <PackageReleaseNotes>1.2.1
-- Make CRC16 and CRC32 lookup-table initialization safe during concurrent first use.
-- Reduce repeated enumeration, redundant frame-length checks and CRC8/CRC16 byte-array traversal overhead.
-- Remove boxing, marshaling and temporary serialization buffers from CRC16/CRC32 digest packing.
-- Preserve the public API, existing calculation results, native byte order and legacy DNP representation.
-- Add independent correctness, compatibility and initialization tests, Windows/Linux Debug/Release CI, and corrected executable README examples.
+Supports CRC8 Classic/Maxim, CRC16 Classic/Modbus/CCITT XModem/DNP/CCITT-FALSE/X25, CRC32 Classic, CRC32C (Castagnoli), CRC64/NVME, and XOR/NMEA, modulo-256 and two's-complement checksums.
+Includes incremental accumulators and synchronous/asynchronous stream CRC calculation with a reusable 64 KiB buffer. Targets .NET Standard 2.1. See the package README for examples and byte-order behavior.</Description>
+    <PackageReleaseNotes>1.3.0
+- Add incremental accumulators and synchronous/asynchronous streaming for CRC8, CRC16 and CRC32, with cancellation support and a reusable 64 KiB buffer.
+- Add CRC32C (Castagnoli), CRC64/NVME and CRC16 CCITT-FALSE/X25 across calculation, frame, accumulator and stream APIs.
+- Preserve all existing public API declarations, optional defaults, calculation results, native digest byte order and legacy DNP representation.
+- Validate 175 published fixed answers for the new algorithms within 2,179 Integrity tests, plus independent calculations, partitions, streams and compatibility checks.
+- Verify actual NuGet packages, all eight executable README examples, public API and metadata in Windows/Linux Debug/Release CI; publish only the exact package that passes all four configurations.
 Full release notes: https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md</PackageReleaseNotes>
-    <PackageTags>CRC CRC8 CRC8-MAXIM CRC16 Modbus XModem DNP CRC32 checksum XOR NMEA modulo-256 two's-complement</PackageTags>
+    <PackageTags>CRC CRC8 CRC8-MAXIM CRC16 Modbus XModem DNP CCITT-FALSE X25 CRC32 CRC32C Castagnoli CRC64 NVME streaming checksum XOR NMEA modulo-256 two's-complement</PackageTags>
     <PackageProjectUrl>https://github.com/AJ-comp/Mythosia/tree/master/Mythosia.Integrity</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AJ-comp/Mythosia</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.2.1</Version>
+    <Version>1.3.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.1.0</FileVersion>
+    <FileVersion>1.3.0.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

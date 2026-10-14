@@ -3,13 +3,10 @@
 CRC and 8-bit checksum calculation, frame encoding and error detection for byte
 sequences. Hash algorithms are provided by `Mythosia.Security.Cryptography`.
 
-Version `1.2.1` improves initialization safety and calculation efficiency while
-preserving the public API and existing results. See the
+Version `1.3.0` adds CRC16 CCITT-FALSE/X25, CRC32C, CRC64/NVME and incremental
+and streaming CRC calculation while preserving the existing public API and
+results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
-
-The CRC16 CCITT-FALSE/X25, CRC32C, CRC64 and streaming CRC sections describe
-unreleased source changes.
-Use a source build until a package containing these APIs is published.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
@@ -132,7 +129,7 @@ foreach (ErrorDetection detector in detectors)
 // Every detector prints valid=True, decoded=True and Damaged frame: True.
 ```
 
-## CRC16 / CCITT-FALSE and X25 (unreleased)
+## CRC16 / CCITT-FALSE and X25
 
 Select `CRC16Type.CCITTFalse` or `CRC16Type.X25` with the existing CRC16 APIs.
 Both are additions; existing enum values, defaults and CRC results are unchanged.
@@ -202,7 +199,7 @@ CCITT-FALSE protocols may specify a different order. Serialize the numerical
 result explicitly when implementing a protocol; these APIs do not add flags,
 bit stuffing or protocol headers.
 
-## CRC32C / Castagnoli (unreleased)
+## CRC32C / Castagnoli
 
 CRC32C is available through separate APIs in `Mythosia.Integrity.CRC`:
 `data.CRC32C()`, `data.WithCRC32C()` and the `CRC32C` detector. The existing
@@ -277,7 +274,7 @@ the numerical CRC. `Encode` appends these digest bytes. As with CRC32, frames
 containing only a digest are invalid: `IsError` returns `true` and `Decode`
 returns an empty sequence for frames of four bytes or fewer.
 
-## CRC64 / NVME (unreleased)
+## CRC64 / NVME
 
 Select the CRC64 algorithm using `CRC64Type.NVME`, following the existing
 `CRC16(type)` and `CRC32(type)` pattern. NVME is the only supported CRC64 type
@@ -347,10 +344,10 @@ fewer, and `Decode` returns an empty sequence for an invalid frame. Frame method
 buffer the payload or frame; use the accumulator or stream methods for bounded
 input-buffer memory. Null inputs throw `ArgumentNullException`.
 
-## Streaming CRC (unreleased)
+## Streaming CRC
 
-The following APIs are additions for the next release. Existing CRC methods and
-their results remain unchanged. Both streaming forms return the same numerical
+Version 1.3.0 adds the following APIs. Existing CRC methods and their results
+remain unchanged. Both streaming forms return the same numerical
 value as the corresponding numeric extension for non-empty input,
 when the same algorithm processes the same bytes in the same order. Chunk sizes
 and split positions do not affect the final value. CRC16 DNP keeps its legacy
