@@ -19,6 +19,8 @@ internal static class CrcReference
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-modbus
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-xmodem
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-dnp
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-3740
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-sdlc
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iso-hdlc
     private static readonly Parameters Smbus = new(8, 0x07, 0, false, false, 0);
     private static readonly Parameters Maxim = new(8, 0x31, 0, true, true, 0);
@@ -26,6 +28,8 @@ internal static class CrcReference
     private static readonly Parameters Modbus = new(16, 0x8005, 0xFFFF, true, true, 0);
     private static readonly Parameters Xmodem = new(16, 0x1021, 0, false, false, 0);
     private static readonly Parameters Dnp = new(16, 0x3D65, 0, true, true, 0xFFFF);
+    private static readonly Parameters CcittFalse = new(16, 0x1021, 0xFFFF, false, false, 0);
+    private static readonly Parameters X25 = new(16, 0x1021, 0xFFFF, true, true, 0xFFFF);
     private static readonly Parameters IsoHdlc = new(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF);
 
     public static byte Compute8(IEnumerable<byte> source, CRC8Type type)
@@ -48,6 +52,8 @@ internal static class CrcReference
             CRC16Type.Modbus => Modbus,
             CRC16Type.CCITTxModem => Xmodem,
             CRC16Type.DNP => Dnp,
+            CRC16Type.CCITTFalse => CcittFalse,
+            CRC16Type.X25 => X25,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         return (ushort)Compute(source, parameters);

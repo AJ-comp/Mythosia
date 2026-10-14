@@ -7,7 +7,8 @@ Version `1.2.1` improves initialization safety and calculation efficiency while
 preserving the public API and existing results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The CRC32C, CRC64 and streaming CRC sections describe unreleased source changes.
+The CRC16 CCITT-FALSE/X25, CRC32C, CRC64 and streaming CRC sections describe
+unreleased source changes.
 Use a source build until a package containing these APIs is published.
 
 Each C# block below is a complete, independent example for a .NET 8 console
@@ -130,6 +131,68 @@ foreach (ErrorDetection detector in detectors)
 }
 // Every detector prints valid=True, decoded=True and Damaged frame: True.
 ```
+
+## CRC16 / CCITT-FALSE and X25 (unreleased)
+
+Select `CRC16Type.CCITTFalse` or `CRC16Type.X25` with the existing CRC16 APIs.
+Both are additions; existing enum values, defaults and CRC results are unchanged.
+The polynomial is `0x1021`, but the initialization and reflection settings differ
+from the existing `CCITTxModem` algorithm:
+
+| Type | Standard name | Initial state | Reflect input/output | Final XOR | `123456789` | Empty input |
+| --- | --- | --- | --- | --- | --- | --- |
+| `CCITTFalse` | CRC-16/IBM-3740 (CCITT-FALSE) | `FFFF` | No | `0000` | `29B1` | `FFFF` |
+| `X25` | CRC-16/IBM-SDLC (X-25) | `FFFF` | Yes | `FFFF` | `906E` | `0000` |
+
+Tests use seven published CCITT-FALSE vectors from
+[AUTOSAR CRC Routines, R24-11, SWS_Crc_00078](https://www.autosar.org/fileadmin/standards/R24-11/CP/AUTOSAR_CP_SWS_CRCLibrary.pdf),
+four X25 frames from
+[ITU-T X.25 (10/96), Appendix I](https://www.itu.int/rec/dologin_pub.asp?id=T-REC-X.25-199610-I!!PDF-E&lang=e&type=items),
+and three CRC_B examples from the
+[ITSO TS 1000-2:2025-03, Annex A.1.1](https://www.itso.org.uk/download/42151.2/part-2-customer-media-data-and-customer-media-architecture/).
+The two standard check values are also listed in the
+[CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/16.htm).
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+foreach (CRC16Type type in new[] { CRC16Type.CCITTFalse, CRC16Type.X25 })
+{
+    var detector = new CRC16(type);
+    Console.WriteLine($"CRC16 {type}: {data.CRC16(type):X4}");
+    byte[] frame = data.WithCRC16(type).ToArray();
+    Console.WriteLine($"CRC16 {type} frame valid: {!detector.IsError(frame)}");
+    Console.WriteLine($"CRC16 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+    var accumulator = new CRC16Accumulator(type);
+    accumulator.Append(data.AsSpan(0, 4));
+    accumulator.Append(data.AsSpan(4));
+    Console.WriteLine($"Chunked CRC16 {type}: {accumulator.GetCurrentValue():X4}");
+
+    using var syncStream = new MemoryStream(data, writable: false);
+    using var asyncStream = new MemoryStream(data, writable: false);
+    Console.WriteLine($"Stream CRC16 {type}: {syncStream.ComputeCRC16(type):X4}");
+    Console.WriteLine($"Async stream CRC16 {type}: {await asyncStream.ComputeCRC16Async(type):X4}");
+}
+// CCITTFalse values are 29B1; X25 values are 906E. Frame checks print True.
+```
+
+Both types work with `CRC16`, `CRC16Accumulator`, `CRC16` / `WithCRC16` and
+`ComputeCRC16` / `ComputeCRC16Async`. Reading an accumulator does not finalize or
+reset its state; appending further bytes continues the same calculation.
+The new types' `Compute` and numeric extension support single-pass enumerables.
+The inherited frame methods still require repeatable input.
+
+Digest and frame bytes retain the existing CRC16 native byte order. Protocol
+serialization is separate: X.25 sends the low FCS byte first, whereas
+CCITT-FALSE protocols may specify a different order. Serialize the numerical
+result explicitly when implementing a protocol; these APIs do not add flags,
+bit stuffing or protocol headers.
 
 ## CRC32C / Castagnoli (unreleased)
 
@@ -357,8 +420,9 @@ Before any non-empty append after construction or `Reset`, `CRC8Accumulator`
 throws `InvalidOperationException` from `GetCurrentValue`. CRC8 stream methods
 throw the same exception when there are no remaining bytes. The existing CRC8
 API has no numeric result for empty input. Empty CRC16 returns
-`FFFF` for Modbus and `0000` for the other variants, including legacy DNP; empty
-CRC32 and CRC32C return `00000000`; CRC64 returns zero. Unsupported algorithm values throw
+`FFFF` for Modbus and CCITTFalse, and `0000` for the other variants, including X25
+and legacy DNP. Empty CRC32 and CRC32C return `00000000`; CRC64 returns zero.
+Unsupported algorithm values throw
 `ArgumentOutOfRangeException`.
 
 Stream methods reject a null source with `ArgumentNullException` and an unreadable

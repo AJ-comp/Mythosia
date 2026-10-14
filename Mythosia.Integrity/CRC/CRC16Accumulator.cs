@@ -17,12 +17,14 @@ namespace Mythosia.Integrity.CRC
         private const ushort ClassicReflectedPolynomial = 0xA001;
         private const ushort XModemPolynomial = 0x1021;
         private const ushort DnpReflectedPolynomial = 0xA6BC;
+        private const ushort X25ReflectedPolynomial = 0x8408;
 
         // Classic and Modbus share a polynomial; only their initial states differ.
         // Tables are generated once, fully initialized, and never modified or exposed.
         private static readonly ushort[] ClassicTable = GenerateReflectedTable(ClassicReflectedPolynomial);
         private static readonly ushort[] XModemTable = GenerateXModemTable();
         private static readonly ushort[] DnpTable = GenerateReflectedTable(DnpReflectedPolynomial);
+        private static readonly ushort[] X25Table = GenerateReflectedTable(X25ReflectedPolynomial);
 
         private readonly ushort[] _table;
         private readonly ushort _initialState;
@@ -49,11 +51,15 @@ namespace Mythosia.Integrity.CRC
                 CRC16Type.Modbus => ClassicTable,
                 CRC16Type.CCITTxModem => XModemTable,
                 CRC16Type.DNP => DnpTable,
+                CRC16Type.CCITTFalse => XModemTable,
+                CRC16Type.X25 => X25Table,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC16 algorithm.")
             };
 #pragma warning restore CS0618
             Type = type;
-            _initialState = type == CRC16Type.Modbus ? ushort.MaxValue : (ushort)0;
+            _initialState = type == CRC16Type.Modbus || type == CRC16Type.CCITTFalse || type == CRC16Type.X25
+                ? ushort.MaxValue
+                : (ushort)0;
             _state = _initialState;
         }
 
@@ -66,7 +72,7 @@ namespace Mythosia.Integrity.CRC
             if (source.IsEmpty) return;
 
             ushort state = _state;
-            if (Type == CRC16Type.CCITTxModem)
+            if (Type == CRC16Type.CCITTxModem || Type == CRC16Type.CCITTFalse)
             {
                 foreach (byte value in source)
                     state = unchecked((ushort)((state << BitsPerByte) ^ _table[(state >> BitsPerByte) ^ value]));
@@ -85,12 +91,14 @@ namespace Mythosia.Integrity.CRC
         /// Gets the CRC16 value for all appended bytes without changing the calculation state.
         /// </summary>
         /// <returns>
-        /// The current CRC16 value. With no appended bytes, Modbus returns 0xFFFF and other
-        /// algorithms return zero. Nonempty DNP results use the legacy complement and byte swap.
+        /// The current CRC16 value. With no appended bytes, Modbus and CCITTFalse return 0xFFFF
+        /// and other algorithms return zero. X25 applies a final XOR of 0xFFFF without changing
+        /// the calculation state. Nonempty DNP results use the legacy complement and byte swap.
         /// More bytes may be appended after reading the value.
         /// </returns>
         public ushort GetCurrentValue()
         {
+            if (Type == CRC16Type.X25) return unchecked((ushort)~_state);
             if (Type != CRC16Type.DNP || !_hasData) return _state;
 
             ushort complemented = unchecked((ushort)~_state);

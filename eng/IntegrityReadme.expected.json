@@ -76,6 +76,38 @@
       ]
     },
     {
+      "id": "crc16-variants",
+      "codeSha256": "D801B1960978EF29AE6A19A3492486CD9AC372EE637F20E2061A5171F7B7350A",
+      "stdoutLittleEndian": [
+        "CRC16 CCITTFalse: 29B1",
+        "CRC16 CCITTFalse frame valid: True",
+        "CRC16 CCITTFalse decoded: True",
+        "Chunked CRC16 CCITTFalse: 29B1",
+        "Stream CRC16 CCITTFalse: 29B1",
+        "Async stream CRC16 CCITTFalse: 29B1",
+        "CRC16 X25: 906E",
+        "CRC16 X25 frame valid: True",
+        "CRC16 X25 decoded: True",
+        "Chunked CRC16 X25: 906E",
+        "Stream CRC16 X25: 906E",
+        "Async stream CRC16 X25: 906E"
+      ],
+      "stdoutBigEndian": [
+        "CRC16 CCITTFalse: 29B1",
+        "CRC16 CCITTFalse frame valid: True",
+        "CRC16 CCITTFalse decoded: True",
+        "Chunked CRC16 CCITTFalse: 29B1",
+        "Stream CRC16 CCITTFalse: 29B1",
+        "Async stream CRC16 CCITTFalse: 29B1",
+        "CRC16 X25: 906E",
+        "CRC16 X25 frame valid: True",
+        "CRC16 X25 decoded: True",
+        "Chunked CRC16 X25: 906E",
+        "Stream CRC16 X25: 906E",
+        "Async stream CRC16 X25: 906E"
+      ]
+    },
+    {
       "id": "crc32c",
       "codeSha256": "F5F57AAD9723709DD318FC72911DD22FAE14753737D6CA0B1E2113176C2975AE",
       "stdoutLittleEndian": [

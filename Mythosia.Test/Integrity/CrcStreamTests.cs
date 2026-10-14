@@ -24,6 +24,8 @@ public sealed class CrcStreamTests
         Crc16Modbus,
         Crc16Xmodem,
         Crc16Dnp,
+        Crc16CcittFalse,
+        Crc16X25,
         Crc32Basic,
         Crc32Classic
     }
@@ -61,6 +63,8 @@ public sealed class CrcStreamTests
             Algorithm.Crc16Xmodem => 0x31C3,
             // Preserve the existing numeric API's byte-swapped DNP value.
             Algorithm.Crc16Dnp => 0x82EA,
+            Algorithm.Crc16CcittFalse => 0x29B1,
+            Algorithm.Crc16X25 => 0x906E,
             Algorithm.Crc32Basic or Algorithm.Crc32Classic => 0xCBF43926,
             _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
         };
@@ -174,7 +178,7 @@ public sealed class CrcStreamTests
             await Assert.ThrowsAsync<InvalidOperationException>(() => ComputeForModeAsync(source, algorithm, mode));
         else
         {
-            uint expected = algorithm == Algorithm.Crc16Modbus ? 0xFFFFu : 0u;
+            uint expected = algorithm is Algorithm.Crc16Modbus or Algorithm.Crc16CcittFalse ? 0xFFFFu : 0u;
             Assert.Equal(expected, await ComputeForModeAsync(source, algorithm, mode));
         }
 
@@ -404,6 +408,8 @@ public sealed class CrcStreamTests
         Algorithm.Crc16Modbus => CrcReference.Compute16(payload, CRC16Type.Modbus),
         Algorithm.Crc16Xmodem => CrcReference.Compute16(payload, CRC16Type.CCITTxModem),
         Algorithm.Crc16Dnp => CrcReference.ToLegacyDnpRepresentation(CrcReference.Compute16(payload, CRC16Type.DNP)),
+        Algorithm.Crc16CcittFalse => CrcReference.Compute16(payload, CRC16Type.CCITTFalse),
+        Algorithm.Crc16X25 => CrcReference.Compute16(payload, CRC16Type.X25),
         Algorithm.Crc32Basic => CrcReference.Compute32(payload, CRC32Type.Basic),
         Algorithm.Crc32Classic => CrcReference.Compute32(payload, CRC32Type.Classic),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
@@ -419,6 +425,8 @@ public sealed class CrcStreamTests
         Algorithm.Crc16Modbus => payload.CRC16(CRC16Type.Modbus),
         Algorithm.Crc16Xmodem => payload.CRC16(CRC16Type.CCITTxModem),
         Algorithm.Crc16Dnp => payload.CRC16(CRC16Type.DNP),
+        Algorithm.Crc16CcittFalse => payload.CRC16(CRC16Type.CCITTFalse),
+        Algorithm.Crc16X25 => payload.CRC16(CRC16Type.X25),
         Algorithm.Crc32Basic => payload.CRC32(CRC32Type.Basic),
         Algorithm.Crc32Classic => payload.CRC32(CRC32Type.Classic),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
@@ -434,6 +442,8 @@ public sealed class CrcStreamTests
         Algorithm.Crc16Modbus => source.ComputeCRC16(CRC16Type.Modbus),
         Algorithm.Crc16Xmodem => source.ComputeCRC16(CRC16Type.CCITTxModem),
         Algorithm.Crc16Dnp => source.ComputeCRC16(CRC16Type.DNP),
+        Algorithm.Crc16CcittFalse => source.ComputeCRC16(CRC16Type.CCITTFalse),
+        Algorithm.Crc16X25 => source.ComputeCRC16(CRC16Type.X25),
         Algorithm.Crc32Basic => source.ComputeCRC32(CRC32Type.Basic),
         Algorithm.Crc32Classic => source.ComputeCRC32(CRC32Type.Classic),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
@@ -450,6 +460,8 @@ public sealed class CrcStreamTests
         Algorithm.Crc16Modbus => await source.ComputeCRC16Async(CRC16Type.Modbus, cancellationToken),
         Algorithm.Crc16Xmodem => await source.ComputeCRC16Async(CRC16Type.CCITTxModem, cancellationToken),
         Algorithm.Crc16Dnp => await source.ComputeCRC16Async(CRC16Type.DNP, cancellationToken),
+        Algorithm.Crc16CcittFalse => await source.ComputeCRC16Async(CRC16Type.CCITTFalse, cancellationToken),
+        Algorithm.Crc16X25 => await source.ComputeCRC16Async(CRC16Type.X25, cancellationToken),
         Algorithm.Crc32Basic => await source.ComputeCRC32Async(CRC32Type.Basic, cancellationToken),
         Algorithm.Crc32Classic => await source.ComputeCRC32Async(CRC32Type.Classic, cancellationToken),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))

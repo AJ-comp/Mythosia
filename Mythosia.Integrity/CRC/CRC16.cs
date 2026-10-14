@@ -14,6 +14,10 @@ namespace Mythosia.Integrity.CRC
         Modbus,
         CCITTxModem,
         DNP,
+        /// <summary>CRC-16/CCITT-FALSE (CRC-16/IBM-3740): polynomial 0x1021, initial state 0xFFFF, no reflection or final XOR.</summary>
+        CCITTFalse = 5,
+        /// <summary>CRC-16/X-25 (CRC-16/IBM-SDLC): polynomial 0x1021, reflected input and output, initial state and final XOR 0xFFFF.</summary>
+        X25 = 6,
     }
 
     public class CRC16 : ErrorDetection
@@ -34,8 +38,31 @@ namespace Mythosia.Integrity.CRC
             else if (Type == CRC16Type.Modbus) AppendNativeBytes(result, ComputeCRC16Modbus(source));
             else if (Type == CRC16Type.CCITTxModem) AppendNativeBytes(result, ComputeCCITTxModem(source));
             else if (Type == CRC16Type.DNP) AppendNativeBytes(result, ComputeDNP(source));
+            else if (Type == CRC16Type.CCITTFalse || Type == CRC16Type.X25)
+                AppendNativeBytes(result, ComputeIncrementally(source));
 
             return result;
+        }
+
+        private ushort ComputeIncrementally(IEnumerable<byte> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            var accumulator = new CRC16Accumulator(Type);
+            if (source is byte[] bytes)
+            {
+                accumulator.Append(bytes);
+                return accumulator.GetCurrentValue();
+            }
+
+            Span<byte> nextByte = stackalloc byte[1];
+            foreach (byte value in source)
+            {
+                nextByte[0] = value;
+                accumulator.Append(nextByte);
+            }
+
+            return accumulator.GetCurrentValue();
         }
 
         private static void AppendNativeBytes(List<byte> result, ushort value)

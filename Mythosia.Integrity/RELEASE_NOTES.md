@@ -42,6 +42,25 @@ preserving the public API and existing algorithm results.
 These changes are available in the source tree and have not been published to
 NuGet. No package version or release date is assigned yet.
 
+### CRC16 / CCITT-FALSE and X25
+
+- Add `CRC16Type.CCITTFalse` (CRC-16/IBM-3740) and `CRC16Type.X25`
+  (CRC-16/IBM-SDLC) to the existing detector, numeric/frame extensions,
+  accumulator and synchronous/asynchronous stream APIs.
+- Preserve all existing enum values, optional defaults, algorithms and native
+  digest byte order. The new types return `FFFF` and `0000`, respectively, for
+  empty input; their single-shot calculations accept single-pass enumerables.
+- Add 16 published fixed vectors: seven AUTOSAR CCITT-FALSE examples, four ITU-T
+  X.25 frames, three ITSO TS 1000-2 CRC_B examples and two
+  catalogue check values. Check these independently of production calculations.
+- Extend the existing bitwise oracle, exhaustive short-input, partition and
+  stream tests, including 64 KiB boundaries, cancellation and read failures.
+- Add a package-backed README example and two reviewed enum declarations.
+  Require the new vector suite in CI and release selection. No package version
+  change or NuGet publication.
+- Add 117 test cases through the focused vector suite and existing algorithm,
+  accumulator and stream suites, bringing the complete Integrity suite to 1,963.
+
 ### CRC64 / NVME
 
 - Add `CRC64(CRC64Type.NVME)`, `CRC64` / `WithCRC64` byte-sequence extensions,
@@ -96,8 +115,8 @@ NuGet. No package version or release date is assigned yet.
   representation. Chunk boundaries do not affect results for the same ordered
   input and algorithm.
 - Document explicit new-API empty-input behavior: CRC8 has no numeric value and
-  throws `InvalidOperationException`; CRC16 returns `FFFF` for Modbus and zero
-  for other variants, including DNP; CRC32 returns zero.
+  throws `InvalidOperationException`; CRC16 returns `FFFF` for Modbus and
+  CCITTFalse, and zero for other variants, including DNP and X25; CRC32 returns zero.
 
 ### Verification and documentation
 
@@ -109,8 +128,8 @@ NuGet. No package version or release date is assigned yet.
 - Verify buffer reuse and lifetime, generated large streams, non-seekable and
   partial reads, current position, stream ownership, cancellation, read failures
   and asynchronous continuation behavior.
-- Run all 1,846 Integrity tests in Windows/Linux Debug/Release CI, plus the
+- Run all 1,963 Integrity tests in Windows/Linux Debug/Release CI, plus the
   existing benchmark correctness validation.
-- Add executable streaming, CRC32C and CRC64 README examples with fixed expected
-  output. Validate all seven examples, public API and metadata against actual
+- Add executable streaming, CRC16 variants, CRC32C and CRC64 README examples with fixed expected
+  output. Validate all eight examples, public API and metadata against actual
   candidate NuGet packages in each CI configuration.
