@@ -1,6 +1,6 @@
 # Mythosia.Integrity
 
-CRC and 8-bit checksum calculation, frame encoding and error detection for byte
+CRC and checksum calculation, frame encoding and error detection for byte
 sequences. Hash algorithms are provided by `Mythosia.Security.Cryptography`.
 
 Version `1.3.0` adds CRC16 CCITT-FALSE/X25, CRC32C, CRC64/NVME and incremental
@@ -8,8 +8,9 @@ and streaming CRC calculation while preserving the existing public API and
 results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The Adler-32 section describes unreleased source additions. Use a source build
-for those APIs until a package containing them is released.
+The Adler-32, CRC64/XZ and ECMA-182, and Internet Checksum sections describe
+unreleased source additions. Use a source build for those APIs until a package
+containing them is released.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
@@ -280,8 +281,9 @@ returns an empty sequence for frames of four bytes or fewer.
 ## CRC64 / NVME
 
 Select the CRC64 algorithm using `CRC64Type.NVME`, following the existing
-`CRC16(type)` and `CRC32(type)` pattern. NVME is the only supported CRC64 type
-and the default for every CRC64 constructor and extension. Numeric results use
+`CRC16(type)` and `CRC32(type)` pattern. Version 1.3.0 supports NVME; the
+unreleased XZ and ECMA-182 additions are described below. NVME remains the
+default for every CRC64 constructor and extension. Numeric results use
 `ulong`; the ASCII input `123456789` produces `AE8B14860A799888`.
 
 This check value and the three original fixed answers come from Amazon's
@@ -538,3 +540,117 @@ using var asyncStream = new MemoryStream(data);
 Console.WriteLine($"Async Adler-32: {await asyncStream.ComputeAdler32Async():X8}");
 // Numeric, chunked and stream values: 091E01DE. Reset: 00000001.
 ```
+
+## CRC64 / XZ and ECMA-182 (unreleased)
+
+Select `CRC64Type.ECMA182` or `CRC64Type.XZ` with the existing CRC64 APIs,
+including their accumulator and synchronous/asynchronous stream methods.
+`CRC64Type.NVME = 0` and every existing CRC64 default remain unchanged;
+the additions are `ECMA182 = 1` and `XZ = 2`.
+
+These two algorithms use polynomial `0x42F0E1EBA9EA3693`, with different
+initialization, reflection and final XOR settings:
+
+| Type | Reflect input/output | Initial state / Final XOR | `123456789` | Empty input |
+| --- | --- | --- | --- | --- |
+| `ECMA182` | No | `0000000000000000` | `6C40DF5F0B497347` | `0000000000000000` |
+| `XZ` | Yes | `FFFFFFFFFFFFFFFF` | `995DC9BBDF1939FA` | `0000000000000000` |
+
+XZ uses its reflected variant, as specified by the
+[XZ file format](https://tukaani.org/xz/xz-file-format.txt).
+Both algorithms and check values are listed in the
+[CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/17plus.htm).
+The CRC64 numeric result remains `ulong`; digest and frame methods keep the
+existing eight-byte native-endian convention. Serialize the numeric value
+explicitly for a file format or protocol's prescribed byte order.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+foreach (CRC64Type type in new[] { CRC64Type.ECMA182, CRC64Type.XZ })
+{
+    var detector = new CRC64(type);
+    Console.WriteLine($"CRC64 {type}: {data.CRC64(type):X16}");
+    Console.WriteLine($"CRC64 {type} digest: {Convert.ToHexString(detector.Compute(data).ToArray())}");
+    byte[] frame = data.WithCRC64(type).ToArray();
+    Console.WriteLine($"CRC64 {type} frame valid: {!detector.IsError(frame)}");
+    Console.WriteLine($"CRC64 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+    var accumulator = new CRC64Accumulator(type);
+    accumulator.Append(data.AsSpan(0, 4));
+    accumulator.Append(data.AsSpan(4));
+    Console.WriteLine($"Chunked CRC64 {type}: {accumulator.GetCurrentValue():X16}");
+    accumulator.Reset();
+    Console.WriteLine($"Reset CRC64 {type}: {accumulator.GetCurrentValue():X16}");
+
+    using var syncStream = new MemoryStream(data, writable: false);
+    using var asyncStream = new MemoryStream(data, writable: false);
+    Console.WriteLine($"Stream CRC64 {type}: {syncStream.ComputeCRC64(type):X16}");
+    Console.WriteLine($"Async stream CRC64 {type}: {await asyncStream.ComputeCRC64Async(type):X16}");
+}
+// ECMA182 values are 6C40DF5F0B497347; XZ values are 995DC9BBDF1939FA.
+// Reset returns zero. Frame validity and decoded-payload checks print True.
+```
+
+## Internet Checksum (unreleased)
+
+`InternetChecksum`, its numeric/frame extensions, `InternetChecksumAccumulator`
+and stream methods are in `Mythosia.Integrity.Checksum`. The numeric result is
+`ushort`, calculated as the one's complement of the one's-complement sum of
+big-endian 16-bit words, as defined in
+[RFC 1071](https://www.rfc-editor.org/rfc/rfc1071.html).
+
+An odd final byte is treated as the high byte of a word with a zero low byte.
+An accumulator retains that pending byte across chunks; `GetCurrentValue()`
+applies padding only to the reported result and leaves the state unchanged.
+Empty input and `Reset` return `FFFF`. A calculated `0000` remains `0000`.
+
+`Compute` returns two digest bytes in native byte order, and `WithInternetChecksum`
+appends them to a copied payload. `IsError`/`Decode` compare the payload's checksum
+with that trailing digest and require a non-empty payload. This library framing
+is separate from a network protocol's checksum field. For an actual IP, TCP or
+UDP packet, prepare the exact required input, zero the checksum field, add any
+required pseudoheader, and write the numeric result explicitly in big-endian
+order, for example with `BinaryPrimitives.WriteUInt16BigEndian`. Apply the UDP
+zero-checksum convention when the relevant protocol requires it.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.Checksum;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+var detector = new InternetChecksum();
+Console.WriteLine($"Internet Checksum: {data.InternetChecksum():X4}");
+Console.WriteLine($"Internet Checksum digest: {Convert.ToHexString(detector.Compute(data).ToArray())}");
+byte[] frame = data.WithInternetChecksum().ToArray();
+Console.WriteLine($"Internet Checksum frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"Internet Checksum decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new InternetChecksumAccumulator();
+accumulator.Append(data.AsSpan(0, 4));
+accumulator.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked Internet Checksum: {accumulator.GetCurrentValue():X4}");
+accumulator.Reset();
+Console.WriteLine($"Reset Internet Checksum: {accumulator.GetCurrentValue():X4}");
+
+using var syncStream = new MemoryStream(data, writable: false);
+using var asyncStream = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream Internet Checksum: {syncStream.ComputeInternetChecksum():X4}");
+Console.WriteLine($"Async Internet Checksum: {await asyncStream.ComputeInternetChecksumAsync():X4}");
+// Numeric, chunked and stream values: F62A. Reset: FFFF.
+```
+
+Byte-sequence APIs consume input once. Accumulators retain only calculation
+state. Both stream methods start at the current position, read to EOF with one
+reusable 64 KiB buffer and leave the stream open. The asynchronous method accepts
+an optional `CancellationToken`; cancellation or read failure returns no partial
+value. Read failures propagate. Null inputs throw `ArgumentNullException`, and
+unreadable streams throw `ArgumentException`.

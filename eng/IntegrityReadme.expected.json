@@ -202,6 +202,70 @@
         "Stream Adler-32: 091E01DE",
         "Async Adler-32: 091E01DE"
       ]
+    },
+    {
+      "id": "crc64-variants",
+      "codeSha256": "913256C38EA1AA48C837F1076BA4C71CFBADCA75890BF357EA09BC2FF9C45962",
+      "stdoutLittleEndian": [
+        "CRC64 ECMA182: 6C40DF5F0B497347",
+        "CRC64 ECMA182 digest: 4773490B5FDF406C",
+        "CRC64 ECMA182 frame valid: True",
+        "CRC64 ECMA182 decoded: True",
+        "Chunked CRC64 ECMA182: 6C40DF5F0B497347",
+        "Reset CRC64 ECMA182: 0000000000000000",
+        "Stream CRC64 ECMA182: 6C40DF5F0B497347",
+        "Async stream CRC64 ECMA182: 6C40DF5F0B497347",
+        "CRC64 XZ: 995DC9BBDF1939FA",
+        "CRC64 XZ digest: FA3919DFBBC95D99",
+        "CRC64 XZ frame valid: True",
+        "CRC64 XZ decoded: True",
+        "Chunked CRC64 XZ: 995DC9BBDF1939FA",
+        "Reset CRC64 XZ: 0000000000000000",
+        "Stream CRC64 XZ: 995DC9BBDF1939FA",
+        "Async stream CRC64 XZ: 995DC9BBDF1939FA"
+      ],
+      "stdoutBigEndian": [
+        "CRC64 ECMA182: 6C40DF5F0B497347",
+        "CRC64 ECMA182 digest: 6C40DF5F0B497347",
+        "CRC64 ECMA182 frame valid: True",
+        "CRC64 ECMA182 decoded: True",
+        "Chunked CRC64 ECMA182: 6C40DF5F0B497347",
+        "Reset CRC64 ECMA182: 0000000000000000",
+        "Stream CRC64 ECMA182: 6C40DF5F0B497347",
+        "Async stream CRC64 ECMA182: 6C40DF5F0B497347",
+        "CRC64 XZ: 995DC9BBDF1939FA",
+        "CRC64 XZ digest: 995DC9BBDF1939FA",
+        "CRC64 XZ frame valid: True",
+        "CRC64 XZ decoded: True",
+        "Chunked CRC64 XZ: 995DC9BBDF1939FA",
+        "Reset CRC64 XZ: 0000000000000000",
+        "Stream CRC64 XZ: 995DC9BBDF1939FA",
+        "Async stream CRC64 XZ: 995DC9BBDF1939FA"
+      ]
+    },
+    {
+      "id": "internet-checksum",
+      "codeSha256": "090A88FC85D7A6E5CF331D41D1A05722BADDEFB02FD8C4B7D62C12AEB1ED3621",
+      "stdoutLittleEndian": [
+        "Internet Checksum: F62A",
+        "Internet Checksum digest: 2AF6",
+        "Internet Checksum frame valid: True",
+        "Internet Checksum decoded: True",
+        "Chunked Internet Checksum: F62A",
+        "Reset Internet Checksum: FFFF",
+        "Stream Internet Checksum: F62A",
+        "Async Internet Checksum: F62A"
+      ],
+      "stdoutBigEndian": [
+        "Internet Checksum: F62A",
+        "Internet Checksum digest: F62A",
+        "Internet Checksum frame valid: True",
+        "Internet Checksum decoded: True",
+        "Chunked Internet Checksum: F62A",
+        "Reset Internet Checksum: FFFF",
+        "Stream Internet Checksum: F62A",
+        "Async Internet Checksum: F62A"
+      ]
     }
   ]
 }

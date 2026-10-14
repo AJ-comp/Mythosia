@@ -147,3 +147,50 @@ published 1.3.0 package. No new package version is assigned yet.
   and release selection; test that missing suites block publication.
 - Keep the package version and released metadata unchanged. This source change
   does not publish a NuGet package.
+
+### CRC64 / ECMA-182 and XZ
+
+- Add `CRC64Type.ECMA182` and `CRC64Type.XZ` to the existing CRC64 detector,
+  numeric/frame extensions, accumulator and synchronous/asynchronous stream APIs.
+  Keep `NVME = 0` and every existing optional default unchanged.
+- Use separate ECMA-182 and XZ parameter sets. For ASCII `123456789`, ECMA-182
+  returns `6C40DF5F0B497347` and XZ returns `995DC9BBDF1939FA`; empty input
+  returns zero for either algorithm. Keep the existing native digest byte order.
+- Verify 32 ECMA-182 and 31 XZ distinct non-empty published fixed answers,
+  with an independent bitwise reference and numeric/digest, frame, partition,
+  accumulator and stream checks. Distinguish Go's `crc64.ECMA` results, which use
+  the XZ parameter set, from true ECMA-182 answers.
+- Retain the original NVME test coverage and calculation behavior. Update only
+  the enum-list and first-undefined-value expectations affected by the additions.
+
+### Internet Checksum
+
+- Add `InternetChecksum`, numeric/frame extensions and
+  `InternetChecksumAccumulator`, plus `ComputeInternetChecksum` and its
+  asynchronous counterpart, in `Mythosia.Integrity.Checksum`.
+- Follow RFC 1071: combine bytes into big-endian 16-bit words, fold end-around
+  carries and complement the sum. Empty input returns `FFFF`; a calculated
+  `0000` remains zero. Keep an odd trailing byte across appends and pad it only
+  for a non-destructive current result or at EOF.
+- Consume sequences once and use a reusable 64 KiB buffer for streams. Preserve
+  current-position, partial-read, cancellation and caller-owned stream behavior.
+- Use native-endian two-byte library frames and compare their digest with a
+  recalculated payload checksum. Document big-endian network serialization,
+  protocol checksum-field placement and caller-supplied TCP/UDP pseudo-headers.
+- Verify 40 published fixed answers from pinned Google gopacket packet fixtures,
+  including IPv4 options and odd-length transport data, plus the RFC 1071 example,
+  an independent byte-lane sum, carry/zero boundaries, partitions and streams.
+
+### Verification and documentation
+
+- Add executable CRC64-variant and Internet Checksum README examples, preserving
+  all nine prior examples and their fixed output. Validate all 11 against actual
+  candidate NuGet packages in CI.
+- Preserve all 174 prior API declarations and review 19 additive declarations:
+  two CRC64 enum members and 17 Internet Checksum declarations. The complete
+  reviewed surface has 193 declarations across 32 public types.
+- Require the CRC64-variant and both Internet Checksum suites in CI and release
+  selection. Add missing-suite rejection cases to the existing release-gate
+  tests, for 55 gate regression cases in total. Run all 2,563 Integrity tests,
+  including the 248 new cases, in all four CI configurations. Keep publication
+  disabled for ordinary CI runs.

@@ -59,10 +59,11 @@ the package version on their first line; the README's `Version` line and the fir
 updating those descriptions, not changing fixed CRC/checksum results or the
 approved public API snapshot.
 
-## CRC and Adler-32 coverage
+## CRC and checksum coverage
 
-The README has nine independent consumers: CRC, checksum, common API, CRC16
-variants, CRC32C, CRC64, streaming CRC, chunked CRC and Adler-32. Their code hashes and
+The README has 11 independent consumers: CRC, checksum, common API, CRC16
+variants, CRC32C, CRC64, streaming CRC, chunked CRC, Adler-32, CRC64 variants and
+Internet Checksum. Their code hashes and
 expected outputs are fixed in the reviewed manifest.
 The CRC16 example checks `CCITTFalse` (`29B1`) and `X25` (`906E`) using numeric,
 frame, accumulator and synchronous/asynchronous stream APIs. The CRC32C and CRC64 examples
@@ -74,7 +75,9 @@ The reviewed API snapshot retains all 85 declarations from version 1.2.1,
 including their exact attributes and defaults. Version 1.3.0 adds 71 declarations
 for streaming CRC, CRC32C, CRC64 and the two CRC16 variants. The unreleased
 Adler-32 APIs add 18 declarations while preserving all 156 declarations from
-1.3.0. The complete snapshot has 174 entries and 29 public types.
+1.3.0. The additional CRC64 variants and Internet Checksum add 19 declarations,
+preserving all 174 prior declarations. The complete snapshot has 193 entries
+and 32 public types.
 Keep existing declarations unchanged when
 reviewing future additions; the snapshot
 test and package consumer still require an exact match with the complete reviewed
@@ -88,10 +91,12 @@ calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases
 stream suites also cover both added CRC16 variants.
 `Adler32Tests` adds 104 calculation/frame/accumulator cases and
 `Adler32StreamTests` adds 32 stream cases.
-The TRX completeness check requires at least 2,315 passing tests, including the
-public API guard, both CRC32C suites, the CRC64 suite, the CRC16 variant suite and
-both Adler-32 suites. Missing Adler-32 calculation or stream results block
-release selection, with both omissions covered by the release-gate regression tests.
+`Crc64VariantTests` adds 123 cases, `InternetChecksumTests` adds 95 and
+`InternetChecksumStreamTests` adds 30.
+The TRX completeness check requires at least 2,563 passing tests, including the
+public API guard, both CRC32C suites, both CRC64 suites, the CRC16 variant suite,
+both Adler-32 suites and both Internet Checksum suites. Missing required suites
+block release selection; the 55 release-gate regression cases cover those omissions.
 Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
 boundaries, generated large input without whole-input allocation, buffer lifetime,
@@ -139,8 +144,9 @@ representative lengths and chunk boundaries, incremental state, eight-byte frame
 packing, single-pass inputs, and the sync/async stream wrappers. It reuses the
 existing CI and package validation without adding a separate test harness.
 
-Version 1.3.0 includes the CRC additions above. Adler-32 remains an unreleased
-source addition; its README section and release notes state that availability.
+Version 1.3.0 includes CRC16 CCITT-FALSE/X25, CRC32C, CRC64/NVME and streaming CRC.
+Adler-32, CRC64/ECMA-182, CRC64/XZ and Internet Checksum remain unreleased source
+additions; their README sections and release notes state that availability.
 Candidate packages remain validation outputs; this validation step does not publish them.
 
 Adler-32 correctness uses 42 distinct non-empty published fixed answers plus a
@@ -156,6 +162,28 @@ The numeric checksum follows RFC 1950; library frames use native byte order,
 and zlib's big-endian serialization is documented and tested explicitly.
 The ninth README consumer exercises calculation, frame validation, decoding,
 accumulation, reset and both stream methods against fixed output.
+
+CRC64 variant correctness uses 32 distinct non-empty ECMA-182 fixed answers
+from .NET, the XCKS specification, Classless.Hasher, EmbeddedUtilityLibraries
+and crc-any, plus 31 distinct non-empty XZ answers from Go's golden table.
+Pinned source revisions or the specification snapshot hash accompany the data.
+An independent normal-polynomial bitwise reference explicitly reflects input
+and output for XZ, separately from the product's reflected lookup table.
+Checks cover native digest packing, frames, arbitrary short splits, selected
+long splits, reset, single-pass enumeration, 64 KiB boundaries and both stream
+methods. The existing NVME coverage is retained. Go's `crc64.ECMA` names its
+polynomial; its golden answers are used only for the XZ parameter set.
+
+Internet Checksum correctness uses 40 distinct non-empty fixed answers from
+Google gopacket v1.1.19, commit `a9779d139771f6a06fc983b18e0efd23ca30222f`.
+The source fixture, line and byte offset accompany each input. Checksum fields
+are zeroed, and TCP/UDP cases include the protocol pseudo-header and complete
+segment. Expected answers are the source packet's published checksum fields;
+they are not calculated by this library. An independent byte-lane reference,
+the RFC 1071 example and exhaustive two-byte values check carry and byte order.
+Additional cases cover odd chunk boundaries and snapshots, positive/negative
+zero, long all-ones input, native frame validation, single-pass enumeration,
+bounded buffer reuse, real asynchronous reads, cancellation and read failures.
 
 The optional publish job selects the exact validated Ubuntu Release candidate
 only after all four CI jobs and their artifact evidence pass. Ordinary CI keeps

@@ -43,6 +43,47 @@ namespace Mythosia.Integrity.Checksum
             return ReadStreamAsync(source, cancellationToken);
         }
 
+        /// <summary>Reads from the current position to the end of the stream and calculates the Internet checksum.</summary>
+        /// <remarks>
+        /// Reuses one 64 KiB buffer and leaves the stream open, including on failure.
+        /// The checksum uses big-endian 16-bit words, with zero padding only for the final odd byte.
+        /// Supply protocol-specific pseudo-headers and checksum fields explicitly.
+        /// </remarks>
+        /// <param name="source">The readable stream to consume.</param>
+        /// <returns>The numeric Internet checksum for all bytes read, or 0xFFFF for an empty stream.</returns>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        public static ushort ComputeInternetChecksum(this Stream source)
+        {
+            ValidateSource(source);
+
+            var accumulator = new InternetChecksumAccumulator();
+            var buffer = new byte[ReadBufferSize];
+            int count;
+            while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
+                accumulator.Append(buffer.AsSpan(0, count));
+            return accumulator.GetCurrentValue();
+        }
+
+        /// <summary>Asynchronously reads to the end of the stream and calculates the Internet checksum.</summary>
+        /// <remarks>
+        /// Starts at the current position, reuses one 64 KiB buffer and leaves the stream open, including on cancellation or failure.
+        /// An odd byte is kept across reads and zero-padded only for the final result. Supply protocol-specific
+        /// pseudo-headers and checksum fields explicitly.
+        /// </remarks>
+        /// <param name="source">The readable stream to consume.</param>
+        /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
+        /// <returns>The numeric Internet checksum for all bytes read, or 0xFFFF for an empty stream.</returns>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        /// <exception cref="OperationCanceledException">Cancellation was requested.</exception>
+        public static Task<ushort> ComputeInternetChecksumAsync(this Stream source,
+            CancellationToken cancellationToken = default)
+        {
+            ValidateSource(source);
+            return ReadInternetChecksumStreamAsync(source, cancellationToken);
+        }
+
         private static void ValidateSource(Stream source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -53,6 +94,22 @@ namespace Mythosia.Integrity.Checksum
         {
             cancellationToken.ThrowIfCancellationRequested();
             var accumulator = new Adler32Accumulator();
+            var buffer = new byte[ReadBufferSize];
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                int count = await source.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (count == 0) return accumulator.GetCurrentValue();
+                accumulator.Append(buffer.AsSpan(0, count));
+            }
+        }
+
+        private static async Task<ushort> ReadInternetChecksumStreamAsync(Stream source,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var accumulator = new InternetChecksumAccumulator();
             var buffer = new byte[ReadBufferSize];
             while (true)
             {

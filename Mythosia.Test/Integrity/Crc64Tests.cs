@@ -331,14 +331,14 @@ public sealed class Crc64Tests
     {
         var detector = new CRC64();
         Assert.IsAssignableFrom<ErrorDetection>(detector);
-        Assert.Equal(new[] { CRC64Type.NVME }, Enum.GetValues<CRC64Type>());
+        Assert.Equal(new[] { CRC64Type.NVME, CRC64Type.ECMA182, CRC64Type.XZ }, Enum.GetValues<CRC64Type>());
         Assert.Equal(CRC64Type.NVME, detector.Type);
         Assert.Equal(CRC64Type.NVME, new CRC64Accumulator().Type);
         Assert.Equal("NVME", detector.GetDetectionType());
         Assert.Equal(new byte[8], detector.Compute(Array.Empty<byte>()));
         Assert.Equal(new byte[8], detector.Encode(Array.Empty<byte>()));
         Assert.Equal(0UL, Array.Empty<byte>().CRC64());
-        foreach (CRC64Type invalid in new[] { (CRC64Type)(-1), (CRC64Type)1, (CRC64Type)int.MaxValue })
+        foreach (CRC64Type invalid in new[] { (CRC64Type)(-1), (CRC64Type)3, (CRC64Type)int.MaxValue })
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => new CRC64(invalid));
             Assert.Throws<ArgumentOutOfRangeException>(() => new CRC64Accumulator(invalid));

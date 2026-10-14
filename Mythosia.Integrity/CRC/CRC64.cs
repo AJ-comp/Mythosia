@@ -9,11 +9,17 @@ namespace Mythosia.Integrity.CRC
     {
         /// <summary>The reflected CRC64/NVME algorithm.</summary>
         NVME = 0,
+        /// <summary>The unreflected CRC64/ECMA-182 algorithm, with zero initial state and final XOR.</summary>
+        ECMA182 = 1,
+        /// <summary>The reflected CRC64/XZ algorithm, with all-one initial state and final XOR.</summary>
+        XZ = 2,
     }
 
     /// <summary>Calculates CRC64 digests and validates frames containing a trailing digest.</summary>
     /// <remarks>
     /// NVME uses polynomial 0xAD93D23594C93659, reflected input and output, and an initial state and final XOR of 0xFFFFFFFFFFFFFFFF.
+    /// ECMA182 and XZ use polynomial 0x42F0E1EBA9EA3693. ECMA182 does not reflect and uses zero initial state and final XOR;
+    /// XZ reflects input and output and uses an all-one initial state and final XOR.
     /// Digest bytes use the platform's native byte order, matching the existing CRC framing convention.
     /// </remarks>
     public sealed class CRC64 : ErrorDetection
@@ -24,7 +30,7 @@ namespace Mythosia.Integrity.CRC
         public CRC64Type Type { get; }
 
         /// <summary>Creates a CRC64 calculator for the selected algorithm.</summary>
-        /// <param name="type">The CRC64 algorithm. Only NVME is supported.</param>
+        /// <param name="type">The CRC64 algorithm: NVME, ECMA182 or XZ. The default is NVME.</param>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
         public CRC64(CRC64Type type = CRC64Type.NVME)
         {
@@ -39,7 +45,7 @@ namespace Mythosia.Integrity.CRC
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            return BitConverter.GetBytes(CRC64Core.Compute(source));
+            return BitConverter.GetBytes(CRC64Core.Compute(source, Type));
         }
 
         /// <summary>Copies a payload and appends its eight CRC64 digest bytes in native byte order.</summary>
@@ -51,13 +57,13 @@ namespace Mythosia.Integrity.CRC
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             var result = new List<byte>();
-            ulong state = CRC64Core.InitialState;
+            ulong state = CRC64Core.InitialState(Type);
             foreach (byte value in source)
             {
                 result.Add(value);
-                state = CRC64Core.Update(state, value);
+                state = CRC64Core.Update(state, value, Type);
             }
-            result.AddRange(BitConverter.GetBytes(~state));
+            result.AddRange(BitConverter.GetBytes(CRC64Core.Finalize(state, Type)));
             return result;
         }
 
@@ -88,15 +94,16 @@ namespace Mythosia.Integrity.CRC
         }
 
         /// <summary>Gets the selected algorithm name.</summary>
-        /// <returns>The string NVME.</returns>
+        /// <returns>The selected CRC64 algorithm name.</returns>
         public override string GetDetectionType() => Type.ToString();
 
-        private static bool HasValidDigest(byte[] frame)
+        private bool HasValidDigest(byte[] frame)
         {
             if (frame.Length <= DigestLength) return false;
 
             int payloadLength = frame.Length - DigestLength;
-            ulong expected = ~CRC64Core.Append(CRC64Core.InitialState, frame.AsSpan(0, payloadLength));
+            ulong state = CRC64Core.Append(CRC64Core.InitialState(Type), frame.AsSpan(0, payloadLength), Type);
+            ulong expected = CRC64Core.Finalize(state, Type);
             return BitConverter.ToUInt64(frame, payloadLength) == expected;
         }
     }

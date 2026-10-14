@@ -8,7 +8,7 @@ namespace Mythosia.Integrity.CRC
     {
         /// <summary>Calculates the numeric CRC64 value for a byte sequence.</summary>
         /// <param name="data">The bytes to consume once.</param>
-        /// <param name="type">The CRC64 algorithm. Only NVME is supported.</param>
+        /// <param name="type">The CRC64 algorithm: NVME, ECMA182 or XZ. The default is NVME.</param>
         /// <returns>The CRC64 value, or zero for an empty sequence.</returns>
         /// <exception cref="ArgumentNullException">The data is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
@@ -16,12 +16,12 @@ namespace Mythosia.Integrity.CRC
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             CRC64Core.ValidateType(type);
-            return CRC64Core.Compute(data);
+            return CRC64Core.Compute(data, type);
         }
 
         /// <summary>Copies a byte sequence and appends its CRC64 digest in native byte order.</summary>
         /// <param name="data">The payload bytes to consume once.</param>
-        /// <param name="type">The CRC64 algorithm. Only NVME is supported.</param>
+        /// <param name="type">The CRC64 algorithm: NVME, ECMA182 or XZ. The default is NVME.</param>
         /// <returns>The payload followed by its eight CRC64 digest bytes.</returns>
         /// <exception cref="ArgumentNullException">The data is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
