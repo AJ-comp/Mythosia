@@ -7,7 +7,7 @@ namespace Mythosia.Integrity.CRC
     /// </summary>
     /// <remarks>
     /// Separate instances can be used independently. An instance is not thread-safe.
-    /// The value for an empty sequence is zero.
+    /// The value for an empty sequence is 0xFFFFFFFF for MPEG-2 and zero for other algorithms.
     /// </remarks>
     public sealed class CRC32Accumulator
     {
@@ -15,9 +15,17 @@ namespace Mythosia.Integrity.CRC
         private const int TableLength = 1 << BitsPerByte;
         private const uint ReflectedPolynomial = 0xEDB88320;
         private const uint InitialState = uint.MaxValue;
+        private const uint UnreflectedPolynomial = 0x04C11DB7;
+        private const uint AutosarReflectedPolynomial = 0xC8DF352F;
 
         // The table is generated once, fully initialized, and never modified or exposed.
-        private static readonly uint[] Table = GenerateTable();
+        private static readonly uint[] Table = GenerateReflectedTable(ReflectedPolynomial);
+        private static readonly uint[] UnreflectedTable = GenerateUnreflectedTable();
+        private static readonly uint[] AutosarTable = GenerateReflectedTable(AutosarReflectedPolynomial);
+
+        private readonly uint[] _table;
+        private readonly bool _reflected;
+        private readonly uint _finalXor;
 
         private uint _state = InitialState;
 
@@ -34,10 +42,19 @@ namespace Mythosia.Integrity.CRC
         public CRC32Accumulator(CRC32Type type = CRC32Type.Classic)
         {
 #pragma warning disable CS0618 // Continue supporting the legacy Basic algorithm name.
-            if (type != CRC32Type.Basic && type != CRC32Type.Classic)
-                throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC32 algorithm.");
+            _table = type switch
+            {
+                CRC32Type.Basic => Table,
+                CRC32Type.Classic => Table,
+                CRC32Type.Mpeg2 => UnreflectedTable,
+                CRC32Type.Bzip2 => UnreflectedTable,
+                CRC32Type.AutosarP4 => AutosarTable,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC32 algorithm.")
+            };
 #pragma warning restore CS0618
             Type = type;
+            _reflected = type != CRC32Type.Mpeg2 && type != CRC32Type.Bzip2;
+            _finalXor = type == CRC32Type.Mpeg2 ? 0 : uint.MaxValue;
         }
 
         /// <summary>
@@ -49,8 +66,16 @@ namespace Mythosia.Integrity.CRC
             if (source.IsEmpty) return;
 
             uint state = _state;
-            foreach (byte value in source)
-                state = (state >> BitsPerByte) ^ Table[(state ^ value) & byte.MaxValue];
+            if (_reflected)
+            {
+                foreach (byte value in source)
+                    state = (state >> BitsPerByte) ^ _table[(state ^ value) & byte.MaxValue];
+            }
+            else
+            {
+                foreach (byte value in source)
+                    state = (state << BitsPerByte) ^ _table[(state >> 24) ^ value];
+            }
 
             _state = state;
         }
@@ -58,15 +83,15 @@ namespace Mythosia.Integrity.CRC
         /// <summary>
         /// Gets the CRC32 value for all appended bytes without changing the calculation state.
         /// </summary>
-        /// <returns>The current CRC32 value, or zero for an empty sequence. More bytes may be appended afterward.</returns>
-        public uint GetCurrentValue() => ~_state;
+        /// <returns>The current CRC32 value; an empty sequence returns 0xFFFFFFFF for MPEG-2 and zero otherwise. More bytes may be appended afterward.</returns>
+        public uint GetCurrentValue() => _state ^ _finalXor;
 
         /// <summary>
         /// Restores the empty initial state while keeping the selected algorithm.
         /// </summary>
         public void Reset() => _state = InitialState;
 
-        private static uint[] GenerateTable()
+        private static uint[] GenerateReflectedTable(uint polynomial)
         {
             uint[] table = new uint[TableLength];
             for (int index = 0; index < table.Length; index++)
@@ -75,9 +100,26 @@ namespace Mythosia.Integrity.CRC
                 for (int bit = 0; bit < BitsPerByte; bit++)
                 {
                     value = (value & 1) != 0
-                        ? (value >> 1) ^ ReflectedPolynomial
+                        ? (value >> 1) ^ polynomial
                         : value >> 1;
                 }
+
+                table[index] = value;
+            }
+
+            return table;
+        }
+
+        private static uint[] GenerateUnreflectedTable()
+        {
+            uint[] table = new uint[TableLength];
+            for (int index = 0; index < table.Length; index++)
+            {
+                uint value = (uint)index << 24;
+                for (int bit = 0; bit < BitsPerByte; bit++)
+                    value = (value & 0x80000000u) != 0
+                        ? (value << 1) ^ UnreflectedPolynomial
+                        : value << 1;
 
                 table[index] = value;
             }

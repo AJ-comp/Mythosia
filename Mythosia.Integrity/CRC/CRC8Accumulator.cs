@@ -18,12 +18,14 @@ namespace Mythosia.Integrity.CRC
         private const byte MaximReflectedPolynomial = 0x8C;
         private const byte SaeJ1850Polynomial = 0x1D;
         private const byte AutosarH2FPolynomial = 0x2F;
+        private const byte SensirionPolynomial = 0x31;
 
         // Tables are generated once, fully initialized, and never modified or exposed.
         private static readonly byte[] ClassicTable = GenerateUnreflectedTable(ClassicPolynomial);
         private static readonly byte[] MaximTable = GenerateMaximTable();
         private static readonly byte[] SaeJ1850Table = GenerateUnreflectedTable(SaeJ1850Polynomial);
         private static readonly byte[] AutosarH2FTable = GenerateUnreflectedTable(AutosarH2FPolynomial);
+        private static readonly byte[] SensirionTable = GenerateUnreflectedTable(SensirionPolynomial);
 
         private readonly byte[] _table;
         private readonly byte _initialState;
@@ -51,14 +53,17 @@ namespace Mythosia.Integrity.CRC
                 CRC8Type.Maxim => MaximTable,
                 CRC8Type.SaeJ1850 => SaeJ1850Table,
                 CRC8Type.AutosarH2F => AutosarH2FTable,
+                CRC8Type.SensirionSht4x => SensirionTable,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC8 algorithm.")
             };
 #pragma warning restore CS0618
             Type = type;
-            _initialState = type == CRC8Type.SaeJ1850 || type == CRC8Type.AutosarH2F
+            _initialState = type == CRC8Type.SaeJ1850 || type == CRC8Type.AutosarH2F || type == CRC8Type.SensirionSht4x
                 ? byte.MaxValue
                 : (byte)0;
-            _finalXor = _initialState;
+            _finalXor = type == CRC8Type.SaeJ1850 || type == CRC8Type.AutosarH2F
+                ? byte.MaxValue
+                : (byte)0;
             _state = _initialState;
         }
 

@@ -168,7 +168,7 @@ public sealed class Crc8VariantTests
         Assert.Equal(2, (int)CRC8Type.Maxim);
         Assert.Equal(3, (int)CRC8Type.SaeJ1850);
         Assert.Equal(4, (int)CRC8Type.AutosarH2F);
-        Assert.Equal(new[] { CRC8Type.Basic, CRC8Type.Classic, CRC8Type.Maxim, CRC8Type.SaeJ1850, CRC8Type.AutosarH2F }, Enum.GetValues<CRC8Type>());
+        Assert.Equal(new[] { CRC8Type.Basic, CRC8Type.Classic, CRC8Type.Maxim, CRC8Type.SaeJ1850, CRC8Type.AutosarH2F, CRC8Type.SensirionSht4x }, Enum.GetValues<CRC8Type>());
         Assert.Equal(CRC8Type.Classic, new CRC8().Type);
         Assert.Equal(CRC8Type.Classic, new CRC8Accumulator().Type);
         Assert.Equal((byte)0xF4, CheckInput.CRC8());
@@ -176,7 +176,7 @@ public sealed class Crc8VariantTests
         Assert.Equal((byte)0xA1, CheckInput.CRC8(CRC8Type.Maxim));
         Assert.Equal(new CRC8().Compute(CheckInput), new CRC8(CRC8Type.Basic).Compute(CheckInput));
 #pragma warning restore CS0618
-        foreach (int undefined in new[] { -1, 5, int.MaxValue })
+        foreach (int undefined in new[] { -1, 6, int.MaxValue })
         {
             var detector = new CRC8((CRC8Type)undefined);
             Assert.Empty(detector.Compute(CheckInput));

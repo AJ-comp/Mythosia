@@ -205,17 +205,67 @@ published 1.3.0 package. No new package version is assigned yet.
 - Add 150 test cases, including 81 focused calculation/frame/vector cases,
   33 stream cases and 36 additional cases in the existing shared suites.
 
+### Additional CRC variants
+
+- Add `CRC8Type.SensirionSht4x = 5`, `CRC16Type.MCRF4XX = 7` and `USB = 8`,
+  and `CRC32Type.Mpeg2 = 2`, `Bzip2 = 3` and `AutosarP4 = 4` across existing
+  calculation, frame, accumulator and synchronous/asynchronous stream APIs.
+- Preserve every existing enum value, optional default, calculation path and
+  empty-input contract. New MCRF4XX empty input returns `FFFF`; new MPEG-2 empty
+  input returns `FFFFFFFF`. USB, BZIP2 and AUTOSAR P4 return zero. Sensirion keeps
+  CRC8's existing no-value empty-input behavior.
+- Verify 188 distinct non-empty published answers: 31 Sensirion, 30 MCRF4XX,
+  30 USB, 30 MPEG-2, 30 BZIP2 and 37 AUTOSAR P4. Retain exact pinned message-pool
+  inputs and final CRC values, the manufacturer's `BE EF -> 92` example and
+  seven official AUTOSAR P4 vectors. Document protocol-specific input selection.
+
+### xxHash32 and xxHash64
+
+- Add `XxHash32` and `XxHash64` detectors, numeric/frame extensions, accumulators
+  and synchronous/asynchronous stream methods in `Mythosia.Integrity.Checksum`.
+  Support unsigned 32-/64-bit seeds, defaulting to zero and retained on reset.
+- Keep only 16 or 32 pending bytes and the hash state; snapshots do not finalize
+  the accumulator. Read input words as little-endian on every platform and use
+  wrapping prime arithmetic. Empty seed-zero values are `02CC5D05` and
+  `EF46DB3751D8E999`.
+- Use native-endian library digest frames and distinguish them from the
+  canonical big-endian xxHash digest representation and compression formats.
+- Verify 155 published fixed answers, including 48 XXH32 and 49 XXH64 distinct
+  non-empty seed-zero inputs, plus empty and nonzero/wide-seed cases. Compare
+  against an independent whole-message BigInteger reference and cover stripe,
+  tail, partition, reset, frame and stream lifecycle boundaries.
+
+### Fletcher4 and OSPF LSA checksums
+
+- Add OpenZFS `Fletcher4`, numeric/frame extensions, `Fletcher4Accumulator` and
+  stream methods. Return a `Fletcher4Value` containing four unsigned 64-bit sums.
+  Select input-word order explicitly with `Fletcher4ByteOrder`, defaulting to
+  little-endian independently of the host. Library digest frames serialize the
+  four sums in native byte order.
+- Preserve partial 32-bit words across appends. A result requires a total byte
+  length divisible by four; incomplete words are not silently padded. Empty
+  input returns four zeros. Reset clears sums and pending bytes.
+- Add `OspfLsaChecksum.Compute`, `Write` and `IsValid` for one complete OSPFv2 or
+  OSPFv3 LSA. Exclude LS age, use the checksum field at bytes 16-17 in network
+  order and validate the declared length. `Write` changes only those two bytes.
+- Verify 30 literal OpenZFS send-stream Fletcher4 checkpoints and 39 complete
+  LSAs from pinned tcpdump captures. Preserve exact source bytes, file hashes,
+  checkpoint/frame offsets and notices. Independent weighted-sum references
+  cover wrapping, word order and OSPF field correction.
+
 ### Verification and documentation
 
-- Add executable CRC64-variant, Internet Checksum and CRC8-variant README examples,
-  preserving all prior examples and their fixed output. Validate all 12 against
-  actual candidate NuGet packages in CI.
-- Preserve all 174 prior API declarations and review 19 additive declarations:
-  two CRC64 enum members and 17 Internet Checksum declarations. Preserve those
-  193 declarations when adding the two CRC8 enum members. The complete reviewed
-  surface has 195 declarations across 32 public types.
-- Require the CRC64-variant and both Internet Checksum suites in CI and release
-  selection, together with both CRC8-variant suites. Add missing-suite rejection
-  cases to the existing release-gate tests, for 57 gate regression cases in total.
-  Run all 2,713 Integrity tests in all four CI configurations. Keep publication
-  disabled for ordinary CI runs and keep released package metadata unchanged.
+- Preserve all 195 prior API declarations and review 92 additive declarations.
+  The complete surface has 287 declarations across 44 public types.
+- Retain every previous unit test and expand shared enum-driven cases for the
+  new CRCs. Add 765 cases, for 3,478 Integrity tests across all four CI
+  configurations. Every newly added algorithm has at least 30 distinct non-empty
+  published fixed answers; no lookup-table entries or locally generated answers
+  are counted as public vectors.
+- Preserve all 12 previous README examples and their fixed output; add six
+  independent examples for all new CRC, xxHash, Fletcher4 and OSPF APIs. Validate
+  all 18 against actual candidate NuGet packages, public API and metadata in CI.
+- Require all seven additional calculation/stream/OSPF suites in test evidence
+  and release selection. Add missing-suite rejection cases for 64 release-gate
+  regression cases in total. Keep publication disabled for ordinary CI runs and
+  keep the released package version and metadata unchanged.

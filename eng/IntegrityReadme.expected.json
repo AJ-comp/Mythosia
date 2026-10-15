@@ -306,6 +306,202 @@
         "Stream CRC8 AutosarH2F: DF",
         "Async stream CRC8 AutosarH2F: DF"
       ]
+    },
+    {
+      "id": "crc8-sensirion",
+      "codeSha256": "0A9A4F3032D71B6FCC3DE9411C6930142AF9D16AEC59AE2DF9651DAD59487585",
+      "stdoutLittleEndian": [
+        "CRC8 SensirionSht4x: F7",
+        "CRC8 SensirionSht4x frame valid: True",
+        "CRC8 SensirionSht4x decoded: True",
+        "Chunked CRC8 SensirionSht4x: F7",
+        "Reused CRC8 SensirionSht4x: F7",
+        "Stream CRC8 SensirionSht4x: F7",
+        "Async stream CRC8 SensirionSht4x: F7",
+        "SHT4x BE EF: 92"
+      ],
+      "stdoutBigEndian": [
+        "CRC8 SensirionSht4x: F7",
+        "CRC8 SensirionSht4x frame valid: True",
+        "CRC8 SensirionSht4x decoded: True",
+        "Chunked CRC8 SensirionSht4x: F7",
+        "Reused CRC8 SensirionSht4x: F7",
+        "Stream CRC8 SensirionSht4x: F7",
+        "Async stream CRC8 SensirionSht4x: F7",
+        "SHT4x BE EF: 92"
+      ]
+    },
+    {
+      "id": "crc16-mcrf4xx-usb",
+      "codeSha256": "190DCEF978A1F306C149AA2BB7FBC5B423F63722965612CCDF598A04306944EF",
+      "stdoutLittleEndian": [
+        "CRC16 MCRF4XX: 6F91",
+        "CRC16 MCRF4XX frame valid: True",
+        "CRC16 MCRF4XX decoded: True",
+        "Chunked CRC16 MCRF4XX: 6F91",
+        "Reset CRC16 MCRF4XX: FFFF",
+        "Stream CRC16 MCRF4XX: 6F91",
+        "Async stream CRC16 MCRF4XX: 6F91",
+        "CRC16 USB: B4C8",
+        "CRC16 USB frame valid: True",
+        "CRC16 USB decoded: True",
+        "Chunked CRC16 USB: B4C8",
+        "Reset CRC16 USB: 0000",
+        "Stream CRC16 USB: B4C8",
+        "Async stream CRC16 USB: B4C8"
+      ],
+      "stdoutBigEndian": [
+        "CRC16 MCRF4XX: 6F91",
+        "CRC16 MCRF4XX frame valid: True",
+        "CRC16 MCRF4XX decoded: True",
+        "Chunked CRC16 MCRF4XX: 6F91",
+        "Reset CRC16 MCRF4XX: FFFF",
+        "Stream CRC16 MCRF4XX: 6F91",
+        "Async stream CRC16 MCRF4XX: 6F91",
+        "CRC16 USB: B4C8",
+        "CRC16 USB frame valid: True",
+        "CRC16 USB decoded: True",
+        "Chunked CRC16 USB: B4C8",
+        "Reset CRC16 USB: 0000",
+        "Stream CRC16 USB: B4C8",
+        "Async stream CRC16 USB: B4C8"
+      ]
+    },
+    {
+      "id": "crc32-mpeg2-bzip2-autosar",
+      "codeSha256": "154604672FA8D41A661288161BCBC95309B9B13AB4BAD4339F5A37E4E28A174B",
+      "stdoutLittleEndian": [
+        "CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Mpeg2 frame valid: True",
+        "CRC32 Mpeg2 decoded: True",
+        "Chunked CRC32 Mpeg2: 0376E6E7",
+        "Reset CRC32 Mpeg2: FFFFFFFF",
+        "Stream CRC32 Mpeg2: 0376E6E7",
+        "Async stream CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Bzip2: FC891918",
+        "CRC32 Bzip2 frame valid: True",
+        "CRC32 Bzip2 decoded: True",
+        "Chunked CRC32 Bzip2: FC891918",
+        "Reset CRC32 Bzip2: 00000000",
+        "Stream CRC32 Bzip2: FC891918",
+        "Async stream CRC32 Bzip2: FC891918",
+        "CRC32 AutosarP4: 1697D06A",
+        "CRC32 AutosarP4 frame valid: True",
+        "CRC32 AutosarP4 decoded: True",
+        "Chunked CRC32 AutosarP4: 1697D06A",
+        "Reset CRC32 AutosarP4: 00000000",
+        "Stream CRC32 AutosarP4: 1697D06A",
+        "Async stream CRC32 AutosarP4: 1697D06A"
+      ],
+      "stdoutBigEndian": [
+        "CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Mpeg2 frame valid: True",
+        "CRC32 Mpeg2 decoded: True",
+        "Chunked CRC32 Mpeg2: 0376E6E7",
+        "Reset CRC32 Mpeg2: FFFFFFFF",
+        "Stream CRC32 Mpeg2: 0376E6E7",
+        "Async stream CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Bzip2: FC891918",
+        "CRC32 Bzip2 frame valid: True",
+        "CRC32 Bzip2 decoded: True",
+        "Chunked CRC32 Bzip2: FC891918",
+        "Reset CRC32 Bzip2: 00000000",
+        "Stream CRC32 Bzip2: FC891918",
+        "Async stream CRC32 Bzip2: FC891918",
+        "CRC32 AutosarP4: 1697D06A",
+        "CRC32 AutosarP4 frame valid: True",
+        "CRC32 AutosarP4 decoded: True",
+        "Chunked CRC32 AutosarP4: 1697D06A",
+        "Reset CRC32 AutosarP4: 00000000",
+        "Stream CRC32 AutosarP4: 1697D06A",
+        "Async stream CRC32 AutosarP4: 1697D06A"
+      ]
+    },
+    {
+      "id": "xxhash",
+      "codeSha256": "D990BD5AE4DDD360DA7526A5C7FE3B4533049BE371CC5DFAD419CB8B05BC35DA",
+      "stdoutLittleEndian": [
+        "XXH32: 937BAD67",
+        "XXH32 digest: 67AD7B93",
+        "XXH32 frame valid: True",
+        "XXH32 decoded: True",
+        "Chunked XXH32: 937BAD67",
+        "Reset XXH32: 02CC5D05",
+        "Stream XXH32: 937BAD67",
+        "Async XXH32: 937BAD67",
+        "XXH64: 8CB841DB40E6AE83",
+        "XXH64 digest: 83AEE640DB41B88C",
+        "XXH64 frame valid: True",
+        "XXH64 decoded: True",
+        "Chunked XXH64: 8CB841DB40E6AE83",
+        "Reset XXH64: EF46DB3751D8E999",
+        "Stream XXH64: 8CB841DB40E6AE83",
+        "Async XXH64: 8CB841DB40E6AE83"
+      ],
+      "stdoutBigEndian": [
+        "XXH32: 937BAD67",
+        "XXH32 digest: 937BAD67",
+        "XXH32 frame valid: True",
+        "XXH32 decoded: True",
+        "Chunked XXH32: 937BAD67",
+        "Reset XXH32: 02CC5D05",
+        "Stream XXH32: 937BAD67",
+        "Async XXH32: 937BAD67",
+        "XXH64: 8CB841DB40E6AE83",
+        "XXH64 digest: 8CB841DB40E6AE83",
+        "XXH64 frame valid: True",
+        "XXH64 decoded: True",
+        "Chunked XXH64: 8CB841DB40E6AE83",
+        "Reset XXH64: EF46DB3751D8E999",
+        "Stream XXH64: 8CB841DB40E6AE83",
+        "Async XXH64: 8CB841DB40E6AE83"
+      ]
+    },
+    {
+      "id": "fletcher4",
+      "codeSha256": "6666FBA0CECACEE8259D56AFADFAF24A751EAF07F2562DEF298ADDA913F46329",
+      "stdoutLittleEndian": [
+        "Fletcher4 A/B/C/D: 10/20/35/56",
+        "Fletcher4 digest: 0A00000000000000140000000000000023000000000000003800000000000000",
+        "Fletcher4 frame valid: True",
+        "Fletcher4 decoded: True",
+        "Chunked Fletcher4 matches: True",
+        "Reset Fletcher4 A/B/C/D: 0/0/0/0",
+        "Stream Fletcher4 matches: True",
+        "Async Fletcher4 matches: True",
+        "Big-endian Fletcher4 matches: True"
+      ],
+      "stdoutBigEndian": [
+        "Fletcher4 A/B/C/D: 10/20/35/56",
+        "Fletcher4 digest: 000000000000000A000000000000001400000000000000230000000000000038",
+        "Fletcher4 frame valid: True",
+        "Fletcher4 decoded: True",
+        "Chunked Fletcher4 matches: True",
+        "Reset Fletcher4 A/B/C/D: 0/0/0/0",
+        "Stream Fletcher4 matches: True",
+        "Async Fletcher4 matches: True",
+        "Big-endian Fletcher4 matches: True"
+      ]
+    },
+    {
+      "id": "ospf-lsa-checksum",
+      "codeSha256": "5B73AFC9A82D24EB280256E410303734DFBD0D6913E576584FE76DEC3C0DB450",
+      "stdoutLittleEndian": [
+        "OSPF LSA length: 48",
+        "OSPF LSA checksum: 51CB",
+        "OSPF LSA checksum field: 51CB",
+        "OSPF LSA valid: True",
+        "OSPF LSA valid after age change: True",
+        "OSPF LSA valid after body change: False"
+      ],
+      "stdoutBigEndian": [
+        "OSPF LSA length: 48",
+        "OSPF LSA checksum: 51CB",
+        "OSPF LSA checksum field: 51CB",
+        "OSPF LSA valid: True",
+        "OSPF LSA valid after age change: True",
+        "OSPF LSA valid after body change: False"
+      ]
     }
   ]
 }

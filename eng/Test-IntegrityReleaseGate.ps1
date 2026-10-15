@@ -30,7 +30,7 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 2713
+$minimumTestCount = 3478
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
@@ -43,6 +43,13 @@ $internetChecksumTestPrefix = 'Mythosia.Test.Integrity.InternetChecksumTests.'
 $internetChecksumStreamTestPrefix = 'Mythosia.Test.Integrity.InternetChecksumStreamTests.'
 $crc8VariantTestPrefix = 'Mythosia.Test.Integrity.Crc8VariantTests.'
 $crc8VariantStreamTestPrefix = 'Mythosia.Test.Integrity.Crc8VariantStreamTests.'
+$remainingCrcVariantsTestPrefix = 'Mythosia.Test.Integrity.RemainingCrcVariantsTests.'
+$remainingCrcVariantsStreamTestPrefix = 'Mythosia.Test.Integrity.RemainingCrcVariantsStreamTests.'
+$xxHashTestPrefix = 'Mythosia.Test.Integrity.XxHashTests.'
+$xxHashStreamTestPrefix = 'Mythosia.Test.Integrity.XxHashStreamTests.'
+$fletcher4TestPrefix = 'Mythosia.Test.Integrity.Fletcher4Tests.'
+$fletcher4StreamTestPrefix = 'Mythosia.Test.Integrity.Fletcher4StreamTests.'
+$ospfLsaTestPrefix = 'Mythosia.Test.Integrity.OspfLsaChecksumTests.'
 $githubSentinel = "existing-output=preserved`n"
 $utf8 = [Text.UTF8Encoding]::new($false)
 
@@ -130,6 +137,13 @@ function New-PassingTrx([string] $Path) {
             9 { "${internetChecksumStreamTestPrefix}SyntheticGateFixture" }
             10 { "${crc8VariantTestPrefix}SyntheticGateFixture" }
             11 { "${crc8VariantStreamTestPrefix}SyntheticGateFixture" }
+            12 { "${remainingCrcVariantsTestPrefix}SyntheticGateFixture" }
+            13 { "${remainingCrcVariantsStreamTestPrefix}SyntheticGateFixture" }
+            14 { "${xxHashTestPrefix}SyntheticGateFixture" }
+            15 { "${xxHashStreamTestPrefix}SyntheticGateFixture" }
+            16 { "${fletcher4TestPrefix}SyntheticGateFixture" }
+            17 { "${fletcher4StreamTestPrefix}SyntheticGateFixture" }
+            18 { "${ospfLsaTestPrefix}SyntheticGateFixture" }
             default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
         }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
@@ -503,6 +517,76 @@ $cases = @(
             foreach ($result in $d.TestRun.Results.UnitTestResult) {
                 if ($result.GetAttribute('testName').StartsWith($crc8VariantStreamTestPrefix, [StringComparison]::Ordinal)) {
                     $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc8VariantsStream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-remaining-crc-variants-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($remainingCrcVariantsTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedRemainingCrcVariantsCalculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-remaining-crc-variants-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($remainingCrcVariantsStreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedRemainingCrcVariantsStream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-xxhash-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($xxHashTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedXxHashCalculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-xxhash-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($xxHashStreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedXxHashStream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-fletcher4-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($fletcher4TestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedFletcher4Calculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-fletcher4-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($fletcher4StreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedFletcher4Stream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-ospf-lsa-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($ospfLsaTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedOspfLsa')
                 }
             }
         }

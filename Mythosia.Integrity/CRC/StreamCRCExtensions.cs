@@ -14,7 +14,7 @@ namespace Mythosia.Integrity.CRC
         /// <summary>Reads from the current position to the end of the stream and calculates CRC8.</summary>
         /// <remarks>Reuses one 64 KiB buffer and leaves the stream open.</remarks>
         /// <param name="source">The readable stream to consume.</param>
-        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F, including the supported Basic alias.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850, AutosarH2F or SensirionSht4x, including the supported Basic alias.</param>
         /// <returns>The CRC8 value for all bytes read.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
@@ -31,7 +31,7 @@ namespace Mythosia.Integrity.CRC
         /// <remarks>Reuses one 64 KiB buffer and leaves the stream open. DNP preserves the legacy numeric byte swap.</remarks>
         /// <param name="source">The readable stream to consume.</param>
         /// <param name="type">The CRC16 algorithm, including the supported Basic alias.</param>
-        /// <returns>The CRC16 value for all bytes read. Empty input returns 0xFFFF for Modbus and CCITTFalse, and zero for other algorithms.</returns>
+        /// <returns>The CRC16 value for all bytes read. Empty input returns 0xFFFF for Modbus, CCITTFalse and MCRF4XX, and zero for other algorithms.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
@@ -46,7 +46,7 @@ namespace Mythosia.Integrity.CRC
         /// <remarks>Reuses one 64 KiB buffer and leaves the stream open.</remarks>
         /// <param name="source">The readable stream to consume.</param>
         /// <param name="type">The CRC32 algorithm, including the supported Basic alias.</param>
-        /// <returns>The CRC32 value for all bytes read, or zero for an empty stream.</returns>
+        /// <returns>The CRC32 value for all bytes read. Empty input returns 0xFFFFFFFF for MPEG-2 and zero otherwise.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
@@ -88,7 +88,7 @@ namespace Mythosia.Integrity.CRC
         /// <summary>Asynchronously reads to the end of the stream and calculates CRC8.</summary>
         /// <remarks>Starts at the current position, reuses one 64 KiB buffer and leaves the stream open, including on cancellation or failure.</remarks>
         /// <param name="source">The readable stream to consume.</param>
-        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F, including the supported Basic alias.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850, AutosarH2F or SensirionSht4x, including the supported Basic alias.</param>
         /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
         /// <returns>The CRC8 value for all bytes read.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
@@ -109,7 +109,7 @@ namespace Mythosia.Integrity.CRC
         /// <param name="source">The readable stream to consume.</param>
         /// <param name="type">The CRC16 algorithm, including the supported Basic alias.</param>
         /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
-        /// <returns>The CRC16 value for all bytes read. Empty input returns 0xFFFF for Modbus and CCITTFalse, and zero for other algorithms.</returns>
+        /// <returns>The CRC16 value for all bytes read. Empty input returns 0xFFFF for Modbus, CCITTFalse and MCRF4XX, and zero for other algorithms.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>
@@ -127,7 +127,7 @@ namespace Mythosia.Integrity.CRC
         /// <param name="source">The readable stream to consume.</param>
         /// <param name="type">The CRC32 algorithm, including the supported Basic alias.</param>
         /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
-        /// <returns>The CRC32 value for all bytes read, or zero for an empty stream.</returns>
+        /// <returns>The CRC32 value for all bytes read. Empty input returns 0xFFFFFFFF for MPEG-2 and zero otherwise.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not supported.</exception>

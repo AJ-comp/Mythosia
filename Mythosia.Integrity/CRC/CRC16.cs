@@ -18,6 +18,10 @@ namespace Mythosia.Integrity.CRC
         CCITTFalse = 5,
         /// <summary>CRC-16/X-25 (CRC-16/IBM-SDLC): polynomial 0x1021, reflected input and output, initial state and final XOR 0xFFFF.</summary>
         X25 = 6,
+        /// <summary>CRC-16/MCRF4XX: polynomial 0x1021, initial state 0xFFFF, reflected input and output, no final XOR.</summary>
+        MCRF4XX = 7,
+        /// <summary>CRC-16/USB: polynomial 0x8005, reflected input and output, initial state and final XOR 0xFFFF.</summary>
+        USB = 8,
     }
 
     public class CRC16 : ErrorDetection
@@ -38,7 +42,8 @@ namespace Mythosia.Integrity.CRC
             else if (Type == CRC16Type.Modbus) AppendNativeBytes(result, ComputeCRC16Modbus(source));
             else if (Type == CRC16Type.CCITTxModem) AppendNativeBytes(result, ComputeCCITTxModem(source));
             else if (Type == CRC16Type.DNP) AppendNativeBytes(result, ComputeDNP(source));
-            else if (Type == CRC16Type.CCITTFalse || Type == CRC16Type.X25)
+            else if (Type == CRC16Type.CCITTFalse || Type == CRC16Type.X25
+                || Type == CRC16Type.MCRF4XX || Type == CRC16Type.USB)
                 AppendNativeBytes(result, ComputeIncrementally(source));
 
             return result;

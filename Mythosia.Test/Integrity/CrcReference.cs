@@ -24,10 +24,22 @@ internal static class CrcReference
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-3740
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-sdlc
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iso-hdlc
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-nrsc-5
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-mcrf4xx
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-usb
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-mpeg-2
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-bzip2
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-autosar
     private static readonly Parameters Smbus = new(8, 0x07, 0, false, false, 0);
     private static readonly Parameters Maxim = new(8, 0x31, 0, true, true, 0);
     private static readonly Parameters SaeJ1850 = new(8, 0x1D, 0xFF, false, false, 0xFF);
     private static readonly Parameters AutosarH2F = new(8, 0x2F, 0xFF, false, false, 0xFF);
+    private static readonly Parameters SensirionSht4x = new(8, 0x31, 0xFF, false, false, 0);
+    private static readonly Parameters Mcrf4xx = new(16, 0x1021, 0xFFFF, true, true, 0);
+    private static readonly Parameters Usb = new(16, 0x8005, 0xFFFF, true, true, 0xFFFF);
+    private static readonly Parameters Mpeg2 = new(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0);
+    private static readonly Parameters Bzip2 = new(32, 0x04C11DB7, 0xFFFFFFFF, false, false, 0xFFFFFFFF);
+    private static readonly Parameters AutosarP4 = new(32, 0xF4ACFB13, 0xFFFFFFFF, true, true, 0xFFFFFFFF);
     private static readonly Parameters Arc = new(16, 0x8005, 0, true, true, 0);
     private static readonly Parameters Modbus = new(16, 0x8005, 0xFFFF, true, true, 0);
     private static readonly Parameters Xmodem = new(16, 0x1021, 0, false, false, 0);
@@ -44,6 +56,7 @@ internal static class CrcReference
             CRC8Type.Maxim => Maxim,
             CRC8Type.SaeJ1850 => SaeJ1850,
             CRC8Type.AutosarH2F => AutosarH2F,
+            CRC8Type.SensirionSht4x => SensirionSht4x,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         return (byte)Compute(source, parameters);
@@ -60,6 +73,8 @@ internal static class CrcReference
             CRC16Type.DNP => Dnp,
             CRC16Type.CCITTFalse => CcittFalse,
             CRC16Type.X25 => X25,
+            CRC16Type.MCRF4XX => Mcrf4xx,
+            CRC16Type.USB => Usb,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         return (ushort)Compute(source, parameters);
@@ -67,10 +82,15 @@ internal static class CrcReference
 
     public static uint Compute32(IEnumerable<byte> source, CRC32Type type)
     {
-        if (type is not (CRC32Type.Basic or CRC32Type.Classic))
-            throw new ArgumentOutOfRangeException(nameof(type), type, null);
-
-        return Compute(source, IsoHdlc);
+        Parameters parameters = type switch
+        {
+            CRC32Type.Basic or CRC32Type.Classic => IsoHdlc,
+            CRC32Type.Mpeg2 => Mpeg2,
+            CRC32Type.Bzip2 => Bzip2,
+            CRC32Type.AutosarP4 => AutosarP4,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+        return Compute(source, parameters);
     }
 
     // Compatibility adapter, deliberately outside the standards oracle.

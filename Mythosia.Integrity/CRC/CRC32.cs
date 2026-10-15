@@ -10,6 +10,12 @@ namespace Mythosia.Integrity.CRC
         [Obsolete("Basic is obsolete. Use Classic instead.")]
         Basic,
         Classic,
+        /// <summary>CRC-32/MPEG-2: polynomial 0x04C11DB7, initial state 0xFFFFFFFF, no reflection or final XOR.</summary>
+        Mpeg2 = 2,
+        /// <summary>CRC-32/BZIP2: polynomial 0x04C11DB7, no reflection, initial state and final XOR 0xFFFFFFFF.</summary>
+        Bzip2 = 3,
+        /// <summary>CRC-32/AUTOSAR (P4): polynomial 0xF4ACFB13, reflected input and output, initial state and final XOR 0xFFFFFFFF.</summary>
+        AutosarP4 = 4,
     }
 
     public class CRC32 : ErrorDetection
@@ -27,8 +33,31 @@ namespace Mythosia.Integrity.CRC
 
             if (Type == CRC32Type.Basic) AppendNativeBytes(result, ComputeCRC32(source));
             else if (Type == CRC32Type.Classic) AppendNativeBytes(result, ComputeCRC32(source));
+            else if (Type == CRC32Type.Mpeg2 || Type == CRC32Type.Bzip2 || Type == CRC32Type.AutosarP4)
+                AppendNativeBytes(result, ComputeIncrementally(source));
 
             return result;
+        }
+
+        private uint ComputeIncrementally(IEnumerable<byte> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            var accumulator = new CRC32Accumulator(Type);
+            if (source is byte[] bytes)
+            {
+                accumulator.Append(bytes);
+                return accumulator.GetCurrentValue();
+            }
+
+            Span<byte> nextByte = stackalloc byte[1];
+            foreach (byte value in source)
+            {
+                nextByte[0] = value;
+                accumulator.Append(nextByte);
+            }
+
+            return accumulator.GetCurrentValue();
         }
 
         private static void AppendNativeBytes(List<byte> result, uint value)

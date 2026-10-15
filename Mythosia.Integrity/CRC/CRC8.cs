@@ -15,6 +15,8 @@ namespace Mythosia.Integrity.CRC
         SaeJ1850 = 3,
         /// <summary>CRC-8/AUTOSAR (H2F): polynomial 0x2F, initial state and final XOR 0xFF, no reflection.</summary>
         AutosarH2F = 4,
+        /// <summary>Sensirion SHT4x CRC-8 (CRC-8/NRSC-5): polynomial 0x31, initial state 0xFF, no reflection or final XOR.</summary>
+        SensirionSht4x = 5,
         //            Unknown,
     }
 
@@ -30,7 +32,7 @@ namespace Mythosia.Integrity.CRC
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
             List<byte> result = new List<byte>();
-            if (Type == CRC8Type.SaeJ1850 || Type == CRC8Type.AutosarH2F)
+            if (Type == CRC8Type.SaeJ1850 || Type == CRC8Type.AutosarH2F || Type == CRC8Type.SensirionSht4x)
             {
                 AppendIncrementalResult(source, result);
                 return result;

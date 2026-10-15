@@ -1,20 +1,22 @@
 # Mythosia.Integrity
 
-CRC and checksum calculation, frame encoding and error detection for byte
-sequences. Hash algorithms are provided by `Mythosia.Security.Cryptography`.
+CRC, checksum and non-cryptographic xxHash calculation, frame encoding and error
+detection for byte sequences. Cryptographic hash algorithms are provided by
+`Mythosia.Security.Cryptography`.
 
 Version `1.3.0` adds CRC16 CCITT-FALSE/X25, CRC32C, CRC64/NVME and incremental
 and streaming CRC calculation while preserving the existing public API and
 results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The Adler-32, CRC64/XZ and ECMA-182, Internet Checksum, and CRC8/SAE-J1850 and
-AUTOSAR H2F sections describe unreleased source additions. Use a source build
-for those APIs until a package containing them is released.
+Sections marked `(unreleased)` describe source additions not included in the
+published 1.3.0 package. Use a source build for those APIs until a package
+containing them is released.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
-All examples use the ASCII bytes of `123456789`.
+CRC and xxHash examples use the ASCII bytes of `123456789` unless stated
+otherwise. Fletcher4 and OSPF examples supply the required binary input.
 
 ## CRC extensions
 
@@ -451,8 +453,9 @@ Before any non-empty append after construction or `Reset`, `CRC8Accumulator`
 throws `InvalidOperationException` from `GetCurrentValue`. CRC8 stream methods
 throw the same exception when there are no remaining bytes. The existing CRC8
 API has no numeric result for empty input. Empty CRC16 returns
-`FFFF` for Modbus and CCITTFalse, and `0000` for the other variants, including X25
-and legacy DNP. Empty CRC32 and CRC32C return `00000000`; CRC64 returns zero.
+`FFFF` for Modbus, CCITTFalse and MCRF4XX, and `0000` for the other variants,
+including X25, USB and legacy DNP. Empty CRC32/Mpeg2 returns `FFFFFFFF`;
+the other CRC32 variants and CRC32C return `00000000`. CRC64 returns zero.
 Unsupported algorithm values throw
 `ArgumentOutOfRangeException`.
 
@@ -721,3 +724,380 @@ foreach (CRC8Type type in new[] { CRC8Type.SaeJ1850, CRC8Type.AutosarH2F })
 Both stream methods start at the current position, use one reusable 64 KiB
 buffer and leave the stream open. The asynchronous method accepts an optional
 `CancellationToken`. Cancellation and read failure return no partial CRC.
+
+## CRC8 / Sensirion SHT4x (unreleased)
+
+Available in source builds. `CRC8Type.SensirionSht4x` is an additive selector in
+all existing CRC8 detector, numeric/frame, accumulator and stream APIs. The
+`Classic` default and existing enum values and results remain unchanged.
+
+The [Sensirion SHT4x datasheet](https://sensirion.com/resource/datasheet/sht4x),
+v7.3 (June 2026), section 4.4, table 7, specifies these parameters. This model is
+also catalogued as
+[CRC-8/NRSC-5](https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-nrsc-5).
+
+| Parameter | Value |
+| --- | --- |
+| Polynomial | `31` |
+| Initial register | `FF` |
+| Reflect input/output | No / No |
+| Final XOR | `00` |
+| ASCII `123456789` | `F7` |
+| Sensor bytes `BE EF` | `92` |
+
+SHT4x checks each 16-bit sensor word separately: two data bytes followed by one
+CRC byte. Supply those two data bytes in their received order when validating
+that word. The generic CRC API also accepts other message lengths, as the
+standard check string below illustrates.
+
+CRC8 retains its existing empty-input contract: `Compute` returns an empty
+digest; numeric/frame encoding throws `ArgumentOutOfRangeException`; a new or
+reset accumulator and an empty stream throw `InvalidOperationException` when
+asked for a numeric result. `Reset()` keeps the selected model and restores its
+initial register. Reading a nonempty prefix never changes the accumulator.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+CRC8Type type = CRC8Type.SensirionSht4x;
+var detector = new CRC8(type);
+Console.WriteLine($"CRC8 {type}: {data.CRC8(type):X2}");
+byte[] frame = data.WithCRC8(type).ToArray();
+Console.WriteLine($"CRC8 {type} frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"CRC8 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new CRC8Accumulator(type);
+accumulator.Append(data.AsSpan(0, 4));
+accumulator.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked CRC8 {type}: {accumulator.GetCurrentValue():X2}");
+accumulator.Reset();
+accumulator.Append(data);
+Console.WriteLine($"Reused CRC8 {type}: {accumulator.GetCurrentValue():X2}");
+
+using var syncStream = new MemoryStream(data, writable: false);
+using var asyncStream = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream CRC8 {type}: {syncStream.ComputeCRC8(type):X2}");
+Console.WriteLine($"Async stream CRC8 {type}: {await asyncStream.ComputeCRC8Async(type):X2}");
+byte[] sensorWord = { 0xBE, 0xEF };
+Console.WriteLine($"SHT4x BE EF: {sensorWord.CRC8(type):X2}");
+// General check: F7. Manufacturer's two-byte example: 92.
+```
+
+## CRC16 / MCRF4XX and USB (unreleased)
+
+Available in source builds. Select `CRC16Type.MCRF4XX` or `CRC16Type.USB` in the
+existing CRC16 APIs. Existing enum values and defaults remain unchanged:
+detectors, accumulators and streams default to `Classic`, and numeric/frame
+extensions retain their legacy `Basic` default, which calculates the same CRC.
+
+| Parameter | MCRF4XX | USB |
+| --- | --- | --- |
+| Polynomial | `1021` | `8005` |
+| Initial register | `FFFF` | `FFFF` |
+| Reflect input/output | Yes / Yes | Yes / Yes |
+| Final XOR | `0000` | `FFFF` |
+| ASCII `123456789` | `6F91` | `B4C8` |
+| Empty input / reset | `FFFF` | `0000` |
+
+The exact models and checks are listed in the
+[CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/16.htm).
+[USB-IF's CRC explanation](https://www.usb.org/sites/default/files/crcdes.pdf)
+describes USB data-packet CRC16.
+[MAVLink's serialization guide](https://mavlink.io/en/guide/serialization.html#checksum)
+uses the MCRF4XX calculation with the required packet fields and message-specific
+`CRC_EXTRA` byte. Prepare that exact input before calling the raw CRC API.
+For USB data packets, use the data field bytes before bit stuffing.
+
+Both results are `ushort`. `Compute` and frame helpers preserve the library's
+two-byte native-endian digest convention. A protocol's packet fields, byte order,
+bit transmission order and checksum placement must be serialized according to
+that protocol. `IsError` and `Decode` require a nonempty payload followed by the
+library digest; a digest-only frame is invalid.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+foreach (CRC16Type type in new[] { CRC16Type.MCRF4XX, CRC16Type.USB })
+{
+    var detector = new CRC16(type);
+    Console.WriteLine($"CRC16 {type}: {data.CRC16(type):X4}");
+    byte[] frame = data.WithCRC16(type).ToArray();
+    Console.WriteLine($"CRC16 {type} frame valid: {!detector.IsError(frame)}");
+    Console.WriteLine($"CRC16 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+    var accumulator = new CRC16Accumulator(type);
+    accumulator.Append(data.AsSpan(0, 4));
+    accumulator.Append(data.AsSpan(4));
+    Console.WriteLine($"Chunked CRC16 {type}: {accumulator.GetCurrentValue():X4}");
+    accumulator.Reset();
+    Console.WriteLine($"Reset CRC16 {type}: {accumulator.GetCurrentValue():X4}");
+
+    using var syncStream = new MemoryStream(data, writable: false);
+    using var asyncStream = new MemoryStream(data, writable: false);
+    Console.WriteLine($"Stream CRC16 {type}: {syncStream.ComputeCRC16(type):X4}");
+    Console.WriteLine($"Async stream CRC16 {type}: {await asyncStream.ComputeCRC16Async(type):X4}");
+}
+// MCRF4XX: 6F91, reset FFFF. USB: B4C8, reset 0000.
+```
+
+## CRC32 / MPEG-2, BZIP2 and AUTOSAR P4 (unreleased)
+
+Available in source builds. Choose `CRC32Type.Mpeg2`, `CRC32Type.Bzip2` or
+`CRC32Type.AutosarP4` in the existing CRC32 APIs. Existing enum values and
+calculation results remain unchanged. Detectors, accumulators and streams
+continue to default to `Classic`; numeric/frame extensions retain the equivalent
+legacy `Basic` default.
+
+| Parameter | MPEG-2 | BZIP2 | AUTOSAR P4 |
+| --- | --- | --- | --- |
+| Polynomial | `04C11DB7` | `04C11DB7` | `F4ACFB13` |
+| Initial register | `FFFFFFFF` | `FFFFFFFF` | `FFFFFFFF` |
+| Reflect input/output | No / No | No / No | Yes / Yes |
+| Final XOR | `00000000` | `FFFFFFFF` | `FFFFFFFF` |
+| ASCII `123456789` | `0376E6E7` | `FC891918` | `1697D06A` |
+| Empty input / reset | `FFFFFFFF` | `00000000` | `00000000` |
+
+The exact models and checks are listed in the
+[CRC RevEng catalogue](https://reveng.sourceforge.io/crc-catalogue/17plus.htm).
+[TSDuck documents MPEG section CRC32](https://tsduck.io/docs/tsduck.html#tscrc32),
+and the [bzip2 manual](https://www.sourceware.org/bzip2/manual/manual.html)
+describes its per-block CRC32 integrity check. The BZIP2 selector calculates a
+block CRC; composing a bzip2 container's combined CRC follows the file format.
+[AUTOSAR's CRC Library specification](https://www.autosar.org/fileadmin/standards/R24-11/CP/AUTOSAR_CP_SWS_CRCLibrary.pdf),
+section 7.2.3.2, defines CRC32P4. An AUTOSAR end-to-end profile also defines which
+fields and Data ID bytes are included; construct that input for the profile.
+
+Numeric results are `uint`; the existing digest/frame convention is four bytes
+in native byte order. Serialize numeric results explicitly for a file format or
+protocol that requires a specific byte order. `IsError` and `Decode` require a
+nonempty payload and its trailing digest. Accumulator snapshots apply the final
+XOR without modifying the calculation state, and `Reset()` restores the
+selected model's empty value shown above.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+foreach (CRC32Type type in new[] { CRC32Type.Mpeg2, CRC32Type.Bzip2, CRC32Type.AutosarP4 })
+{
+    var detector = new CRC32(type);
+    Console.WriteLine($"CRC32 {type}: {data.CRC32(type):X8}");
+    byte[] frame = data.WithCRC32(type).ToArray();
+    Console.WriteLine($"CRC32 {type} frame valid: {!detector.IsError(frame)}");
+    Console.WriteLine($"CRC32 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+    var accumulator = new CRC32Accumulator(type);
+    accumulator.Append(data.AsSpan(0, 4));
+    accumulator.Append(data.AsSpan(4));
+    Console.WriteLine($"Chunked CRC32 {type}: {accumulator.GetCurrentValue():X8}");
+    accumulator.Reset();
+    Console.WriteLine($"Reset CRC32 {type}: {accumulator.GetCurrentValue():X8}");
+
+    using var syncStream = new MemoryStream(data, writable: false);
+    using var asyncStream = new MemoryStream(data, writable: false);
+    Console.WriteLine($"Stream CRC32 {type}: {syncStream.ComputeCRC32(type):X8}");
+    Console.WriteLine($"Async stream CRC32 {type}: {await asyncStream.ComputeCRC32Async(type):X8}");
+}
+// MPEG-2: 0376E6E7. BZIP2: FC891918. AUTOSAR P4: 1697D06A.
+```
+
+For all three sections above, streaming starts at the current position, consumes
+to EOF with one reusable 64 KiB buffer and leaves the source open. Asynchronous
+methods accept an optional `CancellationToken`. Cancellation and read failure
+return no partial CRC.
+
+## xxHash32 and xxHash64 (unreleased)
+
+These APIs are available in source builds and have not been published as a new
+NuGet version. `XxHash32` and `XxHash64` implement the original XXH32 and XXH64
+algorithms described by the [xxHash specification](https://github.com/Cyan4973/xxHash/blob/v0.8.3/doc/xxhash_spec.md).
+These are non-cryptographic hashes, suitable for checksums and hash keys. They
+do not provide authentication.
+
+Numeric extensions return `uint` and `ulong`. The optional seed defaults to zero
+across the detector, accumulator, numeric/frame extensions and stream methods.
+For example, use `data.XxHash64(seed: 42)` and `new XxHash64(seed: 42)` together
+when that seed is required. `Seed` records the selected value, and `Reset()`
+retains it. A result snapshot leaves the accumulator available for more input.
+
+`Compute` and the trailing digest added by `WithXxHash32`/`WithXxHash64` use native
+byte order, following the library's framing convention. The xxHash canonical
+representation is big-endian; serialize the numeric value explicitly for that
+representation. Frame validation requires a nonempty payload. Empty calculations
+are valid and, with seed zero, produce `02CC5D05` and `EF46DB3751D8E999`.
+
+Stream methods start at the current position, reuse one 64 KiB buffer and leave
+the stream open. Asynchronous methods accept a cancellation token following the
+seed parameter. Cancellation or read failure returns no partial hash.
+Accumulators keep calculation state and a 16-byte or 32-byte holdback.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.Checksum;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+var detector32 = new XxHash32(seed: 0);
+Console.WriteLine($"XXH32: {data.XxHash32():X8}");
+Console.WriteLine($"XXH32 digest: {Convert.ToHexString(detector32.Compute(data).ToArray())}");
+byte[] frame32 = data.WithXxHash32().ToArray();
+Console.WriteLine($"XXH32 frame valid: {!detector32.IsError(frame32)}");
+Console.WriteLine($"XXH32 decoded: {detector32.Decode(frame32).SequenceEqual(data)}");
+var accumulator32 = new XxHash32Accumulator(seed: 0);
+accumulator32.Append(data.AsSpan(0, 4));
+accumulator32.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked XXH32: {accumulator32.GetCurrentValue():X8}");
+accumulator32.Reset();
+Console.WriteLine($"Reset XXH32: {accumulator32.GetCurrentValue():X8}");
+using var sync32 = new MemoryStream(data, writable: false);
+using var async32 = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream XXH32: {sync32.ComputeXxHash32():X8}");
+Console.WriteLine($"Async XXH32: {await async32.ComputeXxHash32Async():X8}");
+
+var detector64 = new XxHash64(seed: 0);
+Console.WriteLine($"XXH64: {data.XxHash64():X16}");
+Console.WriteLine($"XXH64 digest: {Convert.ToHexString(detector64.Compute(data).ToArray())}");
+byte[] frame64 = data.WithXxHash64().ToArray();
+Console.WriteLine($"XXH64 frame valid: {!detector64.IsError(frame64)}");
+Console.WriteLine($"XXH64 decoded: {detector64.Decode(frame64).SequenceEqual(data)}");
+var accumulator64 = new XxHash64Accumulator(seed: 0);
+accumulator64.Append(data.AsSpan(0, 4));
+accumulator64.Append(data.AsSpan(4));
+Console.WriteLine($"Chunked XXH64: {accumulator64.GetCurrentValue():X16}");
+accumulator64.Reset();
+Console.WriteLine($"Reset XXH64: {accumulator64.GetCurrentValue():X16}");
+using var sync64 = new MemoryStream(data, writable: false);
+using var async64 = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream XXH64: {sync64.ComputeXxHash64():X16}");
+Console.WriteLine($"Async XXH64: {await async64.ComputeXxHash64Async():X16}");
+// XXH32: 937BAD67; XXH64: 8CB841DB40E6AE83.
+```
+
+## OpenZFS Fletcher-4 (unreleased)
+
+This source-build feature follows the [OpenZFS Fletcher-4 algorithm](https://github.com/openzfs/zfs/blob/34f96a15c73eab27dd6ad17bb5f1263bf26e37d7/module/zcommon/zfs_fletcher.c).
+It reads 32-bit input words and returns `Fletcher4Value`, containing the four
+wrapping 64-bit sums `A`, `B`, `C` and `D`. It has not yet been published as a
+new NuGet version.
+
+Choose the input word byte order explicitly with `Fletcher4ByteOrder.LittleEndian`
+or `BigEndian`; the default is `LittleEndian` on every platform. This choice
+controls how four input bytes form one word. It is independent of digest byte
+order: `Compute` and `WithFletcher4` serialize A/B/C/D as four native-endian
+64-bit values, for a 32-byte digest. This is the library's trailing-digest frame
+format; an OpenZFS block pointer or send-stream record has its own format.
+
+Each complete calculation must contain a multiple of four bytes. An accumulator
+retains up to three pending bytes across chunks; it never pads incomplete words.
+`GetCurrentValue()` throws `InvalidOperationException` while a partial word is
+pending and preserves that state so more bytes can be appended. Byte-sequence
+calculation/encoding throws `ArgumentException` for an unaligned final length;
+stream calculation throws `InvalidDataException` if EOF leaves a partial word.
+A valid encoded frame requires an aligned, nonempty payload. Empty aligned
+calculation and `Reset()` produce four zeros.
+
+Streams start at the current position, reuse one 64 KiB buffer and leave the
+source open. The asynchronous method accepts a cancellation token after the
+byte-order parameter; cancellation and read failures return no partial value.
+
+```csharp
+using System;
+using System.Buffers.Binary;
+using System.IO;
+using System.Linq;
+using Mythosia.Integrity.Checksum;
+
+// Four little-endian uint32 input words: 1, 2, 3, 4.
+byte[] data = Convert.FromHexString("01000000020000000300000004000000");
+var detector = new Fletcher4(Fletcher4ByteOrder.LittleEndian);
+Fletcher4Value value = data.Fletcher4(Fletcher4ByteOrder.LittleEndian);
+Console.WriteLine($"Fletcher4 A/B/C/D: {value.A}/{value.B}/{value.C}/{value.D}");
+Console.WriteLine($"Fletcher4 digest: {Convert.ToHexString(detector.Compute(data).ToArray())}");
+byte[] frame = data.WithFletcher4(Fletcher4ByteOrder.LittleEndian).ToArray();
+Console.WriteLine($"Fletcher4 frame valid: {!detector.IsError(frame)}");
+Console.WriteLine($"Fletcher4 decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+var accumulator = new Fletcher4Accumulator(Fletcher4ByteOrder.LittleEndian);
+accumulator.Append(data.AsSpan(0, 3)); // Keep an incomplete word until the next append.
+accumulator.Append(data.AsSpan(3));
+Console.WriteLine($"Chunked Fletcher4 matches: {accumulator.GetCurrentValue() == value}");
+accumulator.Reset();
+Fletcher4Value empty = accumulator.GetCurrentValue();
+Console.WriteLine($"Reset Fletcher4 A/B/C/D: {empty.A}/{empty.B}/{empty.C}/{empty.D}");
+
+using var syncStream = new MemoryStream(data, writable: false);
+using var asyncStream = new MemoryStream(data, writable: false);
+Console.WriteLine($"Stream Fletcher4 matches: {syncStream.ComputeFletcher4(Fletcher4ByteOrder.LittleEndian) == value}");
+Fletcher4Value asyncValue = await asyncStream.ComputeFletcher4Async(Fletcher4ByteOrder.LittleEndian);
+Console.WriteLine($"Async Fletcher4 matches: {asyncValue == value}");
+
+// The same numeric words in a big-endian input format.
+var bigEndianData = new byte[16];
+for (int index = 0; index < 4; index++)
+    BinaryPrimitives.WriteUInt32BigEndian(bigEndianData.AsSpan(index * 4, 4), (uint)(index + 1));
+Console.WriteLine($"Big-endian Fletcher4 matches: {bigEndianData.Fletcher4(Fletcher4ByteOrder.BigEndian) == value}");
+// A=10, B=20, C=35, D=56. All matching/validity checks print True.
+```
+
+## OSPF LSA checksum (unreleased)
+
+`OspfLsaChecksum` is available in source builds and has not yet been published
+as a new NuGet version. It calculates and validates the LSA Fletcher checksum
+specified by [RFC 2328 section 12.1.7](https://www.rfc-editor.org/rfc/rfc2328.html#section-12.1.7)
+and [appendix B](https://www.rfc-editor.org/rfc/rfc2328.html#appendix-B).
+
+Supply exactly one complete OSPFv2 or OSPFv3 LSA, including its 20-byte header and
+all bytes declared by the length field at offsets 18 and 19. The helper checks
+that the supplied and declared lengths agree; it does not parse LSA body
+semantics. Supplying an entire OSPF packet or a truncated LSA is invalid input.
+
+`Compute` returns the `ushort` checksum to put in the LSA's field, ignoring the
+field's existing contents. `Write` replaces only bytes 16 and 17 in network
+(big-endian) byte order. `IsValid` checks the existing field and checksum
+residues and returns false for malformed input or an invalid checksum. The first
+two LS age bytes are excluded, so changing only age preserves validity. This
+helper updates the embedded protocol field rather than appending a library digest.
+
+The example uses the first fixed public LSA vector from
+[tcpdump's capture corpus](https://github.com/the-tcpdump-group/tcpdump/blob/3a2f6acd865e5b845d9f63caf5f2c23cb73a2bc9/tests/ospf-nssa-bitnt.pcap),
+whose published checksum field is `51CB`.
+
+```csharp
+using System;
+using Mythosia.Integrity.Checksum;
+
+// One complete 48-byte LSA from tcpdump's published ospf-nssa-bitnt.pcap.
+byte[] lsa = Convert.FromHexString(
+    "000128010A0022030A0022038000000451CB0030130000020A0022040A002203010000010A002200FFFFFF0003000001");
+lsa[16] = 0;
+lsa[17] = 0;
+Console.WriteLine($"OSPF LSA length: {lsa.Length}");
+Console.WriteLine($"OSPF LSA checksum: {OspfLsaChecksum.Compute(lsa):X4}");
+OspfLsaChecksum.Write(lsa);
+Console.WriteLine($"OSPF LSA checksum field: {Convert.ToHexString(lsa.AsSpan(16, 2))}");
+Console.WriteLine($"OSPF LSA valid: {OspfLsaChecksum.IsValid(lsa)}");
+
+// The checksum excludes the two-byte LS age field.
+lsa[0] = 0x00;
+lsa[1] = 0x64;
+Console.WriteLine($"OSPF LSA valid after age change: {OspfLsaChecksum.IsValid(lsa)}");
+lsa[lsa.Length - 1] ^= 0x01;
+Console.WriteLine($"OSPF LSA valid after body change: {OspfLsaChecksum.IsValid(lsa)}");
+// Numeric checksum: 51CB. The checksum field contains network-order bytes 51 CB.
+```

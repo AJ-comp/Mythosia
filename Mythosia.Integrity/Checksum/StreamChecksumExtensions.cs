@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Mythosia.Integrity.Checksum
 {
     /// <summary>Calculates checksums from readable streams without buffering the whole input.</summary>
-    public static class StreamChecksumExtensions
+    public static partial class StreamChecksumExtensions
     {
         private const int ReadBufferSize = 64 * 1024;
 

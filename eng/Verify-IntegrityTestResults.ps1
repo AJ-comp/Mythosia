@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 # A floor catches an accidentally narrowed filter without blocking new tests.
-$minimumTestCount = 2713
+$minimumTestCount = 3478
 $testNamePrefix = 'Mythosia.Test.Integrity.'
 $legacyTestNamePrefix = 'Mythosia.Test.IntegrityTest.'
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
@@ -23,7 +23,14 @@ $requiredSuitePrefixes = @(
     'Mythosia.Test.Integrity.InternetChecksumTests.',
     'Mythosia.Test.Integrity.InternetChecksumStreamTests.',
     'Mythosia.Test.Integrity.Crc8VariantTests.',
-    'Mythosia.Test.Integrity.Crc8VariantStreamTests.'
+    'Mythosia.Test.Integrity.Crc8VariantStreamTests.',
+    'Mythosia.Test.Integrity.RemainingCrcVariantsTests.',
+    'Mythosia.Test.Integrity.RemainingCrcVariantsStreamTests.',
+    'Mythosia.Test.Integrity.XxHashTests.',
+    'Mythosia.Test.Integrity.XxHashStreamTests.',
+    'Mythosia.Test.Integrity.Fletcher4Tests.',
+    'Mythosia.Test.Integrity.Fletcher4StreamTests.',
+    'Mythosia.Test.Integrity.OspfLsaChecksumTests.'
 )
 
 if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
@@ -103,4 +110,4 @@ foreach ($prefix in $requiredSuitePrefixes) {
     }
 }
 
-Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot, CRC8 variants suites, CRC32C suites, CRC64 and variants suites, CRC16 variants suite, Adler32 suites and InternetChecksum suites executed."
+Write-Output "Integrity results verified: $passed passed, 0 failed, 0 skipped; public API snapshot and all required CRC, checksum and xxHash suites executed."

@@ -61,10 +61,12 @@ approved public API snapshot.
 
 ## CRC and checksum coverage
 
-The README has 12 independent consumers: CRC, checksum, common API, CRC16
-variants, CRC32C, CRC64, streaming CRC, chunked CRC, Adler-32, CRC64 variants and
-Internet Checksum, plus CRC8 SAE-J1850/AUTOSAR H2F. Their code hashes and
-expected outputs are fixed in the reviewed manifest.
+The README has 18 independent consumers. The original 12 cover CRC, checksum,
+common API, CRC16 variants, CRC32C, CRC64, streaming CRC, chunked CRC, Adler-32,
+CRC64 variants, Internet Checksum and CRC8 SAE-J1850/AUTOSAR H2F. Six further
+examples cover Sensirion CRC8, MCRF4XX/USB, MPEG-2/BZIP2/AUTOSAR P4, xxHash32/64,
+Fletcher4 and OSPF LSA checksums. Code hashes and expected outputs are fixed in
+the reviewed manifest; all original 12 blocks and expectations remain intact.
 The CRC16 example checks `CCITTFalse` (`29B1`) and `X25` (`906E`) using numeric,
 frame, accumulator and synchronous/asynchronous stream APIs. The CRC32C and CRC64 examples
 freeze the `123456789` check values `E3069283` and `AE8B14860A799888`, respectively,
@@ -77,14 +79,16 @@ for streaming CRC, CRC32C, CRC64 and the two CRC16 variants. The unreleased
 Adler-32 APIs add 18 declarations while preserving all 156 declarations from
 1.3.0. The additional CRC64 variants and Internet Checksum add 19 declarations,
 preserving all 174 prior declarations. CRC8 SAE-J1850/AUTOSAR H2F add only two
-enum members, preserving all 193 prior declarations. The complete snapshot has
-195 entries and 32 public types.
+enum members, preserving all 193 prior declarations. The remaining CRC,
+Fletcher/OSPF and xxHash additions retain those 195 entries and add 92 reviewed
+declarations. The complete snapshot has 287 entries and 44 public types.
 Keep existing declarations unchanged when
 reviewing future additions; the snapshot
 test and package consumer still require an exact match with the complete reviewed
 surface.
 
-`CrcAccumulatorTests` contributes 218 cases and `CrcStreamTests` contributes 262.
+`CrcAccumulatorTests` contributes 296 cases, `CrcAlgorithmTests` contributes 113,
+and `CrcStreamTests` contributes 262.
 `Crc32CTests` adds 153
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
 `Crc64Tests` adds 90 focused cases for calculation, frames, accumulators and streams.
@@ -96,11 +100,14 @@ stream suites also cover both added CRC16 variants.
 `InternetChecksumStreamTests` adds 30.
 `Crc8VariantTests` adds 81 focused cases and `Crc8VariantStreamTests` adds 33;
 the existing algorithm/accumulator suites also execute 36 additional cases.
-The TRX completeness check requires at least 2,713 passing tests, including the
-public API guard, both CRC32C suites, both CRC64 suites, the CRC16 variant suite,
-both Adler-32 suites, both Internet Checksum suites and both CRC8-variant suites.
-Missing required suites block release selection; the 57 release-gate regression
-cases cover those omissions.
+The remaining CRC variants add 219 focused cases and 18 stream cases, plus
+108 further cases in shared enum-driven suites. `XxHashTests` contributes 198
+cases and `XxHashStreamTests` 60; `Fletcher4Tests` contributes 60,
+`Fletcher4StreamTests` 45 and `OspfLsaChecksumTests` 57.
+The TRX completeness check requires at least 3,478 passing tests, including the
+public API guard and every required CRC, Adler-32, Internet Checksum, xxHash,
+Fletcher4 and OSPF suite. Missing required suites block release selection; the
+64 release-gate regression cases cover those omissions.
 Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
 boundaries, generated large input without whole-input allocation, buffer lifetime,
@@ -149,9 +156,9 @@ packing, single-pass inputs, and the sync/async stream wrappers. It reuses the
 existing CI and package validation without adding a separate test harness.
 
 Version 1.3.0 includes CRC16 CCITT-FALSE/X25, CRC32C, CRC64/NVME and streaming CRC.
-Adler-32, CRC64/ECMA-182, CRC64/XZ, Internet Checksum and CRC8 SAE-J1850/AUTOSAR
-H2F remain unreleased source additions; their README sections and release notes
-state that availability.
+Adler-32, CRC64/ECMA-182, CRC64/XZ, Internet Checksum, all further CRC variants,
+xxHash, Fletcher4 and OSPF remain unreleased source additions; their README
+sections and release notes state that availability.
 Candidate packages remain validation outputs; this validation step does not publish them.
 
 Adler-32 correctness uses 42 distinct non-empty published fixed answers plus a
@@ -217,3 +224,57 @@ asynchronous streams, short reads, 64 KiB buffers, current position, cancellatio
 read errors and stream ownership. Preserve CRC8's existing no-value semantics
 for empty input. The twelfth README consumer exercises both models through
 calculation, frame validation/decoding, chunking, reuse and both stream methods.
+
+
+## Additional algorithms and published answers
+
+All ten additional models retain at least thirty distinct nonempty public
+input/output facts. For xxHash, the counts below use only seed-zero inputs;
+extra seeded and empty cases are tested separately.
+
+| Algorithm | Distinct nonempty public answers |
+| --- | ---: |
+| CRC8 Sensirion SHT4x / NRSC-5 | 31 |
+| CRC16 MCRF4XX | 30 |
+| CRC16 USB | 30 |
+| CRC32 MPEG-2 | 30 |
+| CRC32 BZIP2 | 30 |
+| CRC32 AUTOSAR P4 | 37 |
+| XXH32 | 48 |
+| XXH64 | 49 |
+| OpenZFS Fletcher4 | 30 |
+| OSPF LSA Fletcher checksum | 39 |
+
+The six CRC models use thirty frozen whole-message answers each from
+jmacheta/checksum commit `39358d88bb755c74ca0f50096eb607a564155755`.
+The literal message pool, byte lengths and final CRC array entries are retained;
+they are not table entries or bit-length variants. Sensirion's official
+`BE EF -> 92` example and seven official AUTOSAR P4 answers provide further
+calibration. A normal-polynomial bitwise reference covers both reflected and
+unreflected models. Existing shared suites exercise all one-/two-byte inputs,
+partitions, reset and span ownership for each newly added enum value.
+
+XXH32/64 use 155 public fixed answers from pinned jmacheta/checksum, pierrec/xxHash
+and upstream xxHash fixtures. Empty, nonzero and wide seeds supplement the 97
+nonempty seed-zero cases. A whole-message BigInteger reference uses modular
+arithmetic independently of the product's bounded streaming state. Tests cover
+16-/32-byte stripes, tail boundaries, prefix queries, reset, frame mutation,
+single-pass inputs and synchronous/asynchronous stream lifecycle behavior.
+
+Fletcher4 uses thirty literal checkpoints physically stored in OpenZFS's public
+`dedup.zsend.bz2` at commit `34f96a15c73eab27dd6ad17bb5f1263bf26e37d7`.
+The frozen input is a losslessly compressed byte slice of the original stream;
+source hashes, BEGIN/checkpoint offsets and upstream field mapping accompany it.
+Expected four-word values are transcribed from those fields rather than
+calculated locally. A separate BigInteger weighted-sum reference tests both word
+orders and wrapping. Partial words remain pending until completed; result queries
+and EOF reject an incomplete word. Input-word order and native digest order are
+independent and documented.
+
+OSPF uses thirty-nine complete, distinct LSAs from pinned tcpdump captures,
+including OSPFv2 and OSPFv3. Capture hashes, frame numbers and byte offsets identify
+each public checksum field. Tests exclude LS age, check exact declared length,
+verify checksum-field placement and mutation, and exercise maximum and malformed
+LSAs. This protocol helper takes a complete LSA and does not append a generic
+digest or parse an entire OSPF packet. Its independent weighted-sum oracle checks
+field correction without reusing the product recurrence.

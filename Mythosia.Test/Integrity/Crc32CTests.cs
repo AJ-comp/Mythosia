@@ -651,12 +651,12 @@ public sealed class Crc32CTests
 #pragma warning disable CS0618 // The old alias is a supported compatibility contract.
         Assert.Equal(0xCBF43926u, CheckInput.CRC32(CRC32Type.Basic));
         Assert.Equal(0xCBF43926u, CheckInput.CRC32(CRC32Type.Classic));
-        Assert.Equal(new[] { CRC32Type.Basic, CRC32Type.Classic }, Enum.GetValues<CRC32Type>());
+        Assert.Equal(new[] { CRC32Type.Basic, CRC32Type.Classic, CRC32Type.Mpeg2, CRC32Type.Bzip2, CRC32Type.AutosarP4 }, Enum.GetValues<CRC32Type>());
 #pragma warning restore CS0618
         Assert.Equal(0xE3069283u, CheckInput.CRC32C());
-        Assert.Empty(new CRC32((CRC32Type)2).Compute(CheckInput));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new CRC32Accumulator((CRC32Type)2));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CheckInput.CRC32((CRC32Type)2));
+        Assert.Empty(new CRC32((CRC32Type)5).Compute(CheckInput));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CRC32Accumulator((CRC32Type)5));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CheckInput.CRC32((CRC32Type)5));
     }
 
     private static void InvokeOperation(string operation, IEnumerable<byte> source)

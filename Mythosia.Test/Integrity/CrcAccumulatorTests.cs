@@ -59,7 +59,7 @@ public sealed class CrcAccumulatorTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(5)]
+    [InlineData(6)]
     [InlineData(int.MinValue)]
     [InlineData(int.MaxValue)]
     public void Crc8ConstructorRejectsUndefinedTypes(int variant)
@@ -70,7 +70,7 @@ public sealed class CrcAccumulatorTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(7)]
+    [InlineData(9)]
     [InlineData(int.MinValue)]
     [InlineData(int.MaxValue)]
     public void Crc16ConstructorRejectsUndefinedTypes(int variant)
@@ -81,7 +81,7 @@ public sealed class CrcAccumulatorTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(2)]
+    [InlineData(5)]
     [InlineData(int.MinValue)]
     [InlineData(int.MaxValue)]
     public void Crc32ConstructorRejectsUndefinedTypes(int variant)
@@ -488,7 +488,9 @@ public sealed class CrcAccumulatorTests
             return;
         }
 
-        uint expected = width == 16 && (CRC16Type)variant is CRC16Type.Modbus or CRC16Type.CCITTFalse ? 0xFFFFu : 0;
+        uint expected = width == 16
+            ? (CRC16Type)variant is CRC16Type.Modbus or CRC16Type.CCITTFalse or CRC16Type.MCRF4XX ? 0xFFFFu : 0
+            : (CRC32Type)variant == CRC32Type.Mpeg2 ? uint.MaxValue : 0;
         Assert.Equal(expected, LegacyValue(Array.Empty<byte>(), width, variant));
         for (int read = 0; read < 3; read++)
             AssertCurrent(accumulator, expected, width, variant, "empty state");

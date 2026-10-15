@@ -13,7 +13,7 @@ namespace Mythosia.Integrity.CRC
         /// This function returns the CRC8 value.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F. Basic is a legacy alias for Classic.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850, AutosarH2F or SensirionSht4x. Basic is a legacy alias for Classic.</param>
         /// <returns></returns>
         /*******************************************/
         public static byte CRC8(this IEnumerable<byte> data, CRC8Type type = CRC8Type.Classic)
@@ -26,7 +26,7 @@ namespace Mythosia.Integrity.CRC
         /// This function returns the byte array included crc8 value.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F. Basic is a legacy alias for Classic.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850, AutosarH2F or SensirionSht4x. Basic is a legacy alias for Classic.</param>
         /// <returns></returns>
         /*******************************************/
         public static IEnumerable<byte> WithCRC8(this IEnumerable<byte> data, CRC8Type type = CRC8Type.Classic)

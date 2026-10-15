@@ -53,11 +53,14 @@ namespace Mythosia.Integrity.CRC
                 CRC16Type.DNP => DnpTable,
                 CRC16Type.CCITTFalse => XModemTable,
                 CRC16Type.X25 => X25Table,
+                CRC16Type.MCRF4XX => X25Table,
+                CRC16Type.USB => ClassicTable,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC16 algorithm.")
             };
 #pragma warning restore CS0618
             Type = type;
             _initialState = type == CRC16Type.Modbus || type == CRC16Type.CCITTFalse || type == CRC16Type.X25
+                || type == CRC16Type.MCRF4XX || type == CRC16Type.USB
                 ? ushort.MaxValue
                 : (ushort)0;
             _state = _initialState;
@@ -91,14 +94,14 @@ namespace Mythosia.Integrity.CRC
         /// Gets the CRC16 value for all appended bytes without changing the calculation state.
         /// </summary>
         /// <returns>
-        /// The current CRC16 value. With no appended bytes, Modbus and CCITTFalse return 0xFFFF
-        /// and other algorithms return zero. X25 applies a final XOR of 0xFFFF without changing
+        /// The current CRC16 value. With no appended bytes, Modbus, CCITTFalse and MCRF4XX return 0xFFFF
+        /// and other algorithms return zero. X25 and USB apply a final XOR of 0xFFFF without changing
         /// the calculation state. Nonempty DNP results use the legacy complement and byte swap.
         /// More bytes may be appended after reading the value.
         /// </returns>
         public ushort GetCurrentValue()
         {
-            if (Type == CRC16Type.X25) return unchecked((ushort)~_state);
+            if (Type == CRC16Type.X25 || Type == CRC16Type.USB) return unchecked((ushort)~_state);
             if (Type != CRC16Type.DNP || !_hasData) return _state;
 
             ushort complemented = unchecked((ushort)~_state);
