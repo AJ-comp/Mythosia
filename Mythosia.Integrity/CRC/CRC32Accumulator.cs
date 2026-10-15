@@ -41,6 +41,14 @@ namespace Mythosia.Integrity.CRC
         /// <exception cref="ArgumentOutOfRangeException">The algorithm is not a defined CRC32 type.</exception>
         public CRC32Accumulator(CRC32Type type = CRC32Type.Classic)
         {
+            if (type == CRC32Type.Castagnoli)
+            {
+                Type = type;
+                _state = CRC32CCore.InitialState;
+                _finalXor = uint.MaxValue;
+                return;
+            }
+
 #pragma warning disable CS0618 // Continue supporting the legacy Basic algorithm name.
             _table = type switch
             {
@@ -64,6 +72,12 @@ namespace Mythosia.Integrity.CRC
         public void Append(ReadOnlySpan<byte> source)
         {
             if (source.IsEmpty) return;
+
+            if (Type == CRC32Type.Castagnoli)
+            {
+                _state = CRC32CCore.Append(_state, source);
+                return;
+            }
 
             uint state = _state;
             if (_reflected)

@@ -207,10 +207,18 @@ bit stuffing or protocol headers.
 
 ## CRC32C / Castagnoli
 
-CRC32C is available through separate APIs in `Mythosia.Integrity.CRC`:
-`data.CRC32C()`, `data.WithCRC32C()` and the `CRC32C` detector. The existing
-`CRC32` APIs and `CRC32Type` values keep their existing behavior. For the ASCII
-input `123456789`, CRC32C returns `E3069283` and CRC32 Classic returns `CBF43926`.
+Source builds add `CRC32Type.Castagnoli` to the existing CRC32 numeric/frame,
+detector, accumulator and stream APIs in `Mythosia.Integrity.CRC`. This enum
+option is unreleased and is not included in NuGet 1.3.0. The example below uses
+this source-build API. For ASCII `123456789`, Castagnoli returns `E3069283` and
+CRC32 Classic returns `CBF43926`.
+
+The separate CRC32C APIs from 1.3.0 remain available. Only the numeric extension
+`data.CRC32C()` now produces an `Obsolete` warning; migrate it to
+`data.CRC32(CRC32Type.Castagnoli)`. Its calculation result is unchanged.
+`WithCRC32C`, the `CRC32C` detector, `CRC32CAccumulator` and dedicated CRC32C
+stream methods remain supported without an obsolete warning. All prior enum
+values and optional defaults retain their existing behavior.
 
 The algorithm is CRC-32/ISCSI (Castagnoli): polynomial `0x1EDC6F41`, initial
 register and final XOR `0xFFFFFFFF`, with reflected input and output. Published
@@ -240,14 +248,14 @@ using System.Text;
 using Mythosia.Integrity.CRC;
 
 byte[] data = Encoding.ASCII.GetBytes("123456789");
-var detector = new CRC32C();
+var detector = new CRC32(CRC32Type.Castagnoli);
 
-Console.WriteLine($"CRC32C: {data.CRC32C():X8}");
-byte[] frame = data.WithCRC32C().ToArray();
+Console.WriteLine($"CRC32C: {data.CRC32(CRC32Type.Castagnoli):X8}");
+byte[] frame = data.WithCRC32(CRC32Type.Castagnoli).ToArray();
 Console.WriteLine($"CRC32C frame valid: {!detector.IsError(frame)}");
 Console.WriteLine($"CRC32C decoded: {detector.Decode(frame).SequenceEqual(data)}");
 
-var accumulator = new CRC32CAccumulator();
+var accumulator = new CRC32Accumulator(CRC32Type.Castagnoli);
 accumulator.Append(data.AsSpan(0, 4));
 accumulator.Append(data.AsSpan(4));
 Console.WriteLine($"Chunked CRC32C: {accumulator.GetCurrentValue():X8}");
@@ -256,8 +264,8 @@ Console.WriteLine($"Reset CRC32C: {accumulator.GetCurrentValue():X8}");
 
 using var syncStream = new MemoryStream(data, writable: false);
 using var asyncStream = new MemoryStream(data, writable: false);
-Console.WriteLine($"Stream CRC32C: {syncStream.ComputeCRC32C():X8}");
-Console.WriteLine($"Async stream CRC32C: {await asyncStream.ComputeCRC32CAsync():X8}");
+Console.WriteLine($"Stream CRC32C: {syncStream.ComputeCRC32(CRC32Type.Castagnoli):X8}");
+Console.WriteLine($"Async stream CRC32C: {await asyncStream.ComputeCRC32Async(CRC32Type.Castagnoli):X8}");
 // All CRC32C values are E3069283 except Reset, which returns 00000000.
 // The frame validity and decoded-payload checks both print True.
 ```
@@ -369,8 +377,10 @@ representation.
 | CRC64 | `ComputeCRC64` / `ComputeCRC64Async` | `CRC64Accumulator` | `ulong` |
 
 CRC8, CRC16 and CRC32 methods and constructors default to `Classic`. They support
-the existing algorithm enums and `Basic` aliases. CRC32C has one fixed algorithm
-and takes no algorithm argument. CRC64 defaults to `CRC64Type.NVME`.
+the existing algorithm enums and `Basic` aliases. Source builds also accept
+`CRC32Type.Castagnoli` throughout the CRC32 APIs. The dedicated CRC32C methods
+have one fixed algorithm and take no algorithm argument. CRC64 defaults to
+`CRC64Type.NVME`.
 Async methods return `Task<byte>`, `Task<ushort>`, `Task<uint>` or `Task<ulong>`.
 All APIs are in `Mythosia.Integrity.CRC`.
 

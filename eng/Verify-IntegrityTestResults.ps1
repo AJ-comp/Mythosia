@@ -8,13 +8,14 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 # A floor catches an accidentally narrowed filter without blocking new tests.
-$minimumTestCount = 3478
+$minimumTestCount = 3581
 $testNamePrefix = 'Mythosia.Test.Integrity.'
 $legacyTestNamePrefix = 'Mythosia.Test.IntegrityTest.'
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $requiredSuitePrefixes = @(
     'Mythosia.Test.Integrity.Crc32CTests.',
     'Mythosia.Test.Integrity.Crc32CStreamTests.',
+    'Mythosia.Test.Integrity.Crc32CastagnoliTests.',
     'Mythosia.Test.Integrity.Crc64Tests.',
     'Mythosia.Test.Integrity.Crc16VariantTests.',
     'Mythosia.Test.Integrity.Adler32Tests.',

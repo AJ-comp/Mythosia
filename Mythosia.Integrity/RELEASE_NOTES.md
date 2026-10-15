@@ -219,6 +219,23 @@ published 1.3.0 package. No new package version is assigned yet.
   inputs and final CRC values, the manufacturer's `BE EF -> 92` example and
   seven official AUTOSAR P4 vectors. Document protocol-specific input selection.
 
+### CRC32 / Castagnoli selection
+
+- Add `CRC32Type.Castagnoli = 5` to the CRC32 detector, numeric/frame extensions,
+  accumulator and synchronous/asynchronous stream APIs. Preserve all previous
+  enum values and optional defaults. ASCII `123456789` produces `E3069283`;
+  empty input produces zero.
+- Reuse the existing CRC32C calculation and frame implementation. The enum path
+  supports single-pass byte sequences and produces the same native-order digest,
+  frame bytes and incremental/stream results as the dedicated CRC32C APIs.
+- Mark only the numeric `data.CRC32C()` extension as `Obsolete`, with a warning
+  directing callers to `data.CRC32(CRC32Type.Castagnoli)`. The old method remains
+  callable and retains its behavior. `WithCRC32C`, `CRC32C`, `CRC32CAccumulator`
+  and dedicated CRC32C stream methods remain supported without that warning.
+- Migrate the executable CRC32C README example to the enum path while retaining
+  every fixed output. This selection and warning are unreleased source changes;
+  the published 1.3.0 package and its metadata are unchanged.
+
 ### xxHash32 and xxHash64
 
 - Add `XxHash32` and `XxHash64` detectors, numeric/frame extensions, accumulators
@@ -255,17 +272,23 @@ published 1.3.0 package. No new package version is assigned yet.
 
 ### Verification and documentation
 
-- Preserve all 195 prior API declarations and review 92 additive declarations.
-  The complete surface has 287 declarations across 44 public types.
+- The CRC, Fletcher/OSPF and xxHash additions preserve all 195 prior API
+  declarations and add 92 reviewed declarations. Castagnoli selection adds one
+  enum member and the explicitly requested obsolete attribute on the existing
+  numeric CRC32C extension. The complete surface has 288 declarations across
+  44 public types.
 - Retain every previous unit test and expand shared enum-driven cases for the
-  new CRCs. Add 765 cases, for 3,478 Integrity tests across all four CI
+  new CRCs. Add 765 cases for the additional algorithms and 103 for Castagnoli
+  selection and migration, for 3,581 Integrity tests across all four CI
   configurations. Every newly added algorithm has at least 30 distinct non-empty
   published fixed answers; no lookup-table entries or locally generated answers
   are counted as public vectors.
-- Preserve all 12 previous README examples and their fixed output; add six
-  independent examples for all new CRC, xxHash, Fletcher4 and OSPF APIs. Validate
+- Preserve the fixed outputs of all 12 previous README examples; migrate the
+  CRC32C example to enum selection and add six independent examples for all new
+  CRC, xxHash, Fletcher4 and OSPF APIs. Validate
   all 18 against actual candidate NuGet packages, public API and metadata in CI.
-- Require all seven additional calculation/stream/OSPF suites in test evidence
-  and release selection. Add missing-suite rejection cases for 64 release-gate
+- Require all seven additional calculation/stream/OSPF suites and the Castagnoli
+  selection suite in test evidence and release selection. Add missing-suite
+  rejection cases for 65 release-gate
   regression cases in total. Keep publication disabled for ordinary CI runs and
   keep the released package version and metadata unchanged.

@@ -27,7 +27,8 @@ public sealed class CrcStreamTests
         Crc16CcittFalse,
         Crc16X25,
         Crc32Basic,
-        Crc32Classic
+        Crc32Classic,
+        Crc32Castagnoli
     }
 
     public enum ReadMode
@@ -66,6 +67,7 @@ public sealed class CrcStreamTests
             Algorithm.Crc16CcittFalse => 0x29B1,
             Algorithm.Crc16X25 => 0x906E,
             Algorithm.Crc32Basic or Algorithm.Crc32Classic => 0xCBF43926,
+            Algorithm.Crc32Castagnoli => 0xE3069283,
             _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
         };
 
@@ -412,6 +414,7 @@ public sealed class CrcStreamTests
         Algorithm.Crc16X25 => CrcReference.Compute16(payload, CRC16Type.X25),
         Algorithm.Crc32Basic => CrcReference.Compute32(payload, CRC32Type.Basic),
         Algorithm.Crc32Classic => CrcReference.Compute32(payload, CRC32Type.Classic),
+        Algorithm.Crc32Castagnoli => CrcReference.Compute32(payload, CRC32Type.Castagnoli),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
     };
 
@@ -429,6 +432,7 @@ public sealed class CrcStreamTests
         Algorithm.Crc16X25 => payload.CRC16(CRC16Type.X25),
         Algorithm.Crc32Basic => payload.CRC32(CRC32Type.Basic),
         Algorithm.Crc32Classic => payload.CRC32(CRC32Type.Classic),
+        Algorithm.Crc32Castagnoli => payload.CRC32(CRC32Type.Castagnoli),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
     };
 
@@ -446,6 +450,7 @@ public sealed class CrcStreamTests
         Algorithm.Crc16X25 => source.ComputeCRC16(CRC16Type.X25),
         Algorithm.Crc32Basic => source.ComputeCRC32(CRC32Type.Basic),
         Algorithm.Crc32Classic => source.ComputeCRC32(CRC32Type.Classic),
+        Algorithm.Crc32Castagnoli => source.ComputeCRC32(CRC32Type.Castagnoli),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
     };
 
@@ -464,6 +469,7 @@ public sealed class CrcStreamTests
         Algorithm.Crc16X25 => await source.ComputeCRC16Async(CRC16Type.X25, cancellationToken),
         Algorithm.Crc32Basic => await source.ComputeCRC32Async(CRC32Type.Basic, cancellationToken),
         Algorithm.Crc32Classic => await source.ComputeCRC32Async(CRC32Type.Classic, cancellationToken),
+        Algorithm.Crc32Castagnoli => await source.ComputeCRC32Async(CRC32Type.Castagnoli, cancellationToken),
         _ => throw new ArgumentOutOfRangeException(nameof(algorithm))
     };
 

@@ -30,10 +30,11 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 3478
+$minimumTestCount = 3581
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
+$crc32CastagnoliTestPrefix = 'Mythosia.Test.Integrity.Crc32CastagnoliTests.'
 $crc64TestPrefix = 'Mythosia.Test.Integrity.Crc64Tests.'
 $crc16VariantTestPrefix = 'Mythosia.Test.Integrity.Crc16VariantTests.'
 $adler32TestPrefix = 'Mythosia.Test.Integrity.Adler32Tests.'
@@ -144,6 +145,7 @@ function New-PassingTrx([string] $Path) {
             16 { "${fletcher4TestPrefix}SyntheticGateFixture" }
             17 { "${fletcher4StreamTestPrefix}SyntheticGateFixture" }
             18 { "${ospfLsaTestPrefix}SyntheticGateFixture" }
+            19 { "${crc32CastagnoliTestPrefix}SyntheticGateFixture" }
             default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
         }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
@@ -527,6 +529,16 @@ $cases = @(
             foreach ($result in $d.TestRun.Results.UnitTestResult) {
                 if ($result.GetAttribute('testName').StartsWith($remainingCrcVariantsTestPrefix, [StringComparison]::Ordinal)) {
                     $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedRemainingCrcVariantsCalculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-crc32-castagnoli-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc32CastagnoliTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc32Castagnoli')
                 }
             }
         }

@@ -16,6 +16,8 @@ namespace Mythosia.Integrity.CRC
         Bzip2 = 3,
         /// <summary>CRC-32/AUTOSAR (P4): polynomial 0xF4ACFB13, reflected input and output, initial state and final XOR 0xFFFFFFFF.</summary>
         AutosarP4 = 4,
+        /// <summary>CRC-32C (Castagnoli / CRC-32/ISCSI): polynomial 0x1EDC6F41, reflected input and output, initial state and final XOR 0xFFFFFFFF.</summary>
+        Castagnoli = 5,
     }
 
     public class CRC32 : ErrorDetection
@@ -29,6 +31,8 @@ namespace Mythosia.Integrity.CRC
 
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
+            if (Type == CRC32Type.Castagnoli) return new CRC32C().Compute(source);
+
             List<byte> result = new List<byte>();
 
             if (Type == CRC32Type.Basic) AppendNativeBytes(result, ComputeCRC32(source));
@@ -80,6 +84,8 @@ namespace Mythosia.Integrity.CRC
 
         public override IEnumerable<byte> Decode(IEnumerable<byte> sourceWithCRC)
         {
+            if (Type == CRC32Type.Castagnoli) return new CRC32C().Decode(sourceWithCRC);
+
             List<byte> result = new List<byte>();
             if (IsError(sourceWithCRC)) return result;
 
@@ -88,6 +94,8 @@ namespace Mythosia.Integrity.CRC
 
         public override IEnumerable<byte> Encode(IEnumerable<byte> source)
         {
+            if (Type == CRC32Type.Castagnoli) return new CRC32C().Encode(source);
+
             List<byte> result = new List<byte>();
             result.AddRange(source);
             result.AddRange(Compute(source));
@@ -97,6 +105,8 @@ namespace Mythosia.Integrity.CRC
 
         public override bool IsError(IEnumerable<byte> sourceWithCRC)
         {
+            if (Type == CRC32Type.Castagnoli) return new CRC32C().IsError(sourceWithCRC);
+
             int frameLength = sourceWithCRC.Count();
             if (frameLength <= 4) return true;
             var toCheckCRC = sourceWithCRC.TakeLast(4);

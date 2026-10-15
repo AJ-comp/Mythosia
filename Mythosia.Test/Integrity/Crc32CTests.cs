@@ -579,6 +579,12 @@ public sealed class Crc32CTests
     [InlineData("IsError")]
     [InlineData("CRC32C")]
     [InlineData("WithCRC32C")]
+    [InlineData("CastagnoliCompute")]
+    [InlineData("CastagnoliEncode")]
+    [InlineData("CastagnoliDecode")]
+    [InlineData("CastagnoliIsError")]
+    [InlineData("CastagnoliCRC32")]
+    [InlineData("CastagnoliWithCRC32")]
     public void NullEnumerablesThrowArgumentNullException(string operation)
     {
         Assert.Throws<ArgumentNullException>(() => InvokeOperation(operation, null!));
@@ -591,9 +597,16 @@ public sealed class Crc32CTests
     [InlineData("IsError")]
     [InlineData("CRC32C")]
     [InlineData("WithCRC32C")]
+    [InlineData("CastagnoliCompute")]
+    [InlineData("CastagnoliEncode")]
+    [InlineData("CastagnoliDecode")]
+    [InlineData("CastagnoliIsError")]
+    [InlineData("CastagnoliCRC32")]
+    [InlineData("CastagnoliWithCRC32")]
     public void EachOperationConsumesASinglePassEnumerableExactlyOnceAndDisposesIt(string operation)
     {
-        byte[] payload = operation is "Decode" or "IsError" ? ReferenceFrame(CheckInput) : CheckInput;
+        byte[] payload = operation is "Decode" or "IsError" or "CastagnoliDecode" or "CastagnoliIsError"
+            ? ReferenceFrame(CheckInput) : CheckInput;
         var source = new SinglePassSource(payload);
         InvokeOperation(operation, source);
         Assert.Equal(1, source.EnumeratorCount);
@@ -615,6 +628,18 @@ public sealed class Crc32CTests
     [InlineData("CRC32C", true)]
     [InlineData("WithCRC32C", false)]
     [InlineData("WithCRC32C", true)]
+    [InlineData("CastagnoliCompute", false)]
+    [InlineData("CastagnoliCompute", true)]
+    [InlineData("CastagnoliEncode", false)]
+    [InlineData("CastagnoliEncode", true)]
+    [InlineData("CastagnoliDecode", false)]
+    [InlineData("CastagnoliDecode", true)]
+    [InlineData("CastagnoliIsError", false)]
+    [InlineData("CastagnoliIsError", true)]
+    [InlineData("CastagnoliCRC32", false)]
+    [InlineData("CastagnoliCRC32", true)]
+    [InlineData("CastagnoliWithCRC32", false)]
+    [InlineData("CastagnoliWithCRC32", true)]
     public void EnumerationFailuresPropagateWithoutWrappingAndDisposeTheEnumerator(string operation, bool failOnCurrent)
     {
         var source = new FailingSource(failOnCurrent);
@@ -651,17 +676,18 @@ public sealed class Crc32CTests
 #pragma warning disable CS0618 // The old alias is a supported compatibility contract.
         Assert.Equal(0xCBF43926u, CheckInput.CRC32(CRC32Type.Basic));
         Assert.Equal(0xCBF43926u, CheckInput.CRC32(CRC32Type.Classic));
-        Assert.Equal(new[] { CRC32Type.Basic, CRC32Type.Classic, CRC32Type.Mpeg2, CRC32Type.Bzip2, CRC32Type.AutosarP4 }, Enum.GetValues<CRC32Type>());
+        Assert.Equal(new[] { CRC32Type.Basic, CRC32Type.Classic, CRC32Type.Mpeg2, CRC32Type.Bzip2, CRC32Type.AutosarP4, CRC32Type.Castagnoli }, Enum.GetValues<CRC32Type>());
 #pragma warning restore CS0618
         Assert.Equal(0xE3069283u, CheckInput.CRC32C());
-        Assert.Empty(new CRC32((CRC32Type)5).Compute(CheckInput));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new CRC32Accumulator((CRC32Type)5));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CheckInput.CRC32((CRC32Type)5));
+        Assert.Empty(new CRC32((CRC32Type)6).Compute(CheckInput));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CRC32Accumulator((CRC32Type)6));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CheckInput.CRC32((CRC32Type)6));
     }
 
     private static void InvokeOperation(string operation, IEnumerable<byte> source)
     {
         var detector = new CRC32C();
+        var castagnoli = new CRC32(CRC32Type.Castagnoli);
         switch (operation)
         {
             case "Compute": _ = detector.Compute(source).ToArray(); break;
@@ -670,6 +696,12 @@ public sealed class Crc32CTests
             case "IsError": _ = detector.IsError(source); break;
             case "CRC32C": _ = source.CRC32C(); break;
             case "WithCRC32C": _ = source.WithCRC32C().ToArray(); break;
+            case "CastagnoliCompute": _ = castagnoli.Compute(source).ToArray(); break;
+            case "CastagnoliEncode": _ = castagnoli.Encode(source).ToArray(); break;
+            case "CastagnoliDecode": _ = castagnoli.Decode(source).ToArray(); break;
+            case "CastagnoliIsError": _ = castagnoli.IsError(source); break;
+            case "CastagnoliCRC32": _ = source.CRC32(CRC32Type.Castagnoli); break;
+            case "CastagnoliWithCRC32": _ = source.WithCRC32(CRC32Type.Castagnoli).ToArray(); break;
             default: throw new ArgumentOutOfRangeException(nameof(operation));
         }
     }

@@ -24,6 +24,7 @@ internal static class CrcReference
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-3740
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-ibm-sdlc
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iso-hdlc
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iscsi
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-nrsc-5
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-mcrf4xx
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-usb
@@ -47,6 +48,7 @@ internal static class CrcReference
     private static readonly Parameters CcittFalse = new(16, 0x1021, 0xFFFF, false, false, 0);
     private static readonly Parameters X25 = new(16, 0x1021, 0xFFFF, true, true, 0xFFFF);
     private static readonly Parameters IsoHdlc = new(32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF);
+    private static readonly Parameters Castagnoli = new(32, 0x1EDC6F41, 0xFFFFFFFF, true, true, 0xFFFFFFFF);
 
     public static byte Compute8(IEnumerable<byte> source, CRC8Type type)
     {
@@ -88,6 +90,7 @@ internal static class CrcReference
             CRC32Type.Mpeg2 => Mpeg2,
             CRC32Type.Bzip2 => Bzip2,
             CRC32Type.AutosarP4 => AutosarP4,
+            CRC32Type.Castagnoli => Castagnoli,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         return Compute(source, parameters);

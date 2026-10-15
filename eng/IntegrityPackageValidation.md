@@ -66,7 +66,9 @@ common API, CRC16 variants, CRC32C, CRC64, streaming CRC, chunked CRC, Adler-32,
 CRC64 variants, Internet Checksum and CRC8 SAE-J1850/AUTOSAR H2F. Six further
 examples cover Sensirion CRC8, MCRF4XX/USB, MPEG-2/BZIP2/AUTOSAR P4, xxHash32/64,
 Fletcher4 and OSPF LSA checksums. Code hashes and expected outputs are fixed in
-the reviewed manifest; all original 12 blocks and expectations remain intact.
+the reviewed manifest. All previous expected outputs remain intact; the CRC32C
+example now uses the unreleased `CRC32Type.Castagnoli` route so it compiles
+without the newly requested warning on the dedicated numeric `CRC32C()` method.
 The CRC16 example checks `CCITTFalse` (`29B1`) and `X25` (`906E`) using numeric,
 frame, accumulator and synchronous/asynchronous stream APIs. The CRC32C and CRC64 examples
 freeze the `123456789` check values `E3069283` and `AE8B14860A799888`, respectively,
@@ -81,15 +83,16 @@ Adler-32 APIs add 18 declarations while preserving all 156 declarations from
 preserving all 174 prior declarations. CRC8 SAE-J1850/AUTOSAR H2F add only two
 enum members, preserving all 193 prior declarations. The remaining CRC,
 Fletcher/OSPF and xxHash additions retain those 195 entries and add 92 reviewed
-declarations. The complete snapshot has 287 entries and 44 public types.
-Keep existing declarations unchanged when
-reviewing future additions; the snapshot
-test and package consumer still require an exact match with the complete reviewed
-surface.
+declarations. Castagnoli selection adds one enum field (`Castagnoli = 5`) and
+changes only the explicitly requested `Obsolete` attribute on the existing
+numeric `CRC32C()` extension; all other existing declarations remain unchanged.
+The complete snapshot has 288 entries and 44 public types. Review changes to
+existing attributes explicitly. The snapshot test and package consumer require
+an exact match with the complete reviewed surface.
 
-`CrcAccumulatorTests` contributes 296 cases, `CrcAlgorithmTests` contributes 113,
-and `CrcStreamTests` contributes 262.
-`Crc32CTests` adds 153
+`CrcAccumulatorTests` contributes 309 cases, `CrcAlgorithmTests` contributes 118,
+and `CrcStreamTests` contributes 283.
+`Crc32CTests` adds 177
 calculation/frame/accumulator cases and `Crc32CStreamTests` adds 74 stream cases.
 `Crc64Tests` adds 90 focused cases for calculation, frames, accumulators and streams.
 `Crc16VariantTests` adds 166 focused cases. The shared algorithm, accumulator and
@@ -104,10 +107,10 @@ The remaining CRC variants add 219 focused cases and 18 stream cases, plus
 108 further cases in shared enum-driven suites. `XxHashTests` contributes 198
 cases and `XxHashStreamTests` 60; `Fletcher4Tests` contributes 60,
 `Fletcher4StreamTests` 45 and `OspfLsaChecksumTests` 57.
-The TRX completeness check requires at least 3,478 passing tests, including the
+The TRX completeness check requires at least 3,581 passing tests, including the
 public API guard and every required CRC, Adler-32, Internet Checksum, xxHash,
 Fletcher4 and OSPF suite. Missing required suites block release selection; the
-64 release-gate regression cases cover those omissions.
+65 release-gate regression cases cover those omissions.
 Coverage includes all supported algorithms and aliases,
 independent bitwise and frozen reference values, arbitrary partitions, 64 KiB
 boundaries, generated large input without whole-input allocation, buffer lifetime,
@@ -117,6 +120,10 @@ CRC32C's oracle uses normal polynomial `1EDC6F41`, a left-shifting register and
 explicit reflection, independently of the product's reflected lookup table.
 Its 37 distinct non-empty published answers include RFC 7143 Appendix A.4,
 CRC RevEng, Google's binary pattern and 30 Go Castagnoli golden answers.
+`Crc32CastagnoliTests` adds 40 focused cases that reuse these fixed answers for
+the enum-selected numeric, digest/frame, accumulator and stream paths. They also
+check the explicit enum identity, unchanged defaults and exact warning metadata.
+Shared suites and existing single-pass/null/failure tests add 63 further cases.
 These calibrate the oracle and numeric/digest paths, every two-chunk split and
 both stream methods. A corpus guard requires at least 30 distinct inputs.
 Every one- and two-byte input, all partitions of
