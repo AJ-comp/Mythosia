@@ -16,12 +16,18 @@ namespace Mythosia.Integrity.CRC
         private const byte MostSignificantBit = 0x80;
         private const byte ClassicPolynomial = 0x07;
         private const byte MaximReflectedPolynomial = 0x8C;
+        private const byte SaeJ1850Polynomial = 0x1D;
+        private const byte AutosarH2FPolynomial = 0x2F;
 
         // Tables are generated once, fully initialized, and never modified or exposed.
-        private static readonly byte[] ClassicTable = GenerateClassicTable();
+        private static readonly byte[] ClassicTable = GenerateUnreflectedTable(ClassicPolynomial);
         private static readonly byte[] MaximTable = GenerateMaximTable();
+        private static readonly byte[] SaeJ1850Table = GenerateUnreflectedTable(SaeJ1850Polynomial);
+        private static readonly byte[] AutosarH2FTable = GenerateUnreflectedTable(AutosarH2FPolynomial);
 
         private readonly byte[] _table;
+        private readonly byte _initialState;
+        private readonly byte _finalXor;
         private byte _state;
         private bool _hasData;
 
@@ -43,10 +49,17 @@ namespace Mythosia.Integrity.CRC
                 CRC8Type.Basic => ClassicTable,
                 CRC8Type.Classic => ClassicTable,
                 CRC8Type.Maxim => MaximTable,
+                CRC8Type.SaeJ1850 => SaeJ1850Table,
+                CRC8Type.AutosarH2F => AutosarH2FTable,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown CRC8 algorithm.")
             };
 #pragma warning restore CS0618
             Type = type;
+            _initialState = type == CRC8Type.SaeJ1850 || type == CRC8Type.AutosarH2F
+                ? byte.MaxValue
+                : (byte)0;
+            _finalXor = _initialState;
+            _state = _initialState;
         }
 
         /// <summary>
@@ -68,7 +81,10 @@ namespace Mythosia.Integrity.CRC
         /// <summary>
         /// Gets the CRC8 value for all appended bytes without changing the calculation state.
         /// </summary>
-        /// <returns>The current CRC8 value. More bytes may be appended after reading it.</returns>
+        /// <returns>
+        /// The current CRC8 value. SAE-J1850 and AUTOSAR H2F apply a final XOR of 0xFF
+        /// without changing the calculation state. More bytes may be appended after reading it.
+        /// </returns>
         /// <exception cref="InvalidOperationException">
         /// No nonempty span has been appended since construction or the last reset.
         /// </exception>
@@ -77,7 +93,7 @@ namespace Mythosia.Integrity.CRC
             if (!_hasData)
                 throw new InvalidOperationException("No data has been appended.");
 
-            return _state;
+            return (byte)(_state ^ _finalXor);
         }
 
         /// <summary>
@@ -85,11 +101,11 @@ namespace Mythosia.Integrity.CRC
         /// </summary>
         public void Reset()
         {
-            _state = 0;
+            _state = _initialState;
             _hasData = false;
         }
 
-        private static byte[] GenerateClassicTable()
+        private static byte[] GenerateUnreflectedTable(byte polynomial)
         {
             byte[] table = new byte[TableLength];
             for (int index = 0; index < table.Length; index++)
@@ -98,7 +114,7 @@ namespace Mythosia.Integrity.CRC
                 for (int bit = 0; bit < BitsPerByte; bit++)
                 {
                     value = unchecked((byte)((value & MostSignificantBit) != 0
-                        ? (value << 1) ^ ClassicPolynomial
+                        ? (value << 1) ^ polynomial
                         : value << 1));
                 }
 

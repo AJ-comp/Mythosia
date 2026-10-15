@@ -11,6 +11,10 @@ namespace Mythosia.Integrity.CRC
         Basic,
         Classic,
         Maxim,
+        /// <summary>CRC-8/SAE-J1850: polynomial 0x1D, initial state and final XOR 0xFF, no reflection.</summary>
+        SaeJ1850 = 3,
+        /// <summary>CRC-8/AUTOSAR (H2F): polynomial 0x2F, initial state and final XOR 0xFF, no reflection.</summary>
+        AutosarH2F = 4,
         //            Unknown,
     }
 
@@ -26,6 +30,12 @@ namespace Mythosia.Integrity.CRC
         public override IEnumerable<byte> Compute(IEnumerable<byte> source)
         {
             List<byte> result = new List<byte>();
+            if (Type == CRC8Type.SaeJ1850 || Type == CRC8Type.AutosarH2F)
+            {
+                AppendIncrementalResult(source, result);
+                return result;
+            }
+
             if (source.Count() == 0) return result;
 
             if (Type == CRC8Type.Basic) result.Add(ComputeClassicCRC8(source));
@@ -33,6 +43,33 @@ namespace Mythosia.Integrity.CRC
             else if (Type == CRC8Type.Maxim) result.Add(ComputeMaximCRC8(source));
 
             return result;
+        }
+
+        private void AppendIncrementalResult(IEnumerable<byte> source, List<byte> result)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            var accumulator = new CRC8Accumulator(Type);
+            if (source is byte[] bytes)
+            {
+                if (bytes.Length == 0) return;
+                accumulator.Append(bytes);
+            }
+            else
+            {
+                bool hasData = false;
+                Span<byte> nextByte = stackalloc byte[1];
+                foreach (byte value in source)
+                {
+                    nextByte[0] = value;
+                    accumulator.Append(nextByte);
+                    hasData = true;
+                }
+
+                if (!hasData) return;
+            }
+
+            result.Add(accumulator.GetCurrentValue());
         }
 
         public override IEnumerable<byte> Encode(IEnumerable<byte> source)

@@ -266,6 +266,46 @@
         "Stream Internet Checksum: F62A",
         "Async Internet Checksum: F62A"
       ]
+    },
+    {
+      "id": "crc8-variants",
+      "codeSha256": "74F048CE76A4F1192D8EFEBBFE708CF1B52B52348EF2347DDDBF6234E761E3A2",
+      "stdoutLittleEndian": [
+        "CRC8 SaeJ1850: 4B",
+        "CRC8 SaeJ1850 digest: 4B",
+        "CRC8 SaeJ1850 frame valid: True",
+        "CRC8 SaeJ1850 decoded: True",
+        "Chunked CRC8 SaeJ1850: 4B",
+        "Reused CRC8 SaeJ1850: 4B",
+        "Stream CRC8 SaeJ1850: 4B",
+        "Async stream CRC8 SaeJ1850: 4B",
+        "CRC8 AutosarH2F: DF",
+        "CRC8 AutosarH2F digest: DF",
+        "CRC8 AutosarH2F frame valid: True",
+        "CRC8 AutosarH2F decoded: True",
+        "Chunked CRC8 AutosarH2F: DF",
+        "Reused CRC8 AutosarH2F: DF",
+        "Stream CRC8 AutosarH2F: DF",
+        "Async stream CRC8 AutosarH2F: DF"
+      ],
+      "stdoutBigEndian": [
+        "CRC8 SaeJ1850: 4B",
+        "CRC8 SaeJ1850 digest: 4B",
+        "CRC8 SaeJ1850 frame valid: True",
+        "CRC8 SaeJ1850 decoded: True",
+        "Chunked CRC8 SaeJ1850: 4B",
+        "Reused CRC8 SaeJ1850: 4B",
+        "Stream CRC8 SaeJ1850: 4B",
+        "Async stream CRC8 SaeJ1850: 4B",
+        "CRC8 AutosarH2F: DF",
+        "CRC8 AutosarH2F digest: DF",
+        "CRC8 AutosarH2F frame valid: True",
+        "CRC8 AutosarH2F decoded: True",
+        "Chunked CRC8 AutosarH2F: DF",
+        "Reused CRC8 AutosarH2F: DF",
+        "Stream CRC8 AutosarH2F: DF",
+        "Async stream CRC8 AutosarH2F: DF"
+      ]
     }
   ]
 }

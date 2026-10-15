@@ -15,6 +15,8 @@ internal static class CrcReference
     // Parameter/check-value provenance: Greg Cook's CRC RevEng catalogue.
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-smbus
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-maxim-dow
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-sae-j1850
+    // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-8-autosar
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-arc
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-modbus
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-16-xmodem
@@ -24,6 +26,8 @@ internal static class CrcReference
     // https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iso-hdlc
     private static readonly Parameters Smbus = new(8, 0x07, 0, false, false, 0);
     private static readonly Parameters Maxim = new(8, 0x31, 0, true, true, 0);
+    private static readonly Parameters SaeJ1850 = new(8, 0x1D, 0xFF, false, false, 0xFF);
+    private static readonly Parameters AutosarH2F = new(8, 0x2F, 0xFF, false, false, 0xFF);
     private static readonly Parameters Arc = new(16, 0x8005, 0, true, true, 0);
     private static readonly Parameters Modbus = new(16, 0x8005, 0xFFFF, true, true, 0);
     private static readonly Parameters Xmodem = new(16, 0x1021, 0, false, false, 0);
@@ -38,6 +42,8 @@ internal static class CrcReference
         {
             CRC8Type.Basic or CRC8Type.Classic => Smbus,
             CRC8Type.Maxim => Maxim,
+            CRC8Type.SaeJ1850 => SaeJ1850,
+            CRC8Type.AutosarH2F => AutosarH2F,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         return (byte)Compute(source, parameters);

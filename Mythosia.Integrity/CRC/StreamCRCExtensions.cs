@@ -14,7 +14,7 @@ namespace Mythosia.Integrity.CRC
         /// <summary>Reads from the current position to the end of the stream and calculates CRC8.</summary>
         /// <remarks>Reuses one 64 KiB buffer and leaves the stream open.</remarks>
         /// <param name="source">The readable stream to consume.</param>
-        /// <param name="type">The CRC8 algorithm, including the supported Basic alias.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F, including the supported Basic alias.</param>
         /// <returns>The CRC8 value for all bytes read.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
@@ -88,7 +88,7 @@ namespace Mythosia.Integrity.CRC
         /// <summary>Asynchronously reads to the end of the stream and calculates CRC8.</summary>
         /// <remarks>Starts at the current position, reuses one 64 KiB buffer and leaves the stream open, including on cancellation or failure.</remarks>
         /// <param name="source">The readable stream to consume.</param>
-        /// <param name="type">The CRC8 algorithm, including the supported Basic alias.</param>
+        /// <param name="type">The CRC8 algorithm: Classic, Maxim, SaeJ1850 or AutosarH2F, including the supported Basic alias.</param>
         /// <param name="cancellationToken">The token used to cancel stream reads and calculation between reads.</param>
         /// <returns>The CRC8 value for all bytes read.</returns>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>

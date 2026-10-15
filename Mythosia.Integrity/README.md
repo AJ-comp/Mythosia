@@ -8,9 +8,9 @@ and streaming CRC calculation while preserving the existing public API and
 results. See the
 [release notes](https://github.com/AJ-comp/Mythosia/blob/master/Mythosia.Integrity/RELEASE_NOTES.md).
 
-The Adler-32, CRC64/XZ and ECMA-182, and Internet Checksum sections describe
-unreleased source additions. Use a source build for those APIs until a package
-containing them is released.
+The Adler-32, CRC64/XZ and ECMA-182, Internet Checksum, and CRC8/SAE-J1850 and
+AUTOSAR H2F sections describe unreleased source additions. Use a source build
+for those APIs until a package containing them is released.
 
 Each C# block below is a complete, independent example for a .NET 8 console
 application referencing `Mythosia.Integrity`. Copy one block into `Program.cs`.
@@ -654,3 +654,70 @@ reusable 64 KiB buffer and leave the stream open. The asynchronous method accept
 an optional `CancellationToken`; cancellation or read failure returns no partial
 value. Read failures propagate. Null inputs throw `ArgumentNullException`, and
 unreadable streams throw `ArgumentException`.
+
+## CRC8 / SAE-J1850 and AUTOSAR H2F (unreleased)
+
+Select `CRC8Type.SaeJ1850` or `CRC8Type.AutosarH2F` in the existing CRC8 detector,
+numeric/frame extensions, accumulator and synchronous/asynchronous stream APIs.
+The default remains `Classic`; existing enum values and calculation results are
+unchanged. Both new algorithms return one CRC byte, with these distinct parameters:
+
+| Parameter | SAE-J1850 | AUTOSAR H2F |
+| --- | --- | --- |
+| Polynomial | `1D` | `2F` |
+| Initial register | `FF` | `FF` |
+| Reflect input/output | No / No | No / No |
+| Final XOR | `FF` | `FF` |
+| ASCII `123456789` | `4B` | `DF` |
+
+These models are specified by the
+[AUTOSAR CRC Library](https://www.autosar.org/fileadmin/standards/R24-11/CP/AUTOSAR_CP_SWS_CRCLibrary.pdf).
+The library supplies the parameters; callers select the algorithm and provide
+the exact bytes required by their protocol. An AUTOSAR end-to-end profile may
+also require fields such as a Data ID, counter and specific checksum placement;
+prepare that input according to the profile before calculating the CRC.
+
+`GetCurrentValue()` applies the final XOR to the reported value without changing
+the accumulator, so reading a prefix does not prevent further appends. `Reset()`
+restores the selected algorithm's initial state. CRC8's empty-input contract is
+preserved: `Compute` returns an empty digest, numeric/frame encoding extensions
+throw `ArgumentOutOfRangeException`, and a new/reset accumulator or an empty
+stream has no numeric result and throws `InvalidOperationException`.
+
+```csharp
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Mythosia.Integrity.CRC;
+
+byte[] data = Encoding.ASCII.GetBytes("123456789");
+foreach (CRC8Type type in new[] { CRC8Type.SaeJ1850, CRC8Type.AutosarH2F })
+{
+    var detector = new CRC8(type);
+    Console.WriteLine($"CRC8 {type}: {data.CRC8(type):X2}");
+    Console.WriteLine($"CRC8 {type} digest: {Convert.ToHexString(detector.Compute(data).ToArray())}");
+    byte[] frame = data.WithCRC8(type).ToArray();
+    Console.WriteLine($"CRC8 {type} frame valid: {!detector.IsError(frame)}");
+    Console.WriteLine($"CRC8 {type} decoded: {detector.Decode(frame).SequenceEqual(data)}");
+
+    var accumulator = new CRC8Accumulator(type);
+    accumulator.Append(data.AsSpan(0, 4));
+    accumulator.Append(data.AsSpan(4));
+    Console.WriteLine($"Chunked CRC8 {type}: {accumulator.GetCurrentValue():X2}");
+    accumulator.Reset();
+    accumulator.Append(data);
+    Console.WriteLine($"Reused CRC8 {type}: {accumulator.GetCurrentValue():X2}");
+
+    using var syncStream = new MemoryStream(data, writable: false);
+    using var asyncStream = new MemoryStream(data, writable: false);
+    Console.WriteLine($"Stream CRC8 {type}: {syncStream.ComputeCRC8(type):X2}");
+    Console.WriteLine($"Async stream CRC8 {type}: {await asyncStream.ComputeCRC8Async(type):X2}");
+}
+// SAE-J1850 values are 4B; AUTOSAR H2F values are DF.
+// Frame validity and decoded-payload checks print True.
+```
+
+Both stream methods start at the current position, use one reusable 64 KiB
+buffer and leave the stream open. The asynchronous method accepts an optional
+`CancellationToken`. Cancellation and read failure return no partial CRC.

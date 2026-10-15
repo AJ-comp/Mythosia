@@ -199,3 +199,5 @@ member Mythosia.Integrity.Checksum.StreamChecksumExtensions method ComputeIntern
 type Mythosia.Integrity.Checksum.ExtensionForInternetChecksum kind=class visibility=public abstract=True sealed=True base=System.Object interfaces=[] attributes=[System.Runtime.CompilerServices.ExtensionAttribute(){}]
 type Mythosia.Integrity.Checksum.InternetChecksum kind=class visibility=public abstract=False sealed=True base=Mythosia.Integrity.ErrorDetection interfaces=[] attributes=[]
 type Mythosia.Integrity.Checksum.InternetChecksumAccumulator kind=class visibility=public abstract=False sealed=True base=System.Object interfaces=[] attributes=[]
+member Mythosia.Integrity.CRC.CRC8Type field Mythosia.Integrity.CRC.CRC8Type SaeJ1850 flags=[Public, Static, Literal, HasDefault] constant=3 attributes=[]
+member Mythosia.Integrity.CRC.CRC8Type field Mythosia.Integrity.CRC.CRC8Type AutosarH2F flags=[Public, Static, Literal, HasDefault] constant=4 attributes=[]

@@ -181,16 +181,41 @@ published 1.3.0 package. No new package version is assigned yet.
   including IPv4 options and odd-length transport data, plus the RFC 1071 example,
   an independent byte-lane sum, carry/zero boundaries, partitions and streams.
 
+### CRC8 / SAE-J1850 and AUTOSAR H2F
+
+- Add `CRC8Type.SaeJ1850 = 3` and `CRC8Type.AutosarH2F = 4` to the existing
+  detector, numeric/frame extensions, accumulator and synchronous/asynchronous
+  stream APIs. Preserve the `Basic`, `Classic` and `Maxim` values and defaults.
+- Use non-reflected polynomials `1D` and `2F`, respectively, with initial
+  register and final XOR `FF`. ASCII `123456789` produces `4B` and `DF`.
+  Keep raw accumulation state separate from the final XOR, support repeated
+  prefix reads and restore the selected initial state on reset.
+- Preserve CRC8's existing empty-input behavior: no digest from `Compute`,
+  exceptions from numeric/frame encoding extensions, and no value from a
+  new/reset accumulator or empty stream. Keep existing calculation paths and
+  frame-enumeration contracts unchanged.
+- Verify 40 SAE-J1850 and 30 AUTOSAR H2F distinct non-empty published answers
+  from the AUTOSAR specification and pinned upstream fixtures. Record exact
+  source revisions and input mapping; H2F Profile 2 fixture inputs include the
+  published payload and selected Data ID. These are raw CRC tests rather than
+  an implementation of an AUTOSAR end-to-end profile.
+- Calibrate the independent bitwise reference against every fixed answer.
+  Reuse the existing exhaustive one-/two-byte, partition and accumulator tests
+  for both variants, and add focused frame, split and stream-lifecycle coverage.
+- Add 150 test cases, including 81 focused calculation/frame/vector cases,
+  33 stream cases and 36 additional cases in the existing shared suites.
+
 ### Verification and documentation
 
-- Add executable CRC64-variant and Internet Checksum README examples, preserving
-  all nine prior examples and their fixed output. Validate all 11 against actual
-  candidate NuGet packages in CI.
+- Add executable CRC64-variant, Internet Checksum and CRC8-variant README examples,
+  preserving all prior examples and their fixed output. Validate all 12 against
+  actual candidate NuGet packages in CI.
 - Preserve all 174 prior API declarations and review 19 additive declarations:
-  two CRC64 enum members and 17 Internet Checksum declarations. The complete
-  reviewed surface has 193 declarations across 32 public types.
+  two CRC64 enum members and 17 Internet Checksum declarations. Preserve those
+  193 declarations when adding the two CRC8 enum members. The complete reviewed
+  surface has 195 declarations across 32 public types.
 - Require the CRC64-variant and both Internet Checksum suites in CI and release
-  selection. Add missing-suite rejection cases to the existing release-gate
-  tests, for 55 gate regression cases in total. Run all 2,563 Integrity tests,
-  including the 248 new cases, in all four CI configurations. Keep publication
-  disabled for ordinary CI runs.
+  selection, together with both CRC8-variant suites. Add missing-suite rejection
+  cases to the existing release-gate tests, for 57 gate regression cases in total.
+  Run all 2,713 Integrity tests in all four CI configurations. Keep publication
+  disabled for ordinary CI runs and keep released package metadata unchanged.

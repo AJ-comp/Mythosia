@@ -59,7 +59,7 @@ public sealed class CrcAccumulatorTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(3)]
+    [InlineData(5)]
     [InlineData(int.MinValue)]
     [InlineData(int.MaxValue)]
     public void Crc8ConstructorRejectsUndefinedTypes(int variant)

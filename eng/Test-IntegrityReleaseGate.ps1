@@ -30,7 +30,7 @@ $matrix = @(
 )
 $selectedArtifact = 'integrity-ubuntu-latest-Release'
 $runName = 'run-00000000000000000000000000000001'
-$minimumTestCount = 2563
+$minimumTestCount = 2713
 $apiTestName = 'Mythosia.Test.Integrity.IntegrityPublicApiTests.PublicApi_MatchesApprovedSnapshot'
 $crc32CTestPrefix = 'Mythosia.Test.Integrity.Crc32CTests.'
 $crc32CStreamTestPrefix = 'Mythosia.Test.Integrity.Crc32CStreamTests.'
@@ -41,6 +41,8 @@ $adler32StreamTestPrefix = 'Mythosia.Test.Integrity.Adler32StreamTests.'
 $crc64VariantTestPrefix = 'Mythosia.Test.Integrity.Crc64VariantTests.'
 $internetChecksumTestPrefix = 'Mythosia.Test.Integrity.InternetChecksumTests.'
 $internetChecksumStreamTestPrefix = 'Mythosia.Test.Integrity.InternetChecksumStreamTests.'
+$crc8VariantTestPrefix = 'Mythosia.Test.Integrity.Crc8VariantTests.'
+$crc8VariantStreamTestPrefix = 'Mythosia.Test.Integrity.Crc8VariantStreamTests.'
 $githubSentinel = "existing-output=preserved`n"
 $utf8 = [Text.UTF8Encoding]::new($false)
 
@@ -126,6 +128,8 @@ function New-PassingTrx([string] $Path) {
             7 { "${crc64VariantTestPrefix}SyntheticGateFixture" }
             8 { "${internetChecksumTestPrefix}SyntheticGateFixture" }
             9 { "${internetChecksumStreamTestPrefix}SyntheticGateFixture" }
+            10 { "${crc8VariantTestPrefix}SyntheticGateFixture" }
+            11 { "${crc8VariantStreamTestPrefix}SyntheticGateFixture" }
             default { "Mythosia.Test.Integrity.SyntheticGateFixture.Case$index" }
         }
         [void] $document.Append("<UnitTestResult testName=`"$name`" outcome=`"Passed`" />")
@@ -479,6 +483,26 @@ $cases = @(
             foreach ($result in $d.TestRun.Results.UnitTestResult) {
                 if ($result.GetAttribute('testName').StartsWith($internetChecksumStreamTestPrefix, [StringComparison]::Ordinal)) {
                     $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedInternetChecksumStream')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-crc8-variants-calculation-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc8VariantTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc8VariantsCalculation')
+                }
+            }
+        }
+    } },
+    @{ Name = 'missing-crc8-variants-stream-suite'; ExpectSuccess = $false; Change = {
+        param($c) Edit-Trx $c {
+            param($d)
+            foreach ($result in $d.TestRun.Results.UnitTestResult) {
+                if ($result.GetAttribute('testName').StartsWith($crc8VariantStreamTestPrefix, [StringComparison]::Ordinal)) {
+                    $result.SetAttribute('testName', 'Mythosia.Test.Integrity.SyntheticGateFixture.OmittedCrc8VariantsStream')
                 }
             }
         }
