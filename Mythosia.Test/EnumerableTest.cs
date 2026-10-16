@@ -18,9 +18,14 @@ namespace Mythosia.Test
         [Fact]
         public void AddTest()
         {
-            uint test = 0x12345678;
-            var test2 = "abcdef".ToASCIIArray();
-            test2.AddRangeExceptNull(test.ToByteArray()); // dead lock
+            uint value = 0x12345678;
+            var bytes = "abcdef".ToASCIIArray().ToList();
+
+            bytes.AddRangeExceptNull(value.ToByteArray());
+
+            var expected = new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66 }
+                .Concat(BitConverter.GetBytes(value));
+            Assert.Equal(expected, bytes);
         }
 
 

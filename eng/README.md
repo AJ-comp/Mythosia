@@ -1,4 +1,37 @@
-# Integrity CI
+# Build and validation
+
+## Fresh checkout
+
+Use the .NET 8 SDK with network access to NuGet. Run the following from a fresh
+repository checkout on Windows or Linux, using Bash or PowerShell:
+
+```powershell
+dotnet restore Mythosia.sln -p:EnableWindowsTargeting=true
+dotnet build Mythosia.sln -c Release --no-restore -p:EnableWindowsTargeting=true
+dotnet test Mythosia.sln -c Release --no-build --no-restore -p:EnableWindowsTargeting=true
+```
+
+All solution project files and their project references are in the repository.
+The libraries target .NET Standard 2.1; tests and benchmarks target .NET 8.
+The WPF library targets `net8.0-windows`. `EnableWindowsTargeting` lets the SDK
+restore its Windows reference packs and compile it on Linux; executing WPF
+still requires Windows. This property is passed at the command line, so it does
+not change the projects' target frameworks or package behavior.
+
+The checkout can restore and build without copying local `bin`, `obj`, `.vs`
+or NuGet caches. Azure Key Vault features use `DefaultAzureCredential` and need
+credentials in the environment where those features are used. The build and
+tests above do not require Azure service credentials.
+
+These solution checks include the non-Integrity test projects. To reproduce the
+additional Integrity release checks, install PowerShell 7.2 or newer (`pwsh`)
+and continue with the commands below. Existing CI and release gates retain their
+dedicated scope.
+
+Historical development notes, reference provenance and safe research helpers are
+versioned in the [Integrity research archive](research/integrity/README.md).
+
+## Integrity CI
 
 `.github/workflows/integrity.yml` runs on every push, pull request and manual
 dispatch. The matrix covers Windows and Ubuntu, each in Debug and Release,

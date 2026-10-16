@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "crc8-sensirion",
+      "codeSha256": "0A9A4F3032D71B6FCC3DE9411C6930142AF9D16AEC59AE2DF9651DAD59487585",
+      "stdoutLittleEndian": [
+        "CRC8 SensirionSht4x: F7",
+        "CRC8 SensirionSht4x frame valid: True",
+        "CRC8 SensirionSht4x decoded: True",
+        "Chunked CRC8 SensirionSht4x: F7",
+        "Reused CRC8 SensirionSht4x: F7",
+        "Stream CRC8 SensirionSht4x: F7",
+        "Async stream CRC8 SensirionSht4x: F7",
+        "SHT4x BE EF: 92"
+      ],
+      "stdoutBigEndian": [
+        "CRC8 SensirionSht4x: F7",
+        "CRC8 SensirionSht4x frame valid: True",
+        "CRC8 SensirionSht4x decoded: True",
+        "Chunked CRC8 SensirionSht4x: F7",
+        "Reused CRC8 SensirionSht4x: F7",
+        "Stream CRC8 SensirionSht4x: F7",
+        "Async stream CRC8 SensirionSht4x: F7",
+        "SHT4x BE EF: 92"
+      ]
+    },
+    {
+      "id": "crc16-mcrf4xx-usb",
+      "codeSha256": "190DCEF978A1F306C149AA2BB7FBC5B423F63722965612CCDF598A04306944EF",
+      "stdoutLittleEndian": [
+        "CRC16 MCRF4XX: 6F91",
+        "CRC16 MCRF4XX frame valid: True",
+        "CRC16 MCRF4XX decoded: True",
+        "Chunked CRC16 MCRF4XX: 6F91",
+        "Reset CRC16 MCRF4XX: FFFF",
+        "Stream CRC16 MCRF4XX: 6F91",
+        "Async stream CRC16 MCRF4XX: 6F91",
+        "CRC16 USB: B4C8",
+        "CRC16 USB frame valid: True",
+        "CRC16 USB decoded: True",
+        "Chunked CRC16 USB: B4C8",
+        "Reset CRC16 USB: 0000",
+        "Stream CRC16 USB: B4C8",
+        "Async stream CRC16 USB: B4C8"
+      ],
+      "stdoutBigEndian": [
+        "CRC16 MCRF4XX: 6F91",
+        "CRC16 MCRF4XX frame valid: True",
+        "CRC16 MCRF4XX decoded: True",
+        "Chunked CRC16 MCRF4XX: 6F91",
+        "Reset CRC16 MCRF4XX: FFFF",
+        "Stream CRC16 MCRF4XX: 6F91",
+        "Async stream CRC16 MCRF4XX: 6F91",
+        "CRC16 USB: B4C8",
+        "CRC16 USB frame valid: True",
+        "CRC16 USB decoded: True",
+        "Chunked CRC16 USB: B4C8",
+        "Reset CRC16 USB: 0000",
+        "Stream CRC16 USB: B4C8",
+        "Async stream CRC16 USB: B4C8"
+      ]
+    },
+    {
+      "id": "crc32-mpeg2-bzip2-autosar",
+      "codeSha256": "154604672FA8D41A661288161BCBC95309B9B13AB4BAD4339F5A37E4E28A174B",
+      "stdoutLittleEndian": [
+        "CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Mpeg2 frame valid: True",
+        "CRC32 Mpeg2 decoded: True",
+        "Chunked CRC32 Mpeg2: 0376E6E7",
+        "Reset CRC32 Mpeg2: FFFFFFFF",
+        "Stream CRC32 Mpeg2: 0376E6E7",
+        "Async stream CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Bzip2: FC891918",
+        "CRC32 Bzip2 frame valid: True",
+        "CRC32 Bzip2 decoded: True",
+        "Chunked CRC32 Bzip2: FC891918",
+        "Reset CRC32 Bzip2: 00000000",
+        "Stream CRC32 Bzip2: FC891918",
+        "Async stream CRC32 Bzip2: FC891918",
+        "CRC32 AutosarP4: 1697D06A",
+        "CRC32 AutosarP4 frame valid: True",
+        "CRC32 AutosarP4 decoded: True",
+        "Chunked CRC32 AutosarP4: 1697D06A",
+        "Reset CRC32 AutosarP4: 00000000",
+        "Stream CRC32 AutosarP4: 1697D06A",
+        "Async stream CRC32 AutosarP4: 1697D06A"
+      ],
+      "stdoutBigEndian": [
+        "CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Mpeg2 frame valid: True",
+        "CRC32 Mpeg2 decoded: True",
+        "Chunked CRC32 Mpeg2: 0376E6E7",
+        "Reset CRC32 Mpeg2: FFFFFFFF",
+        "Stream CRC32 Mpeg2: 0376E6E7",
+        "Async stream CRC32 Mpeg2: 0376E6E7",
+        "CRC32 Bzip2: FC891918",
+        "CRC32 Bzip2 frame valid: True",
+        "CRC32 Bzip2 decoded: True",
+        "Chunked CRC32 Bzip2: FC891918",
+        "Reset CRC32 Bzip2: 00000000",
+        "Stream CRC32 Bzip2: FC891918",
+        "Async stream CRC32 Bzip2: FC891918",
+        "CRC32 AutosarP4: 1697D06A",
+        "CRC32 AutosarP4 frame valid: True",
+        "CRC32 AutosarP4 decoded: True",
+        "Chunked CRC32 AutosarP4: 1697D06A",
+        "Reset CRC32 AutosarP4: 00000000",
+        "Stream CRC32 AutosarP4: 1697D06A",
+        "Async stream CRC32 AutosarP4: 1697D06A"
+      ]
+    }
+  ]
+}

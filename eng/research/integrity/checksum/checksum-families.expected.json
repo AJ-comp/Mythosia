@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "xxhash",
+      "codeSha256": "D990BD5AE4DDD360DA7526A5C7FE3B4533049BE371CC5DFAD419CB8B05BC35DA",
+      "stdoutLittleEndian": [
+        "XXH32: 937BAD67",
+        "XXH32 digest: 67AD7B93",
+        "XXH32 frame valid: True",
+        "XXH32 decoded: True",
+        "Chunked XXH32: 937BAD67",
+        "Reset XXH32: 02CC5D05",
+        "Stream XXH32: 937BAD67",
+        "Async XXH32: 937BAD67",
+        "XXH64: 8CB841DB40E6AE83",
+        "XXH64 digest: 83AEE640DB41B88C",
+        "XXH64 frame valid: True",
+        "XXH64 decoded: True",
+        "Chunked XXH64: 8CB841DB40E6AE83",
+        "Reset XXH64: EF46DB3751D8E999",
+        "Stream XXH64: 8CB841DB40E6AE83",
+        "Async XXH64: 8CB841DB40E6AE83"
+      ],
+      "stdoutBigEndian": [
+        "XXH32: 937BAD67",
+        "XXH32 digest: 937BAD67",
+        "XXH32 frame valid: True",
+        "XXH32 decoded: True",
+        "Chunked XXH32: 937BAD67",
+        "Reset XXH32: 02CC5D05",
+        "Stream XXH32: 937BAD67",
+        "Async XXH32: 937BAD67",
+        "XXH64: 8CB841DB40E6AE83",
+        "XXH64 digest: 8CB841DB40E6AE83",
+        "XXH64 frame valid: True",
+        "XXH64 decoded: True",
+        "Chunked XXH64: 8CB841DB40E6AE83",
+        "Reset XXH64: EF46DB3751D8E999",
+        "Stream XXH64: 8CB841DB40E6AE83",
+        "Async XXH64: 8CB841DB40E6AE83"
+      ]
+    },
+    {
+      "id": "fletcher4",
+      "codeSha256": "6666FBA0CECACEE8259D56AFADFAF24A751EAF07F2562DEF298ADDA913F46329",
+      "stdoutLittleEndian": [
+        "Fletcher4 A/B/C/D: 10/20/35/56",
+        "Fletcher4 digest: 0A00000000000000140000000000000023000000000000003800000000000000",
+        "Fletcher4 frame valid: True",
+        "Fletcher4 decoded: True",
+        "Chunked Fletcher4 matches: True",
+        "Reset Fletcher4 A/B/C/D: 0/0/0/0",
+        "Stream Fletcher4 matches: True",
+        "Async Fletcher4 matches: True",
+        "Big-endian Fletcher4 matches: True"
+      ],
+      "stdoutBigEndian": [
+        "Fletcher4 A/B/C/D: 10/20/35/56",
+        "Fletcher4 digest: 000000000000000A000000000000001400000000000000230000000000000038",
+        "Fletcher4 frame valid: True",
+        "Fletcher4 decoded: True",
+        "Chunked Fletcher4 matches: True",
+        "Reset Fletcher4 A/B/C/D: 0/0/0/0",
+        "Stream Fletcher4 matches: True",
+        "Async Fletcher4 matches: True",
+        "Big-endian Fletcher4 matches: True"
+      ]
+    },
+    {
+      "id": "ospf-lsa-checksum",
+      "codeSha256": "8C311854389C737D8D19F86707837379F4C4A27B52EC7589DA092773ABC935DE",
+      "stdoutLittleEndian": [
+        "OSPF LSA length: 48",
+        "OSPF LSA checksum: 51CB",
+        "OSPF LSA checksum field: 51CB",
+        "OSPF LSA valid: True",
+        "OSPF LSA valid after age change: True",
+        "OSPF LSA valid after body change: False"
+      ],
+      "stdoutBigEndian": [
+        "OSPF LSA length: 48",
+        "OSPF LSA checksum: 51CB",
+        "OSPF LSA checksum field: 51CB",
+        "OSPF LSA valid: True",
+        "OSPF LSA valid after age change: True",
+        "OSPF LSA valid after body change: False"
+      ]
+    }
+  ]
+}

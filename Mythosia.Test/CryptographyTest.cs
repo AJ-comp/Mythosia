@@ -29,7 +29,9 @@ namespace Mythosia.Test
             };
 
             var encryptedData = lea.Encrypt(key.ToArray(), data.ToArray());
-            Assert.True(encryptedData.SequenceEqual(answer));
+            // The vector covers one block; Encrypt also appends a PKCS#7 block.
+            Assert.Equal(32, encryptedData.Length);
+            Assert.Equal(answer, encryptedData.Take(16));
 
             var decryptedData = lea.Decrypt(key.ToArray(), encryptedData);
             Assert.True(decryptedData.SequenceEqual(data));

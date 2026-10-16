@@ -35,9 +35,24 @@
 
 ## 🚀 **Getting Started**
 
-1. Clone this repository.
-2. Install the necessary packages and libraries.
-3. Build and run the project.
+Install the .NET 8 SDK, then run:
+
+```powershell
+git clone https://github.com/AJ-comp/Mythosia.git
+cd Mythosia
+dotnet restore Mythosia.sln -p:EnableWindowsTargeting=true
+dotnet build Mythosia.sln -c Release --no-restore -p:EnableWindowsTargeting=true
+dotnet test Mythosia.sln -c Release --no-build --no-restore -p:EnableWindowsTargeting=true
+```
+
+These commands support Windows and Linux checkouts. WPF can be cross-compiled
+on Linux with `EnableWindowsTargeting`, but running WPF requires Windows.
+See [build and validation instructions](eng/README.md) for the Integrity CI,
+benchmark and package checks. Dependencies are restored from NuGet; existing
+local build outputs are not required.
+
+Development notes and helpers are preserved in the
+[Integrity research archive](eng/research/integrity/README.md).
 
 ---
 

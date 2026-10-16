@@ -1,0 +1,1087 @@
+[
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "",
+    "expected": 46947589,
+    "name": "jmacheta length 0, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5",
+    "expected": 724504601,
+    "name": "jmacheta length 1, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3",
+    "expected": 3244346101,
+    "name": "jmacheta length 2, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c4",
+    "expected": 538943311,
+    "name": "jmacheta length 3, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498",
+    "expected": 3585304987,
+    "name": "jmacheta length 4, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d",
+    "expected": 1575244407,
+    "name": "jmacheta length 7, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29",
+    "expected": 3441886763,
+    "name": "jmacheta length 8, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a7",
+    "expected": 1949241941,
+    "name": "jmacheta length 9, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015",
+    "expected": 3458065127,
+    "name": "jmacheta length 14, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 602696040,
+    "name": "jmacheta length 15, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 2307326312,
+    "name": "jmacheta length 16, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 2300454076,
+    "name": "jmacheta length 17, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c",
+    "expected": 3007635109,
+    "name": "jmacheta length 23, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21",
+    "expected": 1391067917,
+    "name": "jmacheta length 24, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d6",
+    "expected": 3325972099,
+    "name": "jmacheta length 25, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847b",
+    "expected": 922537781,
+    "name": "jmacheta length 30, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 576237245,
+    "name": "jmacheta length 31, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 56213668,
+    "name": "jmacheta length 32, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 691868262,
+    "name": "jmacheta length 33, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be",
+    "expected": 2228813391,
+    "name": "jmacheta length 47, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be19",
+    "expected": 2118940172,
+    "name": "jmacheta length 48, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195d",
+    "expected": 2748596274,
+    "name": "jmacheta length 49, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 3398709966,
+    "name": "jmacheta length 63, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 2926123699,
+    "name": "jmacheta length 64, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 2858657224,
+    "name": "jmacheta length 65, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d5",
+    "expected": 175652808,
+    "name": "jmacheta length 127, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e",
+    "expected": 1099322882,
+    "name": "jmacheta length 128, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41",
+    "expected": 4121752956,
+    "name": "jmacheta length 129, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3",
+    "expected": 1650701049,
+    "name": "jmacheta length 255, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9",
+    "expected": 4221603113,
+    "name": "jmacheta length 256, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4",
+    "expected": 596286116,
+    "name": "jmacheta length 257, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b9764",
+    "expected": 3528491441,
+    "name": "jmacheta length 299, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 2473583450,
+    "name": "jmacheta length 300, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "",
+    "expected": 3586027192,
+    "name": "jmacheta length 0, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5",
+    "expected": 1480580278,
+    "name": "jmacheta length 1, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 1856931678,
+    "name": "jmacheta length 15, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 3435527683,
+    "name": "jmacheta length 16, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 3176587970,
+    "name": "jmacheta length 17, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 1011893355,
+    "name": "jmacheta length 31, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 3082836677,
+    "name": "jmacheta length 32, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 2354125037,
+    "name": "jmacheta length 33, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 2129542433,
+    "name": "jmacheta length 63, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 2586541751,
+    "name": "jmacheta length 64, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 1119894275,
+    "name": "jmacheta length 65, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 2998992890,
+    "name": "jmacheta length 300, seed 42"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "",
+    "expected": 3661193647,
+    "name": "jmacheta length 0, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5",
+    "expected": 843295875,
+    "name": "jmacheta length 1, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 1961233977,
+    "name": "jmacheta length 15, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 2842607572,
+    "name": "jmacheta length 16, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 2763542545,
+    "name": "jmacheta length 17, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 4114702804,
+    "name": "jmacheta length 31, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 449839366,
+    "name": "jmacheta length 32, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 3098728096,
+    "name": "jmacheta length 33, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 2922140942,
+    "name": "jmacheta length 63, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 2148676223,
+    "name": "jmacheta length 64, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 1730910459,
+    "name": "jmacheta length 65, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 4275878552,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 1367947288,
+    "name": "jmacheta length 300, seed 4275878552"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "61",
+    "expected": 1426945110,
+    "name": "pierrec a"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162",
+    "expected": 1234828371,
+    "name": "pierrec ab"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "616263",
+    "expected": 852579327,
+    "name": "pierrec abc"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "61626364",
+    "expected": 2741253893,
+    "name": "pierrec abcd"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162636465",
+    "expected": 2537091483,
+    "name": "pierrec abcde"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "616263646566",
+    "expected": 2340214151,
+    "name": "pierrec abcdef"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "61626364656667",
+    "expected": 2647692211,
+    "name": "pierrec abcdefg"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162636465666768",
+    "expected": 196331195,
+    "name": "pierrec abcdefgh"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "616263646566676869",
+    "expected": 3493598205,
+    "name": "pierrec abcdefghi"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162636465666768696a",
+    "expected": 2342030590,
+    "name": "pierrec abcdefghij"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162636465666768696a6b6c6d6e6f70",
+    "expected": 2637007714,
+    "name": "pierrec abcdefghijklmnop"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "6162636465666768696a6b6c6d6e6f707172737475767778797a30313233343536373839",
+    "expected": 1118732365,
+    "name": "pierrec abcdefghijklmnopqrst"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e20557420656e696d206164206d696e696d2076656e69616d2c2071756973206e6f737472756420657865726369746174696f6e20756c6c616d636f206c61626f726973206e69736920757420616c697175697020657820656120636f6d6d6f646f20636f6e7365717561742e2044756973206175746520697275726520646f6c6f7220696e20726570726568656e646572697420696e20766f6c7570746174652076656c697420657373652063696c6c756d20646f6c6f726520657520667567696174206e756c6c612070617269617475722e204578636570746575722073696e74206f6363616563617420637570696461746174206e6f6e2070726f6964656e742c2073756e7420696e2063756c706120717569206f666669636961206465736572756e74206d6f6c6c697420616e696d20696420657374206c61626f72756d2e",
+    "expected": 1656024320,
+    "name": "pierrec Lorem ipsum dolor si"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "",
+    "expected": 17241709254077376921,
+    "name": "jmacheta length 0, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5",
+    "expected": 10798809820047634490,
+    "name": "jmacheta length 1, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3",
+    "expected": 13225184432586614542,
+    "name": "jmacheta length 2, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c4",
+    "expected": 14747788776508796221,
+    "name": "jmacheta length 3, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498",
+    "expected": 7156897824028547720,
+    "name": "jmacheta length 4, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d",
+    "expected": 9996196749803446641,
+    "name": "jmacheta length 7, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29",
+    "expected": 6935683728208899250,
+    "name": "jmacheta length 8, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a7",
+    "expected": 5032225880513733073,
+    "name": "jmacheta length 9, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015",
+    "expected": 5499635101184070763,
+    "name": "jmacheta length 14, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 3105259086903003233,
+    "name": "jmacheta length 15, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 9426142867349126668,
+    "name": "jmacheta length 16, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 14431526482446564974,
+    "name": "jmacheta length 17, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c",
+    "expected": 16938359814391542700,
+    "name": "jmacheta length 23, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21",
+    "expected": 12581401715287215249,
+    "name": "jmacheta length 24, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d6",
+    "expected": 18253487126685476900,
+    "name": "jmacheta length 25, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847b",
+    "expected": 11288792463182271852,
+    "name": "jmacheta length 30, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 7069961970396930555,
+    "name": "jmacheta length 31, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 6266401639052107114,
+    "name": "jmacheta length 32, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 18259082177780062541,
+    "name": "jmacheta length 33, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be",
+    "expected": 12210625317252116730,
+    "name": "jmacheta length 47, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be19",
+    "expected": 12688435384438099131,
+    "name": "jmacheta length 48, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195d",
+    "expected": 8115594721947326681,
+    "name": "jmacheta length 49, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 7019495951769178890,
+    "name": "jmacheta length 63, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 2908736862202752937,
+    "name": "jmacheta length 64, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 3524827624633585537,
+    "name": "jmacheta length 65, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d5",
+    "expected": 16964756307991014385,
+    "name": "jmacheta length 127, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e",
+    "expected": 5698095493817323181,
+    "name": "jmacheta length 128, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41",
+    "expected": 1620764331672058362,
+    "name": "jmacheta length 129, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3",
+    "expected": 5467590052301233216,
+    "name": "jmacheta length 255, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9",
+    "expected": 15652329344476337257,
+    "name": "jmacheta length 256, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4",
+    "expected": 12987807497116291212,
+    "name": "jmacheta length 257, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b9764",
+    "expected": 2042416817042911300,
+    "name": "jmacheta length 299, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 358275915789090636,
+    "name": "jmacheta length 300, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "",
+    "expected": 11002672306508523268,
+    "name": "jmacheta length 0, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5",
+    "expected": 6630862860873940833,
+    "name": "jmacheta length 1, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 2032326943303910588,
+    "name": "jmacheta length 15, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 13068853489284458663,
+    "name": "jmacheta length 16, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 8421019411663151340,
+    "name": "jmacheta length 17, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 4557408996115222539,
+    "name": "jmacheta length 31, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 16653339247487458225,
+    "name": "jmacheta length 32, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 5353003881361879972,
+    "name": "jmacheta length 33, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 2374607627186065748,
+    "name": "jmacheta length 63, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 2429354159708523113,
+    "name": "jmacheta length 64, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 4338015990367393608,
+    "name": "jmacheta length 65, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 42,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 11068864150092091152,
+    "name": "jmacheta length 300, seed 42"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "",
+    "expected": 8991682357627531110,
+    "name": "jmacheta length 0, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5",
+    "expected": 10301790537087786806,
+    "name": "jmacheta length 1, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c6",
+    "expected": 17313082918244377270,
+    "name": "jmacheta length 15, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669",
+    "expected": 13889555925214374117,
+    "name": "jmacheta length 16, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c66992",
+    "expected": 6373908604323521866,
+    "name": "jmacheta length 17, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfa",
+    "expected": 2997361290536208830,
+    "name": "jmacheta length 31, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac",
+    "expected": 9358093676809128037,
+    "name": "jmacheta length 32, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac47",
+    "expected": 9843634737930609361,
+    "name": "jmacheta length 33, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb87998",
+    "expected": 7056561919300169276,
+    "name": "jmacheta length 63, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb8799887",
+    "expected": 13797181566056682917,
+    "name": "jmacheta length 64, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717",
+    "expected": 2483713816586611576,
+    "name": "jmacheta length 65, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 18364758544493064720,
+    "hex": "a5a3c498884d1d29a711f8f8a015c669929dc994bf3e0c21d65168f9847bfaac4759ac07ac9a620eeed2290df514be195dc0a500cdef04080eca5fecb879988717b9fc651373d3632482825cc4090a3dcc2d5cc31779407a0eef2d7036dd66baad18f208a507821560472b3e0857791bffb7aaa5aa5949b5eae1ac63abe1d51e41774ebf781413c236f998ae28c0f523767f175d1caeabc3be6e0d45d803e756fa2b58627cbbf13129c44c3eba934c40d41158b6be734c552d6f636b1385e88ef1ade8ac65f9d9109cd2f79c26c3a70ee459bb4662497802fdaca02ebee536addc0e4216ce6d0767617beab7f666b721527a6fba6419e8e0133fc12b1464d3e9e4b073e8aa568b70018f4ff9601665f968baec547999a1e5c4715073df3cecde9ee7a9312346817f2b976454",
+    "expected": 10654603412004074302,
+    "name": "jmacheta length 300, seed 18364758544493064720"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "61",
+    "expected": 15154266338359012955,
+    "name": "pierrec a"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162",
+    "expected": 7347350983217793633,
+    "name": "pierrec ab"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "616263",
+    "expected": 4952883123889572249,
+    "name": "pierrec abc"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "61626364",
+    "expected": 15997673941747208908,
+    "name": "pierrec abcd"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162636465",
+    "expected": 568411279426701291,
+    "name": "pierrec abcde"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "616263646566",
+    "expected": 18053520794346263629,
+    "name": "pierrec abcdef"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "61626364656667",
+    "expected": 1756566643212976685,
+    "name": "pierrec abcdefg"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162636465666768",
+    "expected": 4238821247360054455,
+    "name": "pierrec abcdefgh"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "616263646566676869",
+    "expected": 2878261200250560019,
+    "name": "pierrec abcdefghi"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162636465666768696a",
+    "expected": 15431718392004447154,
+    "name": "pierrec abcdefghij"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162636465666768696a6b6c6d6e6f707172737475767778797a303132333435",
+    "expected": 13775620903542209408,
+    "name": "pierrec abcdefghijklmnopqrst"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "6162636465666768696a6b6c6d6e6f707172737475767778797a30313233343536373839",
+    "expected": 7273945407305660262,
+    "name": "pierrec abcdefghijklmnopqrst"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e20557420656e696d206164206d696e696d2076656e69616d2c2071756973206e6f737472756420657865726369746174696f6e20756c6c616d636f206c61626f726973206e69736920757420616c697175697020657820656120636f6d6d6f646f20636f6e7365717561742e2044756973206175746520697275726520646f6c6f7220696e20726570726568656e646572697420696e20766f6c7570746174652076656c697420657373652063696c6c756d20646f6c6f726520657520667567696174206e756c6c612070617269617475722e204578636570746575722073696e74206f6363616563617420637570696461746174206e6f6e2070726f6964656e742c2073756e7420696e2063756c706120717569206f666669636961206465736572756e74206d6f6c6c697420616e696d20696420657374206c61626f72756d2e",
+    "expected": 14242828522148484656,
+    "name": "pierrec Lorem ipsum dolor si"
+  },
+  {
+    "bits": 32,
+    "seed": 2654435761,
+    "hex": "",
+    "expected": 917998311,
+    "name": "xxHash official length 0, seed 2654435761"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "00",
+    "expected": 3479547966,
+    "name": "xxHash official length 1, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 2654435761,
+    "hex": "00",
+    "expected": 3025427108,
+    "name": "xxHash official length 1, seed 2654435761"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "0052929bb732a3242d00af950eec",
+    "expected": 302573538,
+    "name": "xxHash official length 14, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 2654435761,
+    "hex": "0052929bb732a3242d00af950eec",
+    "expected": 1794232830,
+    "name": "xxHash official length 14, seed 2654435761"
+  },
+  {
+    "bits": 32,
+    "seed": 0,
+    "hex": "0052929bb732a3242d00af950eecb893e3dfef93aad6cd2a538b5c3f545a6fd559c0fffc8f85b9331dab74f7b6059327b07084b3677c9f76480072ed7b9817e8dd485e0c0ccbd0653fadb28f11b06ce88db0f186086159566c8e4e781363bdab9d327309ea712fd97a9d55f0ca8ad0e95e1a36b36b0fca51ef8ba2c462ed0096f33449eb0fd13b92a1a963dbaaed3dcff10942cdf9b321a2ebf2c8f4e42f48d14b10f4c2efecf84ab53874c3a4a6620ebffd633741e386981aeb4cba56036687ed004559c18544b6c368f941a9eaf987e09f12d0d51454485d444051e338",
+    "expected": 1540431293,
+    "name": "xxHash official length 222, seed 0"
+  },
+  {
+    "bits": 32,
+    "seed": 2654435761,
+    "hex": "0052929bb732a3242d00af950eecb893e3dfef93aad6cd2a538b5c3f545a6fd559c0fffc8f85b9331dab74f7b6059327b07084b3677c9f76480072ed7b9817e8dd485e0c0ccbd0653fadb28f11b06ce88db0f186086159566c8e4e781363bdab9d327309ea712fd97a9d55f0ca8ad0e95e1a36b36b0fca51ef8ba2c462ed0096f33449eb0fd13b92a1a963dbaaed3dcff10942cdf9b321a2ebf2c8f4e42f48d14b10f4c2efecf84ab53874c3a4a6620ebffd633741e386981aeb4cba56036687ed004559c18544b6c368f941a9eaf987e09f12d0d51454485d444051e338",
+    "expected": 1484799071,
+    "name": "xxHash official length 222, seed 2654435761"
+  },
+  {
+    "bits": 64,
+    "seed": 2654435761,
+    "hex": "",
+    "expected": 12427117621484918767,
+    "name": "xxHash official length 0, seed 2654435761"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "00",
+    "expected": 16804241149081757544,
+    "name": "xxHash official length 1, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 2654435761,
+    "hex": "00",
+    "expected": 5770343083626050755,
+    "name": "xxHash official length 1, seed 2654435761"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "0052929b",
+    "expected": 10463727653771040750,
+    "name": "xxHash official length 4, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "0052929bb732a3242d00af950eec",
+    "expected": 9404321708846757320,
+    "name": "xxHash official length 14, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 2654435761,
+    "hex": "0052929bb732a3242d00af950eec",
+    "expected": 14104548313339227632,
+    "name": "xxHash official length 14, seed 2654435761"
+  },
+  {
+    "bits": 64,
+    "seed": 0,
+    "hex": "0052929bb732a3242d00af950eecb893e3dfef93aad6cd2a538b5c3f545a6fd559c0fffc8f85b9331dab74f7b6059327b07084b3677c9f76480072ed7b9817e8dd485e0c0ccbd0653fadb28f11b06ce88db0f186086159566c8e4e781363bdab9d327309ea712fd97a9d55f0ca8ad0e95e1a36b36b0fca51ef8ba2c462ed0096f33449eb0fd13b92a1a963dbaaed3dcff10942cdf9b321a2ebf2c8f4e42f48d14b10f4c2efecf84ab53874c3a4a6620ebffd633741e386981aeb4cba56036687ed004559c18544b6c368f941a9eaf987e09f12d0d51454485d444051e338",
+    "expected": 13132969907770737012,
+    "name": "xxHash official length 222, seed 0"
+  },
+  {
+    "bits": 64,
+    "seed": 2654435761,
+    "hex": "0052929bb732a3242d00af950eecb893e3dfef93aad6cd2a538b5c3f545a6fd559c0fffc8f85b9331dab74f7b6059327b07084b3677c9f76480072ed7b9817e8dd485e0c0ccbd0653fadb28f11b06ce88db0f186086159566c8e4e781363bdab9d327309ea712fd97a9d55f0ca8ad0e95e1a36b36b0fca51ef8ba2c462ed0096f33449eb0fd13b92a1a963dbaaed3dcff10942cdf9b321a2ebf2c8f4e42f48d14b10f4c2efecf84ab53874c3a4a6620ebffd633741e386981aeb4cba56036687ed004559c18544b6c368f941a9eaf987e09f12d0d51454485d444051e338",
+    "expected": 2363134950989939018,
+    "name": "xxHash official length 222, seed 2654435761"
+  }
+]
